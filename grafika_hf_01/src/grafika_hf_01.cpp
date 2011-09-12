@@ -44,6 +44,14 @@
 #include <math.h>
 #include <stdlib.h>
 
+// TODO: A beadas elott torold ki a kovetkezo sorokat:
+#define DEBUG
+
+#if defined(DEBUG)
+#include <iostream>
+using namespace std;
+#endif
+
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__)
 // MsWindows-on ez is kell
 #include <windows.h>     
@@ -58,6 +66,21 @@
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Innentol modosithatod...
+
+// A DEBUG-olast segito fuggvenyek, metodusok:
+
+#if defined(DEBUG)
+
+void PrintPressedKey(unsigned char key, int x, int y) {
+	cout << "Billentyuzet: gomb: " << key << " Eger koordinatak: x: " << x << " y: " << y << endl;
+}
+
+void PrintTime() {
+	long time = glutGet(GLUT_ELAPSED_TIME);
+	cout << "Eltelt ido: " << time << "ms" << endl;
+}
+
+#endif
 
 // Inicializacio, a program futasanak kezdeten, az OpenGL kontextus letrehozasa utan hivodik meg (ld. main() fv.)
 void onInitialization( ) { 
@@ -76,6 +99,12 @@ void onDisplay( ) {
 
 // Billentyuzet esemenyeket lekezelo fuggveny
 void onKeyboard(unsigned char key, int x, int y) {
+
+	#if defined(DEBUG)
+	PrintPressedKey(key, x, y);
+	PrintTime();
+	#endif
+
     if (key == 'd') glutPostRedisplay( ); 		// d beture rajzold ujra a kepet
 
 }
