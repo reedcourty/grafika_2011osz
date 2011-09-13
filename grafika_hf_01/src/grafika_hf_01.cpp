@@ -82,6 +82,29 @@ void PrintTime() {
 
 #endif
 
+class MyRectangle {
+	private:
+		float x1, y1, x2, y2;
+
+	public:
+
+		MyRectangle(float _x1, float _y1, float _x2, float _y2) {
+			x1 = _x1;
+			y1 = _y1;
+			x2 = _x2;
+			y2 = _y2;
+		}
+
+		void draw(void) {
+			glBegin(GL_POLYGON);
+				glVertex2f(x1, y1);
+				glVertex2f(x2, y1);
+				glVertex2f(x2, y2);
+				glVertex2f(x1, y2);
+			glEnd();
+		}
+};
+
 // Inicializacio, a program futasanak kezdeten, az OpenGL kontextus letrehozasa utan hivodik meg (ld. main() fv.)
 void onInitialization( ) { 
 }
@@ -92,6 +115,9 @@ void onDisplay( ) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // kepernyo torles
 
     // ...
+    MyRectangle rect(0.5,0.5,0.75,0.75);
+    glColor3f(1.0f,0.863f,0.047f);
+    rect.draw();
 
     glutSwapBuffers();     				// Buffercsere: rajzolas vege
 
