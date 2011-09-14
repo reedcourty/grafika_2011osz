@@ -82,6 +82,9 @@ void PrintTime() {
 
 #endif
 
+float LiftQAm = 0;
+float LiftOLm = 0;
+
 class MyRectangle {
 	private:
 		float x1, y1, x2, y2;
@@ -105,6 +108,53 @@ class MyRectangle {
 		}
 };
 
+class Palya {
+	public:
+		float szint1, szint2;
+
+
+	void draw(void) {
+
+		glColor3f(0.03f,0.863f,0.047f);
+
+		MyRectangle szint1_1(-1.00,szint1-0.005,-0.60,szint1+0.005);
+		MyRectangle szint1_2(-0.20,szint1-0.005,+0.20,szint1+0.005);
+		MyRectangle szint1_3(+0.60,szint1-0.005,+1.00,szint1+0.005);
+
+		szint1_1.draw();
+		szint1_2.draw();
+		szint1_3.draw();
+
+		MyRectangle szint2_1(-1.00,szint2-0.005,-0.60,szint2+0.005);
+		MyRectangle szint2_2(-0.20,szint2-0.005,+0.20,szint2+0.005);
+		MyRectangle szint2_3(+0.60,szint2-0.005,+1.00,szint2+0.005);
+
+		szint2_1.draw();
+		szint2_2.draw();
+		szint2_3.draw();
+	}
+};
+
+class Lift {
+	public:
+		float magassag;
+		float szam;
+
+		void draw(void) {
+			glColor3f(0.03f,0.53f,0.047f);
+
+			if (szam == 1) {
+				MyRectangle _lift(-0.60,magassag-0.005,-0.20,magassag+0.005);
+				_lift.draw();
+			}
+			if (szam == 2) {
+				MyRectangle _lift(+0.20,magassag-0.005,+0.60,magassag+0.005);
+				_lift.draw();
+			}
+
+		}
+};
+
 // Inicializacio, a program futasanak kezdeten, az OpenGL kontextus letrehozasa utan hivodik meg (ld. main() fv.)
 void onInitialization( ) { 
 }
@@ -115,9 +165,24 @@ void onDisplay( ) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // kepernyo torles
 
     // ...
-    MyRectangle rect(0.5,0.5,0.75,0.75);
+    //MyRectangle rect(0.1,0.25,0.5,0.75);
     glColor3f(1.0f,0.863f,0.047f);
-    rect.draw();
+    //rect.draw();
+
+    Palya p;
+    p.szint1=+0.5;
+    p.szint2=-0.5;
+    p.draw();
+
+    Lift LiftQA;
+    LiftQA.szam = 1;
+    LiftQA.magassag = LiftQAm;
+    LiftQA.draw();
+
+    Lift LiftOL;
+    LiftOL.szam = 2;
+    LiftOL.magassag = LiftOLm;
+    LiftOL.draw();
 
     glutSwapBuffers();     				// Buffercsere: rajzolas vege
 
@@ -132,6 +197,38 @@ void onKeyboard(unsigned char key, int x, int y) {
 	#endif
 
     if (key == 'd') glutPostRedisplay( ); 		// d beture rajzold ujra a kepet
+
+    if (key == 'q') {
+    	if (LiftQAm <= +1.0) {
+    		LiftQAm = LiftQAm + 0.05;
+    		glutPostRedisplay();
+    	}
+
+    }
+    if (key == 'a') {
+    	if (LiftQAm >= -1.0) {
+    		LiftQAm = LiftQAm - 0.05;
+    		glutPostRedisplay();
+    	}
+    }
+
+    if (key == 'o') {
+    	if (LiftOLm <= +1.0) {
+    		LiftOLm = LiftOLm + 0.05;
+    		glutPostRedisplay();
+        }
+    }
+    if (key == 'l') {
+    	if (LiftOLm >= -1.0) {
+    		LiftOLm = LiftOLm - 0.05;
+    		glutPostRedisplay();
+    	}
+    }
+
+	#if defined(DEBUG)
+    cout << "LiftQAm: " << LiftQAm << endl;
+    cout << "LiftOLm: " << LiftOLm << endl;
+	#endif
 
 }
 
