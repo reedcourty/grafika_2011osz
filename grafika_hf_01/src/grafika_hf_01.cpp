@@ -93,14 +93,14 @@ float LiftOL_kezdeti_magassag = 0;
 // A piros giliszta tulajdonsagai:
 float p_giliszta_cx = +0.00;
 float p_giliszta_cy = +0.00;
-float p_giliszta_vx = +0.0001;
-float p_giliszta_vy = -0.000981;
+float p_giliszta_vx = +0.001;
+float p_giliszta_vy = -0.001;
 
 // A zold giliszta tulajdonsagai:
 float z_giliszta_cx = -0.40;
 float z_giliszta_cy = -0.40;
-float z_giliszta_vx = +0.0001;
-float z_giliszta_vy = -0.000981;
+float z_giliszta_vx = +0.001;
+float z_giliszta_vy = -0.001;
 
 float giliszta_fej = 0.10;
 
@@ -236,11 +236,17 @@ class Giliszta {
 			cout << "cx: " << this->cx << " cy: " << this->cy << endl;
 			#endif
 
-			if ((this->cx <= -1.0+giliszta_fej) || (this->cx >= 1.0-giliszta_fej)) {
-				this->vx = - this->vx;
+			if (this->cx <= -1.0+giliszta_fej) {
+				this->vx = 0 + fabs(this->vx);
 			}
-			if ((this->cy <= -1.0+giliszta_fej) || (this->cy >= 1.0-giliszta_fej)) {
-				this->vy = - this->vy;
+			if (this->cx >= 1.0-giliszta_fej) {
+				this->vx = 0 - fabs(this->vx);
+			}
+			if (this->cy <= -1.0+giliszta_fej) {
+				this->vy = 0 + fabs(this->vy);
+			}
+			if (this->cy >= 1.0-giliszta_fej) {
+				this->vy = 0 - fabs(this->vy);
 			}
 
 		}
