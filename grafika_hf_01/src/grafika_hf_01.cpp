@@ -176,6 +176,32 @@ class Lift {
 		}
 };
 
+class Giliszta {
+	private:
+		float szin_R;
+		float szin_G;
+		float szin_B;
+		float cx;
+		float cy;
+
+	public:
+		Giliszta(float _szin_R, float _szin_G, float _szin_B, float _cx, float _cy) {
+			szin_R = _szin_R;
+			szin_G = _szin_G;
+			szin_B = _szin_B;
+			cx = _cx;
+			cy = _cy;
+		}
+
+		void draw(void) {
+			glColor3f(szin_R,szin_G,szin_B);
+
+			MyPolygon mp(cx, cy);
+			mp.draw();
+		}
+
+};
+
 // Inicializacio, a program futasanak kezdeten, az OpenGL kontextus letrehozasa utan hivodik meg (ld. main() fv.)
 void onInitialization( ) { 
 }
@@ -207,6 +233,9 @@ void onDisplay( ) {
     LiftOL.szam = 2;
     LiftOL.magassag = LiftOLm;
     LiftOL.draw();
+
+    Giliszta g(0.20f,0.34f,0.50,0.00,0.00);
+    g.draw();
 
     glutSwapBuffers();     				// Buffercsere: rajzolas vege
 
