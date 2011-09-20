@@ -94,14 +94,15 @@ float LiftOL_kezdeti_magassag = 0;
 float p_giliszta_cx = +0.00;
 float p_giliszta_cy = +0.00;
 float p_giliszta_vx = +0.0001;
-float p_giliszta_vy = +0.00;
+float p_giliszta_vy = -0.000981;
 
 // A zold giliszta tulajdonsagai:
 float z_giliszta_cx = -0.40;
 float z_giliszta_cy = -0.40;
 float z_giliszta_vx = +0.0001;
-float z_giliszta_vy = 0.00;
+float z_giliszta_vy = -0.000981;
 
+float giliszta_fej = 0.10;
 
 class MyRectangle {
 	private:
@@ -139,10 +140,10 @@ class MyPolygon {
 
 		void draw(void) {
 			glBegin(GL_POLYGON);
-				glVertex2f(cx, cy-0.10);
-				glVertex2f(cx-0.10, cy);
-				glVertex2f(cx, cy+0.10);
-				glVertex2f(cx+0.10, cy);
+				glVertex2f(cx, cy-giliszta_fej);
+				glVertex2f(cx-giliszta_fej, cy);
+				glVertex2f(cx, cy+giliszta_fej);
+				glVertex2f(cx+giliszta_fej, cy);
 			glEnd();
 		}
 };
@@ -230,6 +231,18 @@ class Giliszta {
 
 			this->cx = this->cx + this->vx * this->eltelt_ido;
 			this->cy = this->cy + this->vy * this->eltelt_ido;
+
+			#if defined(DEBUG)
+			cout << "cx: " << this->cx << " cy: " << this->cy << endl;
+			#endif
+
+			if ((this->cx <= -1.0+giliszta_fej) || (this->cx >= 1.0-giliszta_fej)) {
+				this->vx = - this->vx;
+			}
+			if ((this->cy <= -1.0+giliszta_fej) || (this->cy >= 1.0-giliszta_fej)) {
+				this->vy = - this->vy;
+			}
+
 		}
 
 		void draw(void) {
