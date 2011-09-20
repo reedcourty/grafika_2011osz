@@ -108,6 +108,27 @@ class MyRectangle {
 		}
 };
 
+class MyPolygon {
+	private:
+		float cx, cy;
+
+	public:
+
+		MyPolygon(float _cx, float _cy) {
+			cx = _cx;
+			cy = _cy;
+		}
+
+		void draw(void) {
+			glBegin(GL_POLYGON);
+				glVertex2f(cx, cy-0.10);
+				glVertex2f(cx-0.10, cy);
+				glVertex2f(cx, cy+0.10);
+				glVertex2f(cx+0.10, cy);
+			glEnd();
+		}
+};
+
 class Palya {
 	public:
 		float szint1, szint2;
@@ -168,6 +189,9 @@ void onDisplay( ) {
     //MyRectangle rect(0.1,0.25,0.5,0.75);
     glColor3f(1.0f,0.863f,0.047f);
     //rect.draw();
+
+    //MyPolygon poly(0.00, 0.00);
+    //poly.draw();
 
     Palya p;
     p.szint1=+0.5;
