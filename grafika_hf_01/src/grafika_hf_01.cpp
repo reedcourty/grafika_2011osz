@@ -82,8 +82,12 @@ void PrintTime() {
 
 #endif
 
-float LiftQAm = 0;
-float LiftOLm = 0;
+
+// A liftek tulajdonsagai:
+// A QA lift kezdeti magassaga:
+float LiftQA_kezdeti_magassag = 0;
+// Az OL lift kezdeti magassaga:
+float LiftOL_kezdeti_magassag = 0;
 
 
 // A piros giliszta tulajdonsagai:
@@ -257,10 +261,10 @@ void onInitialization( ) {
 	p.szint2=-0.5;
 
 	LiftQA.szam = 1;
-	LiftQA.magassag = LiftQAm;
+	LiftQA.magassag = LiftQA_kezdeti_magassag;
 
 	LiftOL.szam = 2;
-	LiftOL.magassag = LiftOLm;
+	LiftOL.magassag = LiftOL_kezdeti_magassag;
 
 }
 
