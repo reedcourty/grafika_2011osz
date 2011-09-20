@@ -85,11 +85,19 @@ void PrintTime() {
 float LiftQAm = 0;
 float LiftOLm = 0;
 
-float p_giliszta_x = 0;
-float p_giliszta_y = 0;
 
-float z_giliszta_x = -0.40;
-float z_giliszta_y = -0.40;
+// A piros giliszta tulajdonsagai:
+float p_giliszta_cx = +0.00;
+float p_giliszta_cy = +0.00;
+float p_giliszta_vx = +0.0001;
+float p_giliszta_vy = +0.00;
+
+// A zold giliszta tulajdonsagai:
+float z_giliszta_cx = -0.40;
+float z_giliszta_cy = -0.40;
+float z_giliszta_vx = +0.0001;
+float z_giliszta_vy = 0.00;
+
 
 class MyRectangle {
 	private:
@@ -190,26 +198,70 @@ class Giliszta {
 		float cx;
 		float cy;
 
+		float vx;
+		float vy;
+
+		long utolso_rajzolas_ideje;
+		long time;
+		long eltelt_ido;
+
 	public:
-		Giliszta(float _szin_R, float _szin_G, float _szin_B, float _cx, float _cy) {
+		Giliszta(float _szin_R, float _szin_G, float _szin_B, float _cx, float _cy, float _vx, float _vy) {
 			szin_R = _szin_R;
 			szin_G = _szin_G;
 			szin_B = _szin_B;
 			cx = _cx;
 			cy = _cy;
+			vx = _vx;
+			vy = _vy;
+			utolso_rajzolas_ideje = 0;
+
+			eltelt_ido = time - utolso_rajzolas_ideje;
+		}
+
+		void szamol(void) {
+			time = glutGet(GLUT_ELAPSED_TIME);
+
+			this->eltelt_ido = time - this->utolso_rajzolas_ideje;
+
+			this->cx = this->cx + this->vx * this->eltelt_ido;
+			this->cy = this->cy + this->vy * this->eltelt_ido;
 		}
 
 		void draw(void) {
+
+			szamol();
+
 			glColor3f(szin_R,szin_G,szin_B);
 
 			MyPolygon mp(cx, cy);
 			mp.draw();
+
+			this->utolso_rajzolas_ideje = time;
 		}
 
 };
 
+Palya p;
+Lift LiftQA;
+Lift LiftOL;
+Giliszta z_giliszta(0.55f,0.71f,0.00f,z_giliszta_cx,z_giliszta_cy,z_giliszta_vx,z_giliszta_vy);
+Giliszta p_giliszta(0.64f,0.00f,0.00f,p_giliszta_cx,p_giliszta_cy,p_giliszta_vx,p_giliszta_vy);
+
 // Inicializacio, a program futasanak kezdeten, az OpenGL kontextus letrehozasa utan hivodik meg (ld. main() fv.)
 void onInitialization( ) { 
+
+	glColor3f(1.0f,0.863f,0.047f);
+
+	p.szint1=+0.5;
+	p.szint2=-0.5;
+
+	LiftQA.szam = 1;
+	LiftQA.magassag = LiftQAm;
+
+	LiftOL.szam = 2;
+	LiftOL.magassag = LiftOLm;
+
 }
 
 // Rajzolas, ha az alkalmazas ablak ervenytelenne valik, akkor ez a fuggveny hivodik meg
@@ -218,33 +270,11 @@ void onDisplay( ) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // kepernyo torles
 
     // ...
-    //MyRectangle rect(0.1,0.25,0.5,0.75);
-    glColor3f(1.0f,0.863f,0.047f);
-    //rect.draw();
-
-    //MyPolygon poly(0.00, 0.00);
-    //poly.draw();
-
-    Palya p;
-    p.szint1=+0.5;
-    p.szint2=-0.5;
     p.draw();
-
-    Lift LiftQA;
-    LiftQA.szam = 1;
-    LiftQA.magassag = LiftQAm;
     LiftQA.draw();
-
-    Lift LiftOL;
-    LiftOL.szam = 2;
-    LiftOL.magassag = LiftOLm;
     LiftOL.draw();
-
-    Giliszta z_giliszta(0.55f,0.71f,0.00f,z_giliszta_x,z_giliszta_y);
-    z_giliszta.draw();
-
-    Giliszta p_giliszta(0.64f,0.00f,0.00f,p_giliszta_x,p_giliszta_y);
     p_giliszta.draw();
+    z_giliszta.draw();
 
     glutSwapBuffers();     				// Buffercsere: rajzolas vege
 
@@ -261,35 +291,35 @@ void onKeyboard(unsigned char key, int x, int y) {
     if (key == 'd') glutPostRedisplay( ); 		// d beture rajzold ujra a kepet
 
     if (key == 'q') {
-    	if (LiftQAm <= +1.0) {
-    		LiftQAm = LiftQAm + 0.05;
+    	if (LiftQA.magassag <= +1.0) {
+    		LiftQA.magassag = LiftQA.magassag + 0.05;
     		glutPostRedisplay();
     	}
 
     }
     if (key == 'a') {
-    	if (LiftQAm >= -1.0) {
-    		LiftQAm = LiftQAm - 0.05;
+    	if (LiftQA.magassag >= -1.0) {
+    		LiftQA.magassag = LiftQA.magassag - 0.05;
     		glutPostRedisplay();
     	}
     }
 
     if (key == 'o') {
-    	if (LiftOLm <= +1.0) {
-    		LiftOLm = LiftOLm + 0.05;
+    	if (LiftOL.magassag <= +1.0) {
+    		LiftOL.magassag = LiftOL.magassag + 0.05;
     		glutPostRedisplay();
         }
     }
     if (key == 'l') {
-    	if (LiftOLm >= -1.0) {
-    		LiftOLm = LiftOLm - 0.05;
+    	if (LiftOL.magassag >= -1.0) {
+    		LiftOL.magassag = LiftOL.magassag - 0.05;
     		glutPostRedisplay();
     	}
     }
 
 	#if defined(DEBUG)
-    cout << "LiftQAm: " << LiftQAm << endl;
-    cout << "LiftOLm: " << LiftOLm << endl;
+    cout << "LiftQA.magassag: " << LiftQA.magassag << endl;
+    cout << "LiftOL.magassag: " << LiftOL.magassag << endl;
 	#endif
 
 }
@@ -301,7 +331,9 @@ void onMouse(int button, int state, int x, int y) {
 
 // `Idle' esemenykezelo, jelzi, hogy az ido telik, az Idle esemenyek frekvenciajara csak a 0 a garantalt minimalis ertek
 void onIdle( ) {
-     long time = glutGet(GLUT_ELAPSED_TIME);		// program inditasa ota eltelt ido
+	//long time = glutGet(GLUT_ELAPSED_TIME);		// program inditasa ota eltelt ido
+
+	glutPostRedisplay();
 
 }
 
