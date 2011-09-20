@@ -85,6 +85,12 @@ void PrintTime() {
 float LiftQAm = 0;
 float LiftOLm = 0;
 
+float p_giliszta_x = 0;
+float p_giliszta_y = 0;
+
+float z_giliszta_x = -0.40;
+float z_giliszta_y = -0.40;
+
 class MyRectangle {
 	private:
 		float x1, y1, x2, y2;
@@ -234,8 +240,11 @@ void onDisplay( ) {
     LiftOL.magassag = LiftOLm;
     LiftOL.draw();
 
-    Giliszta g(0.20f,0.34f,0.50,0.00,0.00);
-    g.draw();
+    Giliszta z_giliszta(0.55f,0.71f,0.00f,z_giliszta_x,z_giliszta_y);
+    z_giliszta.draw();
+
+    Giliszta p_giliszta(0.64f,0.00f,0.00f,p_giliszta_x,p_giliszta_y);
+    p_giliszta.draw();
 
     glutSwapBuffers();     				// Buffercsere: rajzolas vege
 
