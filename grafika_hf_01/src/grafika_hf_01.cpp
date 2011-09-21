@@ -82,17 +82,10 @@ void PrintTime() {
 
 #endif
 
-const float SZINT1 = +0.50;
-const float SZINT2 = -0.50;
+const float SZINT1 = -0.50;
+const float SZINT2 = +0.50;
 
-const float szintek[4] = { -1.0, SZINT1, SZINT2, 1.0 };
-
-// A liftek tulajdonsagai:
-// A QA lift kezdeti magassaga:
-float LiftQA_kezdeti_magassag = 0;
-// Az OL lift kezdeti magassaga:
-float LiftOL_kezdeti_magassag = 0;
-
+static const float szintek[4] = { -1.0, SZINT1, SZINT2, 1.0 };
 
 // A piros giliszta tulajdonsagai:
 float p_giliszta_cx = +0.00;
@@ -154,48 +147,77 @@ class MyPolygon {
 
 class Palya {
 	public:
-		float szint1, szint2;
 
+		void draw(void) {
 
-	void draw(void) {
+			glColor3f(0.03f,0.863f,0.047f);
 
-		glColor3f(0.03f,0.863f,0.047f);
+			MyRectangle szint1_1(-1.00,SZINT1-0.005,-0.60,SZINT1+0.005);
+			MyRectangle szint1_2(-0.20,SZINT1-0.005,+0.20,SZINT1+0.005);
+			MyRectangle szint1_3(+0.60,SZINT1-0.005,+1.00,SZINT1+0.005);
 
-		MyRectangle szint1_1(-1.00,szint1-0.005,-0.60,szint1+0.005);
-		MyRectangle szint1_2(-0.20,szint1-0.005,+0.20,szint1+0.005);
-		MyRectangle szint1_3(+0.60,szint1-0.005,+1.00,szint1+0.005);
+			szint1_1.draw();
+			szint1_2.draw();
+			szint1_3.draw();
 
-		szint1_1.draw();
-		szint1_2.draw();
-		szint1_3.draw();
+			MyRectangle szint2_1(-1.00,SZINT2-0.005,-0.60,SZINT2+0.005);
+			MyRectangle szint2_2(-0.20,SZINT2-0.005,+0.20,SZINT2+0.005);
+			MyRectangle szint2_3(+0.60,SZINT2-0.005,+1.00,SZINT2+0.005);
 
-		MyRectangle szint2_1(-1.00,szint2-0.005,-0.60,szint2+0.005);
-		MyRectangle szint2_2(-0.20,szint2-0.005,+0.20,szint2+0.005);
-		MyRectangle szint2_3(+0.60,szint2-0.005,+1.00,szint2+0.005);
-
-		szint2_1.draw();
-		szint2_2.draw();
-		szint2_3.draw();
-	}
+			szint2_1.draw();
+			szint2_2.draw();
+			szint2_3.draw();
+		}
 };
 
 class Lift {
 	private:
-		float szint;
+		int szint;
 
 	public:
-		float magassag;
 		float szam;
+
+		Lift() {
+			this->szint = 1;
+			#if defined(DEBUG)
+			cout << "szint: " << get_szint() << " magassag: " << get_magassag() << endl;
+			#endif
+		}
+
+		int get_szint(void) {
+			return this->szint;
+		}
+
+		void set_szint(int _szint) {
+			this->szint = _szint;
+		}
+
+		float get_magassag(void) {
+			int i = this->szint;
+			return szintek[i];
+		}
+
+		void set_kov_szint(void) {
+			if (this->szint < 3) {
+				this->szint = this->szint + 1;
+			}
+		}
+
+		void set_elo_szint(void) {
+			if (this->szint > 0) {
+				this->szint = this->szint - 1;
+			}
+		}
 
 		void draw(void) {
 			glColor3f(0.03f,0.53f,0.047f);
 
 			if (szam == 1) {
-				MyRectangle _lift(-0.60,magassag-0.005,-0.20,magassag+0.005);
+				MyRectangle _lift(-0.60,this->get_magassag()-0.005,-0.20,this->get_magassag()+0.005);
 				_lift.draw();
 			}
 			if (szam == 2) {
-				MyRectangle _lift(+0.20,magassag-0.005,+0.60,magassag+0.005);
+				MyRectangle _lift(+0.20,this->get_magassag()-0.005,+0.60,this->get_magassag()+0.005);
 				_lift.draw();
 			}
 
@@ -239,10 +261,6 @@ class Giliszta {
 			this->cx = this->cx + this->vx * this->eltelt_ido;
 			this->cy = this->cy + this->vy * this->eltelt_ido;
 
-			#if defined(DEBUG)
-			cout << "cx: " << this->cx << " cy: " << this->cy << endl;
-			#endif
-
 			if (this->cx <= -1.0+giliszta_fej) {
 				this->vx = 0 + fabs(this->vx);
 			}
@@ -275,6 +293,7 @@ class Giliszta {
 Palya p;
 Lift LiftQA;
 Lift LiftOL;
+
 Giliszta z_giliszta(0.55f,0.71f,0.00f,z_giliszta_cx,z_giliszta_cy,z_giliszta_vx,z_giliszta_vy);
 Giliszta p_giliszta(0.64f,0.00f,0.00f,p_giliszta_cx,p_giliszta_cy,p_giliszta_vx,p_giliszta_vy);
 
@@ -283,14 +302,8 @@ void onInitialization( ) {
 
 	glColor3f(1.0f,0.863f,0.047f);
 
-	p.szint1 = SZINT1;
-	p.szint2 = SZINT2;
-
 	LiftQA.szam = 1;
-	LiftQA.magassag = LiftQA_kezdeti_magassag;
-
 	LiftOL.szam = 2;
-	LiftOL.magassag = LiftOL_kezdeti_magassag;
 
 }
 
@@ -321,35 +334,27 @@ void onKeyboard(unsigned char key, int x, int y) {
     if (key == 'd') glutPostRedisplay( ); 		// d beture rajzold ujra a kepet
 
     if (key == 'q') {
-    	if (LiftQA.magassag <= +1.0) {
-    		LiftQA.magassag = LiftQA.magassag + 0.05;
-    		glutPostRedisplay();
-    	}
+    	LiftQA.set_kov_szint();
+   		glutPostRedisplay();
 
     }
     if (key == 'a') {
-    	if (LiftQA.magassag >= -1.0) {
-    		LiftQA.magassag = LiftQA.magassag - 0.05;
-    		glutPostRedisplay();
-    	}
+    	LiftQA.set_elo_szint();
+    	glutPostRedisplay();
     }
 
     if (key == 'o') {
-    	if (LiftOL.magassag <= +1.0) {
-    		LiftOL.magassag = LiftOL.magassag + 0.05;
-    		glutPostRedisplay();
-        }
+    	LiftOL.set_kov_szint();
+   		glutPostRedisplay();
     }
     if (key == 'l') {
-    	if (LiftOL.magassag >= -1.0) {
-    		LiftOL.magassag = LiftOL.magassag - 0.05;
-    		glutPostRedisplay();
-    	}
+    	LiftOL.set_elo_szint();
+   		glutPostRedisplay();
     }
 
 	#if defined(DEBUG)
-    cout << "LiftQA.magassag: " << LiftQA.magassag << endl;
-    cout << "LiftOL.magassag: " << LiftOL.magassag << endl;
+    cout << "LiftQA.szint: " << LiftQA.get_szint() << " magassag: " << LiftQA.get_magassag() << endl;
+    cout << "LiftOL.szint: " << LiftOL.get_szint() << " magassag: " << LiftOL.get_magassag() << endl;
 	#endif
 
 }
