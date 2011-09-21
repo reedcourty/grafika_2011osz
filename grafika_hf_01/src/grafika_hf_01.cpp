@@ -82,6 +82,10 @@ void PrintTime() {
 
 #endif
 
+const float SZINT1 = +0.50;
+const float SZINT2 = -0.50;
+
+const float szintek[4] = { -1.0, SZINT1, SZINT2, 1.0 };
 
 // A liftek tulajdonsagai:
 // A QA lift kezdeti magassaga:
@@ -176,6 +180,9 @@ class Palya {
 };
 
 class Lift {
+	private:
+		float szint;
+
 	public:
 		float magassag;
 		float szam;
@@ -276,8 +283,8 @@ void onInitialization( ) {
 
 	glColor3f(1.0f,0.863f,0.047f);
 
-	p.szint1=+0.5;
-	p.szint2=-0.5;
+	p.szint1 = SZINT1;
+	p.szint2 = SZINT2;
 
 	LiftQA.szam = 1;
 	LiftQA.magassag = LiftQA_kezdeti_magassag;
