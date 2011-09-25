@@ -145,6 +145,56 @@ class MyPolygon {
 		}
 };
 
+const float PI = 3.14159;
+const int BONTAS = 100;
+
+class MySine {
+
+	// k = omega / c
+	// k = (2*pi*f) / c
+	// k = (2*pi) / lambda
+
+	private:
+		float cx, cy, Amax, Aakt, omega, phi, f, hossz;
+		typedef float koordinata[2];
+		koordinata koordinatak[BONTAS];
+
+	public:
+		MySine(float _cx, float _cy, float _Amax, float _Aakt, float _phi, float _f, float _hossz) {
+			this->cx = _cx;
+			this->cy = _cy;
+			this->Amax = _Amax;
+			this->Aakt = _Aakt;
+			this->phi = _phi;
+			this->f = _f;
+			this->omega = 2*PI*this->f;
+			this->hossz = _hossz;
+
+			for (int i = 0; i <= BONTAS; i++) {
+				this->koordinatak[i][0] = (float)i*(4*PI/BONTAS);
+				this->koordinatak[i][1] = sin(omega*i + phi); // "A" nem itt, mert akkor mindig ujra kellene szamolni
+
+				#if defined(DEBUG)
+				cout << "i: " << i << " x: " << this->koordinatak[i][0] << " y: " << this->koordinatak[i][1] << endl;
+				#endif
+			}
+		}
+
+		void draw(void) {
+
+			glBegin(GL_LINES);
+			for (int i = 0; i < BONTAS-1; i++) {
+				glVertex2f(this->koordinatak[i][0]/this->hossz+this->cx,this->Aakt*this->koordinatak[i][1]+this->cy);
+				glVertex2f(this->koordinatak[i+1][0]/this->hossz+this->cx,this->Aakt*this->koordinatak[i+1][1]+this->cy);
+			}
+			glEnd();
+
+		}
+};
+
+
+
+
 class Palya {
 	public:
 
@@ -290,6 +340,8 @@ class Giliszta {
 
 };
 
+MySine ms(-0.5, 0.00, 0.85, 0.5, 0, 0.02, 10);
+
 Palya p;
 Lift LiftQA;
 Lift LiftOL;
@@ -318,6 +370,7 @@ void onDisplay( ) {
     LiftOL.draw();
     p_giliszta.draw();
     z_giliszta.draw();
+    ms.draw();
 
     glutSwapBuffers();     				// Buffercsere: rajzolas vege
 
