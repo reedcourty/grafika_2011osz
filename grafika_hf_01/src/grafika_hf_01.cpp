@@ -155,12 +155,12 @@ class MySine {
 	// k = (2*pi) / lambda
 
 	private:
-		float cx, cy, Amax, Aakt, omega, phi, f, hossz;
+		float cx, cy, Amax, Aakt, omega, phi, f, hosszmax, hosszakt;
 		typedef float koordinata[2];
 		koordinata koordinatak[BONTAS];
 
 	public:
-		MySine(float _cx, float _cy, float _Amax, float _Aakt, float _phi, float _f, float _hossz) {
+		MySine(float _cx, float _cy, float _Amax, float _Aakt, float _phi, float _f, float _hosszmax) {
 			this->cx = _cx;
 			this->cy = _cy;
 			this->Amax = _Amax;
@@ -168,7 +168,8 @@ class MySine {
 			this->phi = _phi;
 			this->f = _f;
 			this->omega = 2*PI*this->f;
-			this->hossz = _hossz;
+			this->hosszmax = _hosszmax;
+			this->hosszakt = _hosszmax;
 
 			for (int i = 0; i <= BONTAS; i++) {
 				this->koordinatak[i][0] = (float)i*(4*PI/BONTAS);
@@ -184,16 +185,13 @@ class MySine {
 
 			glBegin(GL_LINES);
 			for (int i = 0; i < BONTAS-1; i++) {
-				glVertex2f(this->koordinatak[i][0]/this->hossz+this->cx,this->Aakt*this->koordinatak[i][1]+this->cy);
-				glVertex2f(this->koordinatak[i+1][0]/this->hossz+this->cx,this->Aakt*this->koordinatak[i+1][1]+this->cy);
+				glVertex2f(this->koordinatak[i][0]/this->hosszakt+this->cx,this->Aakt*this->koordinatak[i][1]+this->cy);
+				glVertex2f(this->koordinatak[i+1][0]/this->hosszakt+this->cx,this->Aakt*this->koordinatak[i+1][1]+this->cy);
 			}
 			glEnd();
 
 		}
 };
-
-
-
 
 class Palya {
 	public:
