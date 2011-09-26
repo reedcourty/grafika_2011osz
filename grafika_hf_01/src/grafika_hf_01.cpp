@@ -87,17 +87,20 @@ const float SZINT2 = +0.50;
 
 static const float szintek[4] = { -1.0, SZINT1, SZINT2, 1.0 };
 
+enum allapottipus {FEJELORE, ALL, FAROKELORE};
+enum iranytipus {JOBBRA, BALRA};
+
 // A piros giliszta tulajdonsagai:
 float p_giliszta_cx = +0.00;
 float p_giliszta_cy = +0.00;
 float p_giliszta_vx = +0.001;
-float p_giliszta_vy = -0.00;
+float p_giliszta_vy = +0.00;
 
 // A zold giliszta tulajdonsagai:
 float z_giliszta_cx = -0.40;
 float z_giliszta_cy = -0.40;
 float z_giliszta_vx = +0.001;
-float z_giliszta_vy = -0.00;
+float z_giliszta_vy = +0.00;
 
 float giliszta_fej = 0.10;
 
@@ -287,6 +290,11 @@ class Giliszta {
 		long time;
 		long eltelt_ido;
 
+
+		allapottipus allapot;
+
+		iranytipus irany;
+
 	public:
 		Giliszta(float _szin_R, float _szin_G, float _szin_B, float _cx, float _cy, float _vx, float _vy) {
 			szin_R = _szin_R;
@@ -299,6 +307,9 @@ class Giliszta {
 			utolso_rajzolas_ideje = 0;
 
 			eltelt_ido = time - utolso_rajzolas_ideje;
+
+			allapot = ALL;
+			irany = BALRA;
 		}
 
 		void szamol(void) {
@@ -306,14 +317,18 @@ class Giliszta {
 
 			this->eltelt_ido = time - this->utolso_rajzolas_ideje;
 
+			if (this->allapot != ALL) {
 			this->cx = this->cx + this->vx * this->eltelt_ido;
 			this->cy = this->cy + this->vy * this->eltelt_ido;
+			}
 
 			if (this->cx <= -1.0+giliszta_fej) {
 				this->vx = 0 + fabs(this->vx);
+				this->irany = JOBBRA;
 			}
 			if (this->cx >= 1.0-giliszta_fej) {
 				this->vx = 0 - fabs(this->vx);
+				this->irany = BALRA;
 			}
 			if (this->cy <= -1.0+giliszta_fej) {
 				this->vy = 0 + fabs(this->vy);
@@ -322,6 +337,14 @@ class Giliszta {
 				this->vy = 0 - fabs(this->vy);
 			}
 
+		}
+
+		allapottipus get_allapot(void) {
+			return this->allapot;
+		}
+
+		void set_allapot(allapottipus _allapot) {
+			this->allapot = _allapot;
 		}
 
 		void draw(void) {
@@ -354,6 +377,7 @@ void onInitialization( ) {
 
 	LiftQA.szam = 1;
 	LiftOL.szam = 2;
+	z_giliszta.set_allapot(FEJELORE);
 
 }
 
