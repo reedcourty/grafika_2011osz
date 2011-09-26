@@ -163,12 +163,15 @@ class MySine {
 	// k = (2*pi) / lambda
 
 	private:
-		float cx, cy, Amax, Aakt, omega, phi, f, hosszmax, hosszakt;
-		iranytipus irany;
+
 		typedef float koordinata[2];
 		koordinata koordinatak[BONTAS];
 
 	public:
+
+		float cx, cy, Amax, Aakt, omega, phi, f, hosszmax, hosszakt;
+		iranytipus irany;
+
 		MySine(float _cx, float _cy, float _Amax, float _phi, float _f, float _hosszmax, iranytipus _irany) {
 			this->cx = _cx;
 			this->cy = _cy;
