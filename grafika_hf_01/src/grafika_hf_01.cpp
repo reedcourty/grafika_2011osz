@@ -91,13 +91,13 @@ static const float szintek[4] = { -1.0, SZINT1, SZINT2, 1.0 };
 float p_giliszta_cx = +0.00;
 float p_giliszta_cy = +0.00;
 float p_giliszta_vx = +0.001;
-float p_giliszta_vy = -0.001;
+float p_giliszta_vy = -0.00;
 
 // A zold giliszta tulajdonsagai:
 float z_giliszta_cx = -0.40;
 float z_giliszta_cy = -0.40;
 float z_giliszta_vx = +0.001;
-float z_giliszta_vy = -0.001;
+float z_giliszta_vy = -0.00;
 
 float giliszta_fej = 0.10;
 
@@ -160,11 +160,11 @@ class MySine {
 		koordinata koordinatak[BONTAS];
 
 	public:
-		MySine(float _cx, float _cy, float _Amax, float _Aakt, float _phi, float _f, float _hosszmax) {
+		MySine(float _cx, float _cy, float _Amax, float _phi, float _f, float _hosszmax) {
 			this->cx = _cx;
 			this->cy = _cy;
 			this->Amax = _Amax;
-			this->Aakt = _Aakt;
+			this->Aakt = _Amax;
 			this->phi = _phi;
 			this->f = _f;
 			this->omega = 2*PI*this->f;
@@ -332,13 +332,13 @@ class Giliszta {
 
 			MyPolygon mp(cx, cy);
 			mp.draw();
+			MySine farok(cx, cy, 0.5, 0, 0.02, 10);
+			farok.draw();
 
 			this->utolso_rajzolas_ideje = time;
 		}
 
 };
-
-MySine ms(-0.5, 0.00, 0.85, 0.5, 0, 0.02, 10);
 
 Palya p;
 Lift LiftQA;
@@ -368,7 +368,6 @@ void onDisplay( ) {
     LiftOL.draw();
     p_giliszta.draw();
     z_giliszta.draw();
-    ms.draw();
 
     glutSwapBuffers();     				// Buffercsere: rajzolas vege
 
