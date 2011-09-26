@@ -45,7 +45,7 @@
 #include <stdlib.h>
 
 // TODO: A beadas elott torold ki a kovetkezo sorokat:
-#define DEBUG
+// #define DEBUG
 
 #if defined(DEBUG)
 #include <iostream>
