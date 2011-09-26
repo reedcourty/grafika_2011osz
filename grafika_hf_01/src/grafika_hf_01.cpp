@@ -189,9 +189,9 @@ class MySine {
 				this->koordinatak[i][0] = (float)i*(4*PI/BONTAS);
 				this->koordinatak[i][1] = sin(omega*i + phi); // "A" nem itt, mert akkor mindig ujra kellene szamolni
 
-				#if defined(DEBUG)
-				cout << "i: " << i << " x: " << this->koordinatak[i][0] << " y: " << this->koordinatak[i][1] << endl;
-				#endif
+				//#if defined(DEBUG)
+				//cout << "i: " << i << " x: " << this->koordinatak[i][0] << " y: " << this->koordinatak[i][1] << endl;
+				//#endif
 			}
 		}
 
@@ -308,7 +308,7 @@ class Lift {
 				}
 				else {
 					set_allapot(SZINTEN_ALL);
-					set_szint(get_szint()+1);
+					szint_fel();
 					this->magassag = get_szint_magassag(get_szint());
 					rajzol();
 				}
@@ -320,7 +320,7 @@ class Lift {
 				}
 				else {
 					set_allapot(SZINTEN_ALL);
-					set_szint(get_szint()-1);
+					szint_le();
 					this->magassag = get_szint_magassag(get_szint());
 					rajzol();
 				}
@@ -484,7 +484,6 @@ void onKeyboard(unsigned char key, int x, int y) {
     if (key == 'd') glutPostRedisplay( ); 		// d beture rajzold ujra a kepet
 
     if (key == 'q') {
-    	//LiftQA.set_kov_szint();
     	if (LiftQA.get_allapot() == SZINTEN_ALL) {
     		LiftQA.set_allapot(MOZOG_FEL);
     	}
@@ -513,7 +512,9 @@ void onKeyboard(unsigned char key, int x, int y) {
 
 	#if defined(DEBUG)
     	cout << "LiftQA.allapot: " << LiftQA.get_allapot() << endl;
+    	cout << "LiftQA.szint: " << LiftQA.get_szint() << endl;
     	cout << "LiftOL.allapot: " << LiftOL.get_allapot() << endl;
+    	cout << "LiftOL.szint: " << LiftOL.get_szint() << endl;
 	#endif
 
 }
