@@ -93,13 +93,13 @@ enum iranytipus {JOBBRA, BALRA};
 // A piros giliszta tulajdonsagai:
 float p_giliszta_cx = +0.00;
 float p_giliszta_cy = +0.00;
-float p_giliszta_vx = +0.001;
+float p_giliszta_vx = -0.001;
 float p_giliszta_vy = +0.00;
 
 // A zold giliszta tulajdonsagai:
 float z_giliszta_cx = -0.40;
 float z_giliszta_cy = -0.40;
-float z_giliszta_vx = +0.001;
+float z_giliszta_vx = -0.001;
 float z_giliszta_vy = +0.00;
 
 float giliszta_fej = 0.05;
@@ -164,11 +164,12 @@ class MySine {
 
 	private:
 		float cx, cy, Amax, Aakt, omega, phi, f, hosszmax, hosszakt;
+		iranytipus irany;
 		typedef float koordinata[2];
 		koordinata koordinatak[BONTAS];
 
 	public:
-		MySine(float _cx, float _cy, float _Amax, float _phi, float _f, float _hosszmax) {
+		MySine(float _cx, float _cy, float _Amax, float _phi, float _f, float _hosszmax, iranytipus _irany) {
 			this->cx = _cx;
 			this->cy = _cy;
 			this->Amax = _Amax;
@@ -178,6 +179,7 @@ class MySine {
 			this->omega = 2*PI*this->f;
 			this->hosszmax = _hosszmax;
 			this->hosszakt = _hosszmax;
+			this->irany = _irany;
 
 			for (int i = 0; i <= BONTAS; i++) {
 				this->koordinatak[i][0] = (float)i*(4*PI/BONTAS);
@@ -189,12 +191,27 @@ class MySine {
 			}
 		}
 
-		void draw(void) {
+		iranytipus get_irany(void) {
+			return this->irany;
+		}
 
+		void set_irany(iranytipus _irany) {
+			this->irany = _irany;
+		}
+
+		void draw(void) {
 			glBegin(GL_LINES);
-			for (int i = 0; i < BONTAS-1; i++) {
-				glVertex2f(this->koordinatak[i][0]/this->hosszakt+this->cx,this->Aakt*this->koordinatak[i][1]+this->cy);
-				glVertex2f(this->koordinatak[i+1][0]/this->hosszakt+this->cx,this->Aakt*this->koordinatak[i+1][1]+this->cy);
+			if (irany == BALRA) {
+				for (int i = 0; i < BONTAS-1; i++) {
+					glVertex2f(this->koordinatak[i][0]/this->hosszakt+this->cx,this->Aakt*this->koordinatak[i][1]+this->cy);
+					glVertex2f(this->koordinatak[i+1][0]/this->hosszakt+this->cx,this->Aakt*this->koordinatak[i+1][1]+this->cy);
+				}
+			}
+			if (irany == JOBBRA) {
+				for (int i = 0; i < BONTAS-1; i++) {
+					glVertex2f(-1*(this->koordinatak[i][0]/this->hosszakt)+this->cx,this->Aakt*this->koordinatak[i][1]+this->cy);
+					glVertex2f(-1*(this->koordinatak[i+1][0]/this->hosszakt)+this->cx,this->Aakt*this->koordinatak[i+1][1]+this->cy);
+				}
 			}
 			glEnd();
 
@@ -360,7 +377,8 @@ class Giliszta {
 
 			MyPolygon mp(cx, cy, giliszta_fej);
 			mp.draw();
-			MySine farok(cx, cy, 0.5, 0, 0.02, 10);
+			MySine farok(cx, cy, 0.10, 0, 0.02, 40, this->irany);
+			farok.set_irany(this->irany);
 			farok.draw();
 
 			this->utolso_rajzolas_ideje = time;
@@ -382,7 +400,9 @@ void onInitialization( ) {
 
 	LiftQA.szam = 1;
 	LiftOL.szam = 2;
+	p_giliszta.set_allapot(FEJELORE);
 	z_giliszta.set_allapot(FEJELORE);
+
 
 }
 
