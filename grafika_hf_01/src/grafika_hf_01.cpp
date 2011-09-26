@@ -45,7 +45,7 @@
 #include <stdlib.h>
 
 // TODO: A beadas elott torold ki a kovetkezo sorokat:
-// #define DEBUG
+#define DEBUG
 
 #if defined(DEBUG)
 #include <iostream>
@@ -102,7 +102,7 @@ float z_giliszta_cy = -0.40;
 float z_giliszta_vx = -0.001;
 float z_giliszta_vy = +0.00;
 
-float giliszta_fej = 0.05;
+float giliszta_fej = 0.025;
 
 class MyRectangle {
 	private:
@@ -377,7 +377,7 @@ class Giliszta {
 
 			MyPolygon mp(cx, cy, giliszta_fej);
 			mp.draw();
-			MySine farok(cx, cy, 0.10, 0, 0.02, 40, this->irany);
+			MySine farok(cx, cy, 0.05, 0, 0.02, 50, this->irany);
 			farok.set_irany(this->irany);
 			farok.draw();
 
