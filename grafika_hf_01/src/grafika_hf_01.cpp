@@ -102,7 +102,7 @@ float z_giliszta_cy = -0.40;
 float z_giliszta_vx = +0.001;
 float z_giliszta_vy = +0.00;
 
-float giliszta_fej = 0.10;
+float giliszta_fej = 0.05;
 
 class MyRectangle {
 	private:
@@ -129,21 +129,26 @@ class MyRectangle {
 
 class MyPolygon {
 	private:
-		float cx, cy;
+		float cx, cy, szelesseg;
 
 	public:
 
-		MyPolygon(float _cx, float _cy) {
+		MyPolygon(float _cx, float _cy, float _szelesseg) {
 			cx = _cx;
 			cy = _cy;
+			szelesseg = _szelesseg;
+		}
+
+		float get_szelesseg(void) {
+			return this->szelesseg;
 		}
 
 		void draw(void) {
 			glBegin(GL_POLYGON);
-				glVertex2f(cx, cy-giliszta_fej);
-				glVertex2f(cx-giliszta_fej, cy);
-				glVertex2f(cx, cy+giliszta_fej);
-				glVertex2f(cx+giliszta_fej, cy);
+				glVertex2f(this->cx, this->cy-this->szelesseg);
+				glVertex2f(this->cx-this->szelesseg, this->cy);
+				glVertex2f(this->cx, this->cy+this->szelesseg);
+				glVertex2f(this->cx+this->szelesseg, this->cy);
 			glEnd();
 		}
 };
@@ -353,7 +358,7 @@ class Giliszta {
 
 			glColor3f(szin_R,szin_G,szin_B);
 
-			MyPolygon mp(cx, cy);
+			MyPolygon mp(cx, cy, giliszta_fej);
 			mp.draw();
 			MySine farok(cx, cy, 0.5, 0, 0.02, 10);
 			farok.draw();
