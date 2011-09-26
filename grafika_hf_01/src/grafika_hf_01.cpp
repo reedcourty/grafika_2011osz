@@ -45,7 +45,7 @@
 #include <stdlib.h>
 
 // TODO: A beadas elott torold ki a kovetkezo sorokat:
-// #define DEBUG
+#define DEBUG
 
 #if defined(DEBUG)
 #include <iostream>
@@ -96,7 +96,7 @@ enum iranytipus {JOBBRA, BALRA};
 
 // A piros giliszta tulajdonsagai:
 float p_giliszta_cx = +0.00;
-float p_giliszta_cy = +0.00;
+float p_giliszta_cy = -0.40;
 float p_giliszta_vx = -0.001;
 float p_giliszta_vy = +0.00;
 
@@ -512,8 +512,8 @@ void onKeyboard(unsigned char key, int x, int y) {
     }
 
 	#if defined(DEBUG)
-    	cout << "LiftQA.allapot: " << LiftQApp.get_allapot() << endl;
-    	cout << "LiftOL.allapot: " << LiftOLpp.get_allapot() << endl;
+    	cout << "LiftQA.allapot: " << LiftQA.get_allapot() << endl;
+    	cout << "LiftOL.allapot: " << LiftOL.get_allapot() << endl;
 	#endif
 
 }
