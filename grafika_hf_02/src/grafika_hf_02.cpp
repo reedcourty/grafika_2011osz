@@ -126,7 +126,7 @@ class Vector2D {
 			this->y*=f;
 		}
 
-		Vector2D operator*(const Vector2D& v) {
+		float operator*(const Vector2D& v) {
 			return (this->x * v.x + this->y * v.y);
 		}
 
@@ -162,8 +162,76 @@ class Vector2D {
 
 };
 
+const int BEZIER_VEZERLOPONTOK_SZAMA = 4;
+const int BVSZ = BEZIER_VEZERLOPONTOK_SZAMA;
+
+class BezierGorbe {
+	private:
+		Vector2D vezerlopontok[BVSZ+1];
+		int mvpsz;
+
+		float B(int i, float t) {
+			float choose = 1;
+			for (int j = 1; j <= i; j++) {
+				choose *= (float)(BVSZ-i+j)/j;
+			}
+			return choose * pow(t, i) * pow(1-t, BVSZ-i);
+		}
+
+	public:
+		BezierGorbe() {
+			this->mvpsz = 0;
+		}
+
+		Vector2D r(float t) {
+			Vector2D rr(0,0);
+			for (int i = 0; i <= BVSZ; i++) {
+				rr += this->vezerlopontok[i] * B(i,t);
+			}
+			return rr;
+		}
+
+		Vector2D VezerlopontHozzaadasa(Vector2D v) {
+			// TODO: ennek van-e ertelem erteket visszaadni???
+			this->vezerlopontok[this->mvpsz] = v;
+			this->mvpsz++;
+			return v;
+		}
+
+		void Rajzol() {
+			#if defined(DEBUG)
+				/* A kontrollpontok kirajzolasa: */
+				glColor3f(0.5f,1.0f,0.56f);
+				for (int i = 0; i <= BVSZ; i++) {
+					cout << this->vezerlopontok[i].X() << "," << this->vezerlopontok[i].Y() << endl;
+					glBegin(GL_POLYGON);
+					glVertex2f(this->vezerlopontok[i].X()-0.01, this->vezerlopontok[i].Y()+0.01);
+					glVertex2f(this->vezerlopontok[i].X()+0.01, this->vezerlopontok[i].Y()+0.01);
+					glVertex2f(this->vezerlopontok[i].X()+0.01, this->vezerlopontok[i].Y()-0.01);
+					glVertex2f(this->vezerlopontok[i].X()-0.01, this->vezerlopontok[i].Y()-0.01);
+					glEnd();
+				}
+			#endif
+
+			glColor3f(0.72157f,0.62353f,0.61961f);
+			glBegin(GL_LINE_STRIP);
+				for (float i = 0; i <= 1; i = i + 0.0001) {
+					glVertex2f(r(i).X(), r(i).Y());
+				}
+				glEnd();
+		}
+
+
+};
+
+BezierGorbe bg;
+
 // Inicializacio, a program futasanak kezdeten, az OpenGL kontextus letrehozasa utan hivodik meg (ld. main() fv.)
 void onInitialization( ) { 
+	bg.VezerlopontHozzaadasa(Vector2D(-0.50, +0.50));
+	bg.VezerlopontHozzaadasa(Vector2D(-0.25, +0.50));
+	bg.VezerlopontHozzaadasa(Vector2D(+0.00, +0.45));
+	bg.VezerlopontHozzaadasa(Vector2D(-0.30, +0.23));
 }
 
 // Rajzolas, ha az alkalmazas ablak ervenytelenne valik, akkor ez a fuggveny hivodik meg
@@ -172,6 +240,8 @@ void onDisplay( ) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // kepernyo torles
 
     // ...
+    bg.Rajzol();
+
 
     glutSwapBuffers();     				// Buffercsere: rajzolas vege
 
