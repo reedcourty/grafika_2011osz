@@ -137,6 +137,10 @@ class MyPolygon {
 
 	public:
 
+		MyPolygon() {
+
+		}
+
 		MyPolygon(float _cx, float _cy, float _szelesseg) {
 			cx = _cx;
 			cy = _cy;
@@ -160,6 +164,8 @@ class MyPolygon {
 const float PI = 3.14159;
 const int BONTAS = 100;
 
+float giliszta_Amax = 0.10;
+
 class MySine {
 
 	// k = omega / c
@@ -171,8 +177,14 @@ class MySine {
 		iranytipus irany;
 		typedef float koordinata[2];
 		koordinata koordinatak[BONTAS];
+		float hossz_allando;
 
 	public:
+
+		MySine() {
+			MySine(cx, cy, giliszta_Amax, 0, 0.02, 40, this->irany);
+		}
+
 		MySine(float _cx, float _cy, float _Amax, float _phi, float _f, float _hosszmax, iranytipus _irany) {
 			this->cx = _cx;
 			this->cy = _cy;
@@ -184,6 +196,8 @@ class MySine {
 			this->hosszmax = _hosszmax;
 			this->hosszakt = _hosszmax;
 			this->irany = _irany;
+
+			this->hossz_allando = 8*sqrt(this->Amax*this->Amax+(this->hosszmax/8)*(this->hosszmax/8));
 
 			for (int i = 0; i <= BONTAS; i++) {
 				this->koordinatak[i][0] = (float)i*(4*PI/BONTAS);
@@ -370,6 +384,8 @@ class Giliszta {
 
 		iranytipus irany;
 
+		MySine farok;
+
 	public:
 		Giliszta(float _szin_R, float _szin_G, float _szin_B, float _cx, float _cy, float _vx, float _vy) {
 			szin_R = _szin_R;
@@ -430,13 +446,29 @@ class Giliszta {
 
 			MyPolygon mp(cx, cy, giliszta_fej);
 			mp.draw();
-			MySine farok(cx, cy, 0.10, 0, 0.02, 40, this->irany);
+			MySine farok(cx, cy, giliszta_Amax, 0, 0.02, 40, this->irany);
 			farok.set_irany(this->irany);
 			farok.draw();
 
 			this->utolso_rajzolas_ideje = time;
 		}
 
+};
+
+class Gilisztapp {
+	private:
+		MyPolygon fej;
+		MySine farok;
+
+		iranytipus irany;
+
+		float cx, cy;
+
+	public:
+		Gilisztapp() {
+			fej = MyPolygon(cx, cy, giliszta_fej);
+			farok = MySine(cx, cy, giliszta_Amax, 0, 0.02, 40, this->irany);
+		}
 };
 
 Palya p;
@@ -451,8 +483,8 @@ void onInitialization( ) {
 
 	glColor3f(1.0f,0.863f,0.047f);
 
-	p_giliszta.set_allapot(FEJELORE);
-	z_giliszta.set_allapot(FEJELORE);
+	p_giliszta.set_allapot(ALL);
+	z_giliszta.set_allapot(ALL);
 
 
 }
