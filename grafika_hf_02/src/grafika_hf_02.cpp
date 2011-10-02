@@ -82,6 +82,86 @@ void PrintTime() {
 
 #endif
 
+// Osztalydefiniciok:
+
+class Vector2D {
+	private:
+		float x, y;
+	public:
+		Vector2D() { x = y = 0.00; }
+
+		Vector2D(float _x, float _y) {
+			this->x = _x;
+			this->y = _y;
+		}
+
+		Vector2D operator+(const Vector2D& v) {
+			float X = this->x + v.x;
+			float Y = this->y + v.y;
+			return Vector2D(X, Y);
+		}
+
+		void operator+=(const Vector2D& v) {
+			this->x+=v.x;
+			this->y+=v.y;
+		}
+
+		Vector2D operator-(const Vector2D& v) {
+			float X = this->x - v.x;
+			float Y = this->y - v.y;
+			return Vector2D(X, Y);
+		}
+
+		void operator-=(const Vector2D& v) {
+			this->x-=v.x;
+			this->y-=v.y;
+		}
+
+		Vector2D operator*(float f) {
+			return Vector2D(this->x * f, this->y * f);
+		}
+
+		void operator*=(float f) {
+			this->x*=f;
+			this->y*=f;
+		}
+
+		Vector2D operator*(const Vector2D& v) {
+			return (this->x * v.x + this->y * v.y);
+		}
+
+		Vector2D operator/(float f) {
+			return Vector2D(x/f, y/f);
+		}
+
+		float Length() {
+			return (float)sqrt(this->x * this->x + this->y * this->y);
+		}
+
+		void Normalize() {
+			float l = Length();
+			if (l < 0.000001f) {
+				this->x = 1;
+				this->y = 0;
+			}
+			else {
+				x /= l;
+				y /= l;
+			}
+		}
+
+		Vector2D UnitVector() {
+			Vector2D r = * this;
+			r.Normalize();
+			return r;
+		}
+
+		float& X() { return this->x; }
+
+		float& Y() { return this->y; }
+
+};
+
 // Inicializacio, a program futasanak kezdeten, az OpenGL kontextus letrehozasa utan hivodik meg (ld. main() fv.)
 void onInitialization( ) { 
 }
