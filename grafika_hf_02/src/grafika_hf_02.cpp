@@ -27,8 +27,8 @@
 //
 // NYILATKOZAT
 // ---------------------------------------------------------------------------------------------
-// Nev    : <VEZETEKNEV(EK)> <KERESZTNEV(EK)>
-// Neptun : <NEPTUN KOD>
+// Nev    : Nadudvari Gyorgy
+// Neptun : ULQP9P
 // ---------------------------------------------------------------------------------------------
 // ezennel kijelentem, hogy a feladatot magam keszitettem, es ha barmilyen segitseget igenybe vettem vagy 
 // mas szellemi termeket felhasznaltam, akkor a forrast es az atvett reszt kommentekben egyertelmuen jeloltem. 
@@ -44,6 +44,14 @@
 #include <math.h>
 #include <stdlib.h>
 
+// TODO: A beadas elott torold ki a kovetkezo sorokat:
+#define DEBUG
+
+#if defined(DEBUG)
+#include <iostream>
+using namespace std;
+#endif
+
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__)
 // MsWindows-on ez is kell
 #include <windows.h>     
@@ -58,6 +66,21 @@
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Innentol modosithatod...
+
+// A DEBUG-olast segito fuggvenyek, metodusok:
+
+#if defined(DEBUG)
+
+void PrintPressedKey(unsigned char key, int x, int y) {
+	cout << "Billentyuzet: gomb: " << key << " Eger koordinatak: x: " << x << " y: " << y << endl;
+}
+
+void PrintTime() {
+	long time = glutGet(GLUT_ELAPSED_TIME);
+	cout << "Eltelt ido: " << time << "ms" << endl;
+}
+
+#endif
 
 // Inicializacio, a program futasanak kezdeten, az OpenGL kontextus letrehozasa utan hivodik meg (ld. main() fv.)
 void onInitialization( ) { 
@@ -76,7 +99,13 @@ void onDisplay( ) {
 
 // Billentyuzet esemenyeket lekezelo fuggveny
 void onKeyboard(unsigned char key, int x, int y) {
-    if (key == 'd') glutPostRedisplay( ); 		// d beture rajzold ujra a kepet
+
+	#if defined(DEBUG)
+	PrintPressedKey(key, x, y);
+	PrintTime();
+	#endif
+
+	if (key == 'd') glutPostRedisplay( ); 		// d beture rajzold ujra a kepet
 
 }
 
@@ -87,7 +116,9 @@ void onMouse(int button, int state, int x, int y) {
 
 // `Idle' esemenykezelo, jelzi, hogy az ido telik, az Idle esemenyek frekvenciajara csak a 0 a garantalt minimalis ertek
 void onIdle( ) {
-     long time = glutGet(GLUT_ELAPSED_TIME);		// program inditasa ota eltelt ido
+     //long time = glutGet(GLUT_ELAPSED_TIME);		// program inditasa ota eltelt ido
+
+	glutPostRedisplay();
 
 }
 
