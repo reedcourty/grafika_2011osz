@@ -191,11 +191,15 @@ class BezierGorbe {
 			return rr;
 		}
 
-		Vector2D VezerlopontHozzaadasa(Vector2D v) {
-			// TODO: ennek van-e ertelem erteket visszaadni???
-			this->vezerlopontok[this->mvpsz] = v;
-			this->mvpsz++;
-			return v;
+		int VezerlopontHozzaadasa(Vector2D v) {
+			if (this->mvpsz < BVSZ) {
+				this->vezerlopontok[this->mvpsz] = v;
+				this->mvpsz++;
+				return 0;
+			}
+			else {
+				return -1;
+			}
 		}
 
 		void Rajzol() {
@@ -228,10 +232,16 @@ BezierGorbe bg;
 
 // Inicializacio, a program futasanak kezdeten, az OpenGL kontextus letrehozasa utan hivodik meg (ld. main() fv.)
 void onInitialization( ) { 
+
+	// TODO: Megnezni, hogy mekkora lehet a vezerlopontok tombje
+	// TODO: Limitalni, hogy nem csorduljon tul a vezerlopontok tombje
+
 	bg.VezerlopontHozzaadasa(Vector2D(-0.50, +0.50));
 	bg.VezerlopontHozzaadasa(Vector2D(-0.25, +0.50));
 	bg.VezerlopontHozzaadasa(Vector2D(+0.00, +0.45));
 	bg.VezerlopontHozzaadasa(Vector2D(-0.30, +0.23));
+	bg.VezerlopontHozzaadasa(Vector2D(-0.75, +0.80));
+	bg.VezerlopontHozzaadasa(Vector2D(-0.50, +0.50));
 }
 
 // Rajzolas, ha az alkalmazas ablak ervenytelenne valik, akkor ez a fuggveny hivodik meg
