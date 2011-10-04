@@ -276,9 +276,9 @@ void onMouse(int button, int state, int x, int y) {
 
 // `Idle' esemenykezelo, jelzi, hogy az ido telik, az Idle esemenyek frekvenciajara csak a 0 a garantalt minimalis ertek
 void onIdle( ) {
-     //long time = glutGet(GLUT_ELAPSED_TIME);		// program inditasa ota eltelt ido
+	//long time = glutGet(GLUT_ELAPSED_TIME);		// program inditasa ota eltelt ido
 
-	glutPostRedisplay();
+	//glutPostRedisplay();
 
 }
 
