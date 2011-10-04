@@ -44,7 +44,7 @@
 #include <math.h>
 #include <stdlib.h>
 
-// TODO: A beadas elott torold ki a kovetkezo sorokat:
+// TODO: A beadas elott kapcsold ki a DEBUG modot:
 #define DEBUG
 
 #if defined(DEBUG)
