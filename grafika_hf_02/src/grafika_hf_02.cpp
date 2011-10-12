@@ -163,6 +163,7 @@ class Vector2D {
 };
 
 class Vector3D {
+	// Dr. Szirmay-Kalos L. - Haromdimenzios grafika, ... 35. old. alapjan
 	private:
 		float x, y, z;
 	public:
@@ -214,6 +215,10 @@ class Vector3D {
 			return (this->x * v.x + this->y * v.y + this->z * v.z);
 		}
 
+		Vector3D operator%(const Vector3D& v) {
+			return Vector3D(this->y * v.z - this->z * v.y, this->z * v.x - this->x * v.z, this->x * v.y - this->y * v.x);
+		}
+
 		Vector3D operator/(float f) {
 			return Vector3D(x/f, y/f, z/f);
 		}
@@ -252,6 +257,9 @@ class Vector3D {
 
 const int BEZIER_VEZERLOPONTOK_SZAMA = 4;
 const int BVSZ = BEZIER_VEZERLOPONTOK_SZAMA;
+
+const int CATMULLROM_VEZERLOPONTOK_SZAMA = 5;
+const int CRVSZ = CATMULLROM_VEZERLOPONTOK_SZAMA;
 
 class BezierGorbe {
 	private:
@@ -317,6 +325,21 @@ class BezierGorbe {
 };
 
 class CatmullRomGorbe {
+	private:
+		Vector3D vezerlopontok[CRVSZ];
+
+		/*
+		q(t) = 0.5 * ((-p1 + 3*p2 -3*p3 + p4)*t*t*t
+		               + (2*p1 -5*p2 + 4*p3 - p4)*t*t
+		               + (-p1+p3)*t
+		               + 2*p2)
+
+		               ri(t) = ci3(t- ti)^3+ci2(t- ti)^2+ci1(t- ti)+ ci0
+		               ci0 = pi
+		               ci1 = vi
+		               ci2 =
+		               ci3 =
+		            */
 
 };
 
