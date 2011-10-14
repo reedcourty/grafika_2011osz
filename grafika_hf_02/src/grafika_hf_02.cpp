@@ -362,13 +362,10 @@ class CatmullRomGorbe {
 		void LoadTa() {
 			for (int i = 0; i < CRVSZ; i++) {
 				ta[i] = i * (1.0 / CRVSZ);
-				//cout << ta[i] << endl;
 			}
 		}
 
 		Vector2D r(float t, int i) {
-			//Vector2D var = a[i]*pow((t-ta[i]),3) + b[i]*pow((t-ta[i]),2) + c[i]*(t-ta[i]) + d[i];
-			//cout << var.X()	<< "," << var.Y() << endl;
 			return ai(i)*pow((t-ta[i]),3) + bi(i)*pow((t-ta[i]),2) + ci(i)*(t-ta[i]) + di(i);
 		}
 
@@ -376,44 +373,21 @@ class CatmullRomGorbe {
 			for (int i = 0; i < CRVSZ; i++) {
 				a[i] = ((vi(i+1) + vi(i)) / pow((ti(i+1)-ti(i)),2)) - ((fi(i+1) - fi(i))*2 / pow((ti(i+1)-ti(i)),3));
 			}
-			cout << "ai: ";
-			for (int i = 0; i < CRVSZ; i++) {
-				cout << a[i].X() << ',' << a[i].Y() << ";";
-			}
-			cout << endl;
 		}
 
-		Vector2D ai(int i) {
-			return a[i];
-			//Vector2D var = ((vi(i+1) + vi(i)) / pow((ti(i+1)-ti(i)),2)) - ((fi(i+1) - fi(i))*2 / pow((ti(i+1)-ti(i)),3));
-			//cout << var.X()	<< "," << var.Y() << endl;
-			//return ((vi(i+1) + vi(i)) / pow((ti(i+1)-ti(i)),2)) - ((fi(i+1) - fi(i))*2 / pow((ti(i+1)-ti(i)),3));
-		}
+		Vector2D ai(int i) { return a[i]; }
 
 		void LoadB() {
 			for (int i = 0; i < CRVSZ; i++) {
 				b[i] = ((fi(i+1) - fi(i))*3 / pow((ti(i+1)-ti(i)),2)) - ((vi(i+1) + vi(i)*2) / (ti(i+1)-ti(i)));
 			}
-
-			cout << "bi: ";
-			for (int i = 0; i < CRVSZ; i++) {
-				cout << b[i].X() << ',' << b[i].Y() << ";";
-			}
-			cout << endl;
-		}
-		Vector2D bi(int i) {
-			//cout << b[i].X()	<< "," << b[i].Y() << endl;
-			return b[i];
-			//return ((fi(i+1) - fi(i))*3 / pow((ti(i+1)-ti(i)),2)) - ((vi(i+1) + vi(i)*2) / (ti(i+1)-ti(i)));
 		}
 
-		Vector2D ci(int i) {
-			return vi(i);
-		}
+		Vector2D bi(int i) { return b[i]; }
 
-		Vector2D di(int i) {
-			return vp[i];
-		}
+		Vector2D ci(int i) { return vi(i); }
+
+		Vector2D di(int i) { return vp[i]; }
 
 		Vector2D fi(int i) {
 			Vector2D result;
@@ -422,7 +396,6 @@ class CatmullRomGorbe {
 				if (i < 0) { result = vp[CRVSZ+i]; }
 				if (i >= CRVSZ) { result = vp[i-CRVSZ]; }
 			}
-			cout << "i:	" << i << ", fi:" << result.X() << "," << result.Y() << endl;
 			return result;
 		}
 
@@ -440,12 +413,7 @@ class CatmullRomGorbe {
 			}
 		}
 
-		Vector2D vi(int i) {
-			return v[i];
-			//Vector2D var = ((fi(i)-fi(i-1))/(ti(i)-ti(i-1)) + (fi(i+1)-fi(i))/(ti(i+1)-ti(i))) * 0.5;
-			//cout << var.X()	<< "," << var.Y() << endl;
-			//return ((fi(i)-fi(i-1))/(ti(i)-ti(i-1)) + (fi(i+1)-fi(i))/(ti(i+1)-ti(i))) * 0.5;
-		}
+		Vector2D vi(int i) { return v[i]; }
 
 		CatmullRomGorbe() {
 
