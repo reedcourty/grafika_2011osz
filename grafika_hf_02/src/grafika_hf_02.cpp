@@ -417,27 +417,19 @@ class CatmullRomGorbe {
 
 		Vector2D vi(int i) { return v[i]; }
 
-		CatmullRomGorbe() {
+		void Init(Vector2D v[13]) {
 
-			vp = { Vector2D(+0.00,+0.50),
-				   Vector2D(-0.075,+0.525),
-				   Vector2D(-0.35,+0.85),
-				   Vector2D(-0.20,+0.50),
-				   Vector2D(-0.15,+0.20),
-				   Vector2D(-0.30,-0.35),
-				   Vector2D(+0.00,-0.95),
-				   Vector2D(+0.30,-0.35),
-				   Vector2D(+0.15,+0.20),
-				   Vector2D(+0.20,+0.50),
-				   Vector2D(+0.35,+0.85),
-				   Vector2D(+0.075,+0.525),
-				   Vector2D(+0.00,+0.50) };
+			for (int i = 0; i < 13; i++) {
+				vp[i] = v[i];
+			}
 
 			LoadTa();
 			LoadV();
 			LoadA();
 			LoadB();
 		}
+
+		CatmullRomGorbe() {}
 
 		void Rajzol() {
 
@@ -466,13 +458,29 @@ class CatmullRomGorbe {
 
 
 //BezierGorbe bg;
-CatmullRomGorbe cg;
+CatmullRomGorbe csiga;
 
 // Inicializacio, a program futasanak kezdeten, az OpenGL kontextus letrehozasa utan hivodik meg (ld. main() fv.)
 void onInitialization( ) { 
 
 	// TODO: Megnezni, hogy mekkora lehet a vezerlopontok tombje
 	// TODO: Limitalni, hogy nem csorduljon tul a vezerlopontok tombje
+
+	Vector2D csigavp[13] = { Vector2D(+0.00,+0.50),
+							 Vector2D(-0.075,+0.525),
+							 Vector2D(-0.35,+0.85),
+							 Vector2D(-0.20,+0.50),
+							 Vector2D(-0.15,+0.20),
+							 Vector2D(-0.30,-0.35),
+							 Vector2D(+0.00,-0.95),
+							 Vector2D(+0.30,-0.35),
+							 Vector2D(+0.15,+0.20),
+							 Vector2D(+0.20,+0.50),
+							 Vector2D(+0.35,+0.85),
+							 Vector2D(+0.075,+0.525),
+							 Vector2D(+0.00,+0.50) };
+
+	csiga.Init(csigavp);
 
 	//bg.VezerlopontHozzaadasa(Vector2D(-0.50, +0.50));
 	//bg.VezerlopontHozzaadasa(Vector2D(-0.25, +0.50));
@@ -484,12 +492,12 @@ void onInitialization( ) {
 
 // Rajzolas, ha az alkalmazas ablak ervenytelenne valik, akkor ez a fuggveny hivodik meg
 void onDisplay( ) {
-    glClearColor(0.1f, 0.2f, 0.3f, 1.0f);		// torlesi szin beallitasa
+    glClearColor(0.55294f, 0.71373f, 0.00f, 1.0f);		// torlesi szin beallitasa
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // kepernyo torles
 
     // ...
     //bg.Rajzol();
-    cg.Rajzol();
+    csiga.Rajzol();
 
 
     glutSwapBuffers();     				// Buffercsere: rajzolas vege
