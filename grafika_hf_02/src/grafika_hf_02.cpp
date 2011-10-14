@@ -400,11 +400,13 @@ class CatmullRomGorbe {
 		}
 
 		float ti(int i) {
-			if ((i >= 0) && (i < CRVSZ)) { return ta[i]; }
+			float result;
+			if ((i >= 0) && (i < CRVSZ)) { result = ta[i]; }
 			else {
-				if (i < 0) { return ta[CRVSZ+i]; }
-				if (i >= CRVSZ) { return ta[i-CRVSZ]; }
+				if (i < 0) { result = ta[CRVSZ+i]; }
+				if (i >= CRVSZ) { result = ta[i-CRVSZ]; }
 			}
+			return result;
 		}
 
 		void LoadV() {
