@@ -258,7 +258,7 @@ class Vector3D {
 const int BEZIER_VEZERLOPONTOK_SZAMA = 4;
 const int BVSZ = BEZIER_VEZERLOPONTOK_SZAMA;
 
-const int CATMULLROM_VEZERLOPONTOK_SZAMA = 6;
+const int CATMULLROM_VEZERLOPONTOK_SZAMA = 9;
 const int CRVSZ = CATMULLROM_VEZERLOPONTOK_SZAMA;
 
 class BezierGorbe {
@@ -417,12 +417,15 @@ class CatmullRomGorbe {
 
 		CatmullRomGorbe() {
 
-			vp[0] = Vector2D(-0.50,-0.50);
-			vp[1] = Vector2D(-0.34,-0.45);
-			vp[2] = Vector2D(-0.20,+0.20);
-			vp[3] = Vector2D(-0.63,+0.37);
-			vp[4] = Vector2D(+0.23,+0.40);
-			vp[5] = Vector2D(-0.50,-0.50);
+			vp = { Vector2D(+0.00,+0.50),
+				   Vector2D(-0.05,+0.55),
+				   Vector2D(-0.20,+0.75),
+				   Vector2D(-0.20,+0.50),
+				   Vector2D(+0.00,-0.75),
+				   Vector2D(+0.20,+0.50),
+				   Vector2D(+0.20,+0.75),
+				   Vector2D(+0.05,+0.55),
+				   Vector2D(+0.00,+0.50) };
 
 			LoadTa();
 			LoadV();
