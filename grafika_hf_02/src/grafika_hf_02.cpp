@@ -326,157 +326,55 @@ class BezierGorbe {
 
 class CatmullRomGorbe {
 	private:
-		Vector3D vp[CRVSZ];
-		float dt;
-		Vector3D vi, vi1, ai, bi, ci, di;
+		Vector2D vp[CRVSZ];
+
+		Vector2D a[CRVSZ];
+		Vector2D b[CRVSZ];
+		Vector2D c[CRVSZ];
+		Vector2D d[CRVSZ];
+		Vector2D v[CRVSZ];
+
+		float ta[CRVSZ];
 
 	public:
-		CatmullRomGorbe() {
+		/*
+		 * Dr. Szirmay-Kalos L. - Haromdimenzios grafika, ... 327-330. old. alapjan
+		 * f(t) = a[i]*(t-t[i])^3 + b[i]*(t-t[i])^2 + c[i]*(t-t[i]) + d[i], ha t[i] <= t < t[i+1]
+		 *
+		 * f[i] = f(t[i]) = d[i]
+		 * f[i+1] = f(t[i+1]) = a[i]*(t[i+1]-t[i])^3 + b[i]*(t[i+1]-t[i])^2 + c[i]*(t[i+1]-t[i]) + d[i]
+		 *
+		 * v[i] = f'(t[i]) = c[i]
+		 * v[i+1] = f'(t[i+1]) = 3*a[i]*(t[i+1]-t[i]) + 2*b[i]*(t[i+1]-t[i]) + c[i]
+		 *
+		 * a[i] = ((v[i+1] + v[i]) / (t[i+1]-t[i])^2) - (2*(f[i+1] - f[i]) / (t[i+1]-t[i])^3)
+		 *
+		 * b[i] = (3*(f[i+1] - f[i]) / (t[i+1]-t[i])^2) - (v[i+1] + 2*v[i] / (t[i+1]-t[i]))
+		 *
+		 * c[i] = v[i]
+		 *
+		 * d[i] = f[i]
+		 *
+		 */
 
-			vp[0] = Vector3D(-0.25, -0.5, 0);
-			vp[1] = Vector3D(-0.5, +0.5, 0);
-			//vp[2] = Vector3D(+0.5, +0.5, 0);
-
-			//vp[CRVSZ-1] = vp[0];
-
-/*
-		// dt = t[i+1] - t[i];
-		int i;
-		dt = this->vp[i+1].X() - this->vp[i].X();
-
-		//v[i]=0.5 * ( ((r[i]-r[i-1]) / (t[i]-t[i-1])) + ((r[i+1]-r[i]) / (t[i+1]-t[i])));
-		vi = ( ((this->vp[i]-this->vp[i-1]) / (this->vp[i].X()-this->vp[i-1].X())) + ((this->vp[i+1]-this->vp[i]) / (this->vp[i+1].X()-this->vp[i].X()))) * 0.5;
-
-		vi1 = ( ((this->vp[i+1]-this->vp[i]) / (this->vp[i+1].X()-this->vp[i].X())) + ((this->vp[i+2]-this->vp[i+1]) / (this->vp[i+2].X()-this->vp[i+1].X()))) * 0.5;
-
-
-		//a[i] = (v[i+1] + v[i]) / dt*dt - 2*(r[i+1]-r[i]) / dt*dt*dt;
-		ai = (vi1 + vi) / dt*dt - (this->vp[i+1]-this->vp[i])*2 / dt*dt*dt;
-
-		//b[i] = 3 * (r[i+1]-r[i])/dt*dt - (v[i+1]+2*v[i])/dt;
-		bi = (this->vp[i+1]-this->vp[i])*3/dt*dt - (vi1+vi*2)/dt;
-
-		ci = vi;
-
-		di = this->vp[i];
-
-		//dt = t - this->vp[i].X()
-
-		//r = a[i] * dt*dt*dt + b[i] * dt*dt + c[i]*dt + d[i];
-*/
+		Vector2D r(float t, int i) {
+			return a[i]*pow((t-ta[i]),3) + b[i]*pow((t-ta[i]),2) + c[i]*(t-ta[i]) + d[i];
 		}
+
+		CatmullRomGorbe() {}
 
 		void Rajzol() {
-				/* A kontrollpontok kirajzolasa: */
-				glColor3f(1.00f,0.00f,0.00f);
-				glPointSize(10.0f);
-				glBegin(GL_POINTS);
-				for (int i = 0; i < CRVSZ; i++) {
-					glVertex2f(this->vp[i].X(), this->vp[i].Y());
-				}
-				glEnd();
 
-				glColor3f(0.72157f,0.35367f,0.61961f);
-				glBegin(GL_LINE_STRIP);
-					for (int i = 0; i < CRVSZ; i++) {
-
-						if (i != CRVSZ-1) {
-							dt = this->vp[i+1].X() - this->vp[i].X() + 0.0000001;
-						}
-						else {
-							dt = this->vp[0].X() - this->vp[i].X() + 0.0000001;
-						}
-
-						#if defined(DEBUG)
-							cout << "dt: " << dt << endl;
-						#endif
-
-						//v[i]=0.5 * ( ((r[i]-r[i-1]) / (t[i]-t[i-1])) + ((r[i+1]-r[i]) / (t[i+1]-t[i])));
-
-						if (i == CRVSZ-1) {
-							vi = ( ((this->vp[i]-this->vp[i-1]) / (this->vp[i].X()-this->vp[i-1].X() + 0.0000001)) + ((this->vp[0]-this->vp[i]) / (this->vp[0].X()-this->vp[i].X() + 0.0000001))) * 0.5;
-						}
-						if (i == 0) {
-							vi = ( ((this->vp[i]-this->vp[CRVSZ-1]) / (this->vp[i].X()-this->vp[CRVSZ-1].X() + 0.0000001)) + ((this->vp[i+1]-this->vp[i]) / (this->vp[i+1].X()-this->vp[i].X() + 0.0000001))) * 0.5;
-						}
-
-						if ((i != 0) && (i != CRVSZ-1)) {
-							vi = ( ((this->vp[i]-this->vp[i-1]) / (this->vp[i].X()-this->vp[i-1].X() + 0.0000001)) + ((this->vp[i+1]-this->vp[i]) / (this->vp[i+1].X()-this->vp[i].X() + 0.0000001))) * 0.5;
-						}
-
-						if (i == CRVSZ-1) {
-							vi1 = ( ((this->vp[0]-this->vp[i]) / (this->vp[0].X()-this->vp[i].X() + 0.0000001)) + ((this->vp[1]-this->vp[i+1]) / (this->vp[1].X()-this->vp[0].X() + 0.0000001))) * 0.5;
-						}
-
-						if (i == CRVSZ-2) {
-							vi1 = ( ((this->vp[i+1]-this->vp[i]) / (this->vp[i+1].X()-this->vp[i].X() + 0.0000001)) + ((this->vp[0]-this->vp[i+1]) / (this->vp[0].X()-this->vp[i+1].X() + 0.0000001))) * 0.5;
-						}
-
-						if ((i != CRVSZ-1) && (i != CRVSZ-2)) {
-							vi1 = ( ((this->vp[i+1]-this->vp[i]) / (this->vp[i+1].X()-this->vp[i].X() + 0.0000001)) + ((this->vp[i+2]-this->vp[i+1]) / (this->vp[i+2].X()-this->vp[i+1].X() + 0.0000001))) * 0.5;
-						}
-
-
-						#if defined(DEBUG)
-							cout << " vi: " << vi.X() << "," << vi.Y() << endl;
-							cout << "vi1: " << vi1.X() << "," << vi1.Y() << endl;
-						#endif
-
-
-						//a[i] = (v[i+1] + v[i]) / dt*dt - 2*(r[i+1]-r[i]) / dt*dt*dt;
-						if (i != CRVSZ-1) {
-							ai = (vi1 + vi) / dt*dt - (this->vp[i+1]-this->vp[i])*2 / dt*dt*dt;
-						}
-						else {
-							ai = (vi1 + vi) / dt*dt - (this->vp[0]-this->vp[i])*2 / dt*dt*dt;
-						}
-
-						//b[i] = 3 * (r[i+1]-r[i])/dt*dt - (v[i+1]+2*v[i])/dt;
-						if (i != CRVSZ-1) {
-							bi = (this->vp[i+1]-this->vp[i])*3/dt*dt - (vi1+vi*2)/dt;
-						}
-						else {
-							bi = (this->vp[0]-this->vp[i])*3/dt*dt - (vi1+vi*2)/dt;
-						}
-
-						ci = vi;
-
-						di = this->vp[i];
-
-						//#if defined(DEBUG)
-						//	cout << di.X() << "," << di.Y() << endl;
-						//#endif
-
-						glBegin(GL_LINE_STRIP);
-
-						float tend;
-
-						if (i != CRVSZ-1) {
-							tend = this->vp[i+1].X();
-						}
-						else {
-							tend = this->vp[0].X();
-						}
-
-						for (float t = this->vp[i].X(); t < tend; t = t + 0.0001) {
-							dt = t - this->vp[i].X();
-							Vector3D r = ai * dt*dt*dt + bi * dt*dt + ci*dt + di;
-
-							//#if defined(DEBUG)
-							//	cout << r.X() << "," << t << endl;
-							//#endif
-
-							glVertex2f(r.X(), t);
-						}
-						glEnd();
-
-					}
-
-
+			/* A kontrollpontok kirajzolasa: */
+			glColor3f(1.00f,0.00f,0.00f);
+			glPointSize(10.0f);
+			glBegin(GL_POINTS);
+			for (int i = 0; i < CRVSZ; i++) {
+				glVertex2f(this->vp[i].X(), this->vp[i].Y());
+			}
+			glEnd();
 
 		}
-
-
 
 };
 
