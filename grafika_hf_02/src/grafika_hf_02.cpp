@@ -258,7 +258,7 @@ class Vector3D {
 const int BEZIER_VEZERLOPONTOK_SZAMA = 4;
 const int BVSZ = BEZIER_VEZERLOPONTOK_SZAMA;
 
-const int CATMULLROM_VEZERLOPONTOK_SZAMA = 5;
+const int CATMULLROM_VEZERLOPONTOK_SZAMA = 2;
 const int CRVSZ = CATMULLROM_VEZERLOPONTOK_SZAMA;
 
 class BezierGorbe {
@@ -326,25 +326,165 @@ class BezierGorbe {
 
 class CatmullRomGorbe {
 	private:
-		Vector3D vezerlopontok[CRVSZ];
+		Vector3D vp[CRVSZ];
+		float dt;
+		Vector3D vi, vi1, ai, bi, ci, di;
 
-		/*
-		q(t) = 0.5 * ((-p1 + 3*p2 -3*p3 + p4)*t*t*t
-		               + (2*p1 -5*p2 + 4*p3 - p4)*t*t
-		               + (-p1+p3)*t
-		               + 2*p2)
+	public:
+		CatmullRomGorbe() {
 
-		               ri(t) = ci3(t- ti)^3+ci2(t- ti)^2+ci1(t- ti)+ ci0
-		               ci0 = pi
-		               ci1 = vi
-		               ci2 =
-		               ci3 =
-		            */
+			vp[0] = Vector3D(-0.25, -0.5, 0);
+			vp[1] = Vector3D(-0.5, +0.5, 0);
+			//vp[2] = Vector3D(+0.5, +0.5, 0);
+
+			//vp[CRVSZ-1] = vp[0];
+
+/*
+		// dt = t[i+1] - t[i];
+		int i;
+		dt = this->vp[i+1].X() - this->vp[i].X();
+
+		//v[i]=0.5 * ( ((r[i]-r[i-1]) / (t[i]-t[i-1])) + ((r[i+1]-r[i]) / (t[i+1]-t[i])));
+		vi = ( ((this->vp[i]-this->vp[i-1]) / (this->vp[i].X()-this->vp[i-1].X())) + ((this->vp[i+1]-this->vp[i]) / (this->vp[i+1].X()-this->vp[i].X()))) * 0.5;
+
+		vi1 = ( ((this->vp[i+1]-this->vp[i]) / (this->vp[i+1].X()-this->vp[i].X())) + ((this->vp[i+2]-this->vp[i+1]) / (this->vp[i+2].X()-this->vp[i+1].X()))) * 0.5;
+
+
+		//a[i] = (v[i+1] + v[i]) / dt*dt - 2*(r[i+1]-r[i]) / dt*dt*dt;
+		ai = (vi1 + vi) / dt*dt - (this->vp[i+1]-this->vp[i])*2 / dt*dt*dt;
+
+		//b[i] = 3 * (r[i+1]-r[i])/dt*dt - (v[i+1]+2*v[i])/dt;
+		bi = (this->vp[i+1]-this->vp[i])*3/dt*dt - (vi1+vi*2)/dt;
+
+		ci = vi;
+
+		di = this->vp[i];
+
+		//dt = t - this->vp[i].X()
+
+		//r = a[i] * dt*dt*dt + b[i] * dt*dt + c[i]*dt + d[i];
+*/
+		}
+
+		void Rajzol() {
+				/* A kontrollpontok kirajzolasa: */
+				glColor3f(0.13f,0.34f,0.56f);
+				for (int i = 0; i < CRVSZ; i++) {
+					glBegin(GL_POLYGON);
+					glVertex2f(this->vp[i].X()-0.01, this->vp[i].Y()+0.01);
+					glVertex2f(this->vp[i].X()+0.01, this->vp[i].Y()+0.01);
+					glVertex2f(this->vp[i].X()+0.01, this->vp[i].Y()-0.01);
+					glVertex2f(this->vp[i].X()-0.01, this->vp[i].Y()-0.01);
+					glEnd();
+				}
+
+				glColor3f(0.72157f,0.35367f,0.61961f);
+				glBegin(GL_LINE_STRIP);
+					for (int i = 0; i < CRVSZ; i++) {
+
+						if (i != CRVSZ-1) {
+							dt = this->vp[i+1].X() - this->vp[i].X() + 0.0000001;
+						}
+						else {
+							dt = this->vp[0].X() - this->vp[i].X() + 0.0000001;
+						}
+
+						#if defined(DEBUG)
+							cout << "dt: " << dt << endl;
+						#endif
+
+						//v[i]=0.5 * ( ((r[i]-r[i-1]) / (t[i]-t[i-1])) + ((r[i+1]-r[i]) / (t[i+1]-t[i])));
+
+						if (i == CRVSZ-1) {
+							vi = ( ((this->vp[i]-this->vp[i-1]) / (this->vp[i].X()-this->vp[i-1].X() + 0.0000001)) + ((this->vp[0]-this->vp[i]) / (this->vp[0].X()-this->vp[i].X() + 0.0000001))) * 0.5;
+						}
+						if (i == 0) {
+							vi = ( ((this->vp[i]-this->vp[CRVSZ-1]) / (this->vp[i].X()-this->vp[CRVSZ-1].X() + 0.0000001)) + ((this->vp[i+1]-this->vp[i]) / (this->vp[i+1].X()-this->vp[i].X() + 0.0000001))) * 0.5;
+						}
+
+						if ((i != 0) && (i != CRVSZ-1)) {
+							vi = ( ((this->vp[i]-this->vp[i-1]) / (this->vp[i].X()-this->vp[i-1].X() + 0.0000001)) + ((this->vp[i+1]-this->vp[i]) / (this->vp[i+1].X()-this->vp[i].X() + 0.0000001))) * 0.5;
+						}
+
+						if (i == CRVSZ-1) {
+							vi1 = ( ((this->vp[0]-this->vp[i]) / (this->vp[0].X()-this->vp[i].X() + 0.0000001)) + ((this->vp[1]-this->vp[i+1]) / (this->vp[1].X()-this->vp[0].X() + 0.0000001))) * 0.5;
+						}
+
+						if (i == CRVSZ-2) {
+							vi1 = ( ((this->vp[i+1]-this->vp[i]) / (this->vp[i+1].X()-this->vp[i].X() + 0.0000001)) + ((this->vp[0]-this->vp[i+1]) / (this->vp[0].X()-this->vp[i+1].X() + 0.0000001))) * 0.5;
+						}
+
+						if ((i != CRVSZ-1) && (i != CRVSZ-2)) {
+							vi1 = ( ((this->vp[i+1]-this->vp[i]) / (this->vp[i+1].X()-this->vp[i].X() + 0.0000001)) + ((this->vp[i+2]-this->vp[i+1]) / (this->vp[i+2].X()-this->vp[i+1].X() + 0.0000001))) * 0.5;
+						}
+
+
+						#if defined(DEBUG)
+							cout << " vi: " << vi.X() << "," << vi.Y() << endl;
+							cout << "vi1: " << vi1.X() << "," << vi1.Y() << endl;
+						#endif
+
+
+						//a[i] = (v[i+1] + v[i]) / dt*dt - 2*(r[i+1]-r[i]) / dt*dt*dt;
+						if (i != CRVSZ-1) {
+							ai = (vi1 + vi) / dt*dt - (this->vp[i+1]-this->vp[i])*2 / dt*dt*dt;
+						}
+						else {
+							ai = (vi1 + vi) / dt*dt - (this->vp[0]-this->vp[i])*2 / dt*dt*dt;
+						}
+
+						//b[i] = 3 * (r[i+1]-r[i])/dt*dt - (v[i+1]+2*v[i])/dt;
+						if (i != CRVSZ-1) {
+							bi = (this->vp[i+1]-this->vp[i])*3/dt*dt - (vi1+vi*2)/dt;
+						}
+						else {
+							bi = (this->vp[0]-this->vp[i])*3/dt*dt - (vi1+vi*2)/dt;
+						}
+
+						ci = vi;
+
+						di = this->vp[i];
+
+						//#if defined(DEBUG)
+						//	cout << di.X() << "," << di.Y() << endl;
+						//#endif
+
+						glBegin(GL_LINE_STRIP);
+
+						float tend;
+
+						if (i != CRVSZ-1) {
+							tend = this->vp[i+1].X();
+						}
+						else {
+							tend = this->vp[0].X();
+						}
+
+						for (float t = this->vp[i].X(); t < tend; t = t + 0.0001) {
+							dt = t - this->vp[i].X();
+							Vector3D r = ai * dt*dt*dt + bi * dt*dt + ci*dt + di;
+
+							//#if defined(DEBUG)
+							//	cout << r.X() << "," << t << endl;
+							//#endif
+
+							glVertex2f(r.X(), t);
+						}
+						glEnd();
+
+					}
+
+
+
+		}
+
+
 
 };
 
 
-BezierGorbe bg;
+//BezierGorbe bg;
+CatmullRomGorbe cg;
 
 // Inicializacio, a program futasanak kezdeten, az OpenGL kontextus letrehozasa utan hivodik meg (ld. main() fv.)
 void onInitialization( ) { 
@@ -352,12 +492,12 @@ void onInitialization( ) {
 	// TODO: Megnezni, hogy mekkora lehet a vezerlopontok tombje
 	// TODO: Limitalni, hogy nem csorduljon tul a vezerlopontok tombje
 
-	bg.VezerlopontHozzaadasa(Vector2D(-0.50, +0.50));
-	bg.VezerlopontHozzaadasa(Vector2D(-0.25, +0.50));
-	bg.VezerlopontHozzaadasa(Vector2D(+0.00, +0.45));
-	bg.VezerlopontHozzaadasa(Vector2D(-0.30, +0.23));
-	bg.VezerlopontHozzaadasa(Vector2D(-0.75, +0.80));
-	bg.VezerlopontHozzaadasa(Vector2D(-0.50, +0.50));
+	//bg.VezerlopontHozzaadasa(Vector2D(-0.50, +0.50));
+	//bg.VezerlopontHozzaadasa(Vector2D(-0.25, +0.50));
+	//bg.VezerlopontHozzaadasa(Vector2D(+0.00, +0.45));
+	//bg.VezerlopontHozzaadasa(Vector2D(-0.30, +0.23));
+	//bg.VezerlopontHozzaadasa(Vector2D(-0.75, +0.80));
+	//bg.VezerlopontHozzaadasa(Vector2D(-0.50, +0.50));
 }
 
 // Rajzolas, ha az alkalmazas ablak ervenytelenne valik, akkor ez a fuggveny hivodik meg
@@ -366,7 +506,8 @@ void onDisplay( ) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // kepernyo torles
 
     // ...
-    bg.Rajzol();
+    //bg.Rajzol();
+    cg.Rajzol();
 
 
     glutSwapBuffers();     				// Buffercsere: rajzolas vege
