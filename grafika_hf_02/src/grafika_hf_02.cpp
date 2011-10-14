@@ -368,15 +368,13 @@ class CatmullRomGorbe {
 
 		void Rajzol() {
 				/* A kontrollpontok kirajzolasa: */
-				glColor3f(0.13f,0.34f,0.56f);
+				glColor3f(1.00f,0.00f,0.00f);
+				glPointSize(10.0f);
+				glBegin(GL_POINTS);
 				for (int i = 0; i < CRVSZ; i++) {
-					glBegin(GL_POLYGON);
-					glVertex2f(this->vp[i].X()-0.01, this->vp[i].Y()+0.01);
-					glVertex2f(this->vp[i].X()+0.01, this->vp[i].Y()+0.01);
-					glVertex2f(this->vp[i].X()+0.01, this->vp[i].Y()-0.01);
-					glVertex2f(this->vp[i].X()-0.01, this->vp[i].Y()-0.01);
-					glEnd();
+					glVertex2f(this->vp[i].X(), this->vp[i].Y());
 				}
+				glEnd();
 
 				glColor3f(0.72157f,0.35367f,0.61961f);
 				glBegin(GL_LINE_STRIP);
