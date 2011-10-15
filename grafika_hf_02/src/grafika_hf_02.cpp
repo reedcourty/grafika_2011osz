@@ -276,7 +276,7 @@ Vector2D Pixel2Vector(int x, int y) {
 
 }
 
-const int BEZIER_VEZERLOPONTOK_SZAMA = 4;
+const int BEZIER_VEZERLOPONTOK_SZAMA = 6;
 const int BVSZ = BEZIER_VEZERLOPONTOK_SZAMA;
 
 const int CATMULLROM_VEZERLOPONTOK_SZAMA = 13;
@@ -323,23 +323,22 @@ class BezierGorbe {
 			#if defined(DEBUG)
 				/* A kontrollpontok kirajzolasa: */
 				glColor3f(0.5f,1.0f,0.56f);
-				for (int i = 0; i <= BVSZ; i++) {
-					cout << this->vezerlopontok[i].X() << "," << this->vezerlopontok[i].Y() << endl;
-					glBegin(GL_POLYGON);
-					glVertex2f(this->vezerlopontok[i].X()-0.01, this->vezerlopontok[i].Y()+0.01);
-					glVertex2f(this->vezerlopontok[i].X()+0.01, this->vezerlopontok[i].Y()+0.01);
-					glVertex2f(this->vezerlopontok[i].X()+0.01, this->vezerlopontok[i].Y()-0.01);
-					glVertex2f(this->vezerlopontok[i].X()-0.01, this->vezerlopontok[i].Y()-0.01);
-					glEnd();
-				}
+				glPointSize(5.0f);
+				glBegin(GL_POINTS);
+					for (int i = 0; i <= BVSZ; i++) {
+						cout << this->vezerlopontok[i].X() << "," << this->vezerlopontok[i].Y() << endl;
+						glVertex2f(this->vezerlopontok[i].X(), this->vezerlopontok[i].Y());
+					}
+				glEnd();
 			#endif
 
 			glColor3f(0.72157f,0.62353f,0.61961f);
-			glBegin(GL_LINE_STRIP);
+			glPointSize(2.5f);
+			glBegin(GL_POINTS);
 				for (float i = 0; i <= 1; i = i + 0.0001) {
 					glVertex2f(r(i).X(), r(i).Y());
 				}
-				glEnd();
+			glEnd();
 		}
 
 
@@ -528,10 +527,32 @@ class CatmullRomGorbe {
 
 };
 
+const int HAZPONT = 9;
 
-//BezierGorbe bg;
+class Poligon {
+	private:
+
+
+	public:
+		Vector2D p[HAZPONT];
+		Poligon() {}
+
+		void Rajzol() {
+			glColor3f(0.20f,0.20f,0.20f);
+			glBegin(GL_LINES);
+			for (int i = 0; i < HAZPONT-1; i++) {
+				glVertex2f(p[i].X(), p[i].Y());
+				glVertex2f(p[i+1].X(), p[i+1].Y());
+			}
+			glEnd();
+		}
+};
+
+BezierGorbe szem1;
+BezierGorbe szem2;
 CatmullRomGorbe csiga;
 CatmullRomGorbe palya;
+Poligon haz1, haz2;
 
 // Inicializacio, a program futasanak kezdeten, az OpenGL kontextus letrehozasa utan hivodik meg (ld. main() fv.)
 void onInitialization( ) { 
@@ -578,12 +599,37 @@ void onInitialization( ) {
 	palya.Init(palyavp, palyaszin, palyavpszin);
 	palya.setVprajzolasa(true);
 
-	//bg.VezerlopontHozzaadasa(Vector2D(-0.50, +0.50));
-	//bg.VezerlopontHozzaadasa(Vector2D(-0.25, +0.50));
-	//bg.VezerlopontHozzaadasa(Vector2D(+0.00, +0.45));
-	//bg.VezerlopontHozzaadasa(Vector2D(-0.30, +0.23));
-	//bg.VezerlopontHozzaadasa(Vector2D(-0.75, +0.80));
-	//bg.VezerlopontHozzaadasa(Vector2D(-0.50, +0.50));
+	szem1.VezerlopontHozzaadasa(Vector2D(-0.00, +0.00));
+	szem1.VezerlopontHozzaadasa(Vector2D(-0.15, +0.00));
+	szem1.VezerlopontHozzaadasa(Vector2D(-0.15, +0.25));
+	szem1.VezerlopontHozzaadasa(Vector2D(+0.15, +0.25));
+	szem1.VezerlopontHozzaadasa(Vector2D(+0.15, +0.00));
+	szem1.VezerlopontHozzaadasa(Vector2D(-0.00, +0.00));
+
+
+	haz1.p = { Vector2D(+0.00,+0.00),
+
+			   Vector2D(-0.15,+0.10),
+			   Vector2D(-0.15,-0.10),
+			   Vector2D(-0.25,-0.35),
+			   Vector2D(+0.00,-0.75),
+			   Vector2D(+0.25,-0.35),
+			   Vector2D(+0.15,-0.10),
+			   Vector2D(+0.15,+0.10),
+
+			   Vector2D(+0.00,+0.00) };
+
+	haz2.p = { Vector2D(-0.00,-0.10),
+
+			   Vector2D(-0.05,+0.00),
+			   Vector2D(-0.05,-0.10),
+			   Vector2D(-0.15,-0.35),//
+			   Vector2D(+0.00,-0.55),
+			   Vector2D(+0.15,-0.35),//
+			   Vector2D(+0.05,-0.10),
+			   Vector2D(+0.05,+0.00),
+
+			   Vector2D(+0.00,-0.10) };
 
 }
 
@@ -593,9 +639,11 @@ void onDisplay( ) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // kepernyo torles
 
     // ...
-    //bg.Rajzol();
+    szem1.Rajzol();
     csiga.Rajzol();
     palya.Rajzol();
+    haz1.Rajzol();
+    haz2.Rajzol();
 
 
     glutSwapBuffers();     				// Buffercsere: rajzolas vege
