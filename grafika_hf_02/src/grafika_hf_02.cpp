@@ -337,6 +337,7 @@ class CatmullRomGorbe {
 		float ta[CRVSZ];
 
 		float gorbeszin[3];
+		float vpszin[3];
 
 		boolean vprajzolasa;
 
@@ -425,12 +426,16 @@ class CatmullRomGorbe {
 
 		Vector2D vi(int i) { return v[i]; }
 
-		void Init(Vector2D v[13], float _gorbeszin[3]) {
+		void Init(Vector2D v[13], float _gorbeszin[3], float _vpszin[3]) {
 
 			setVprajzolasa(false);
 
 			for (int i = 0; i < 3; i++) {
 				gorbeszin[i] = _gorbeszin[i];
+			}
+
+			for (int i = 0; i < 3; i++) {
+				vpszin[i] = _vpszin[i];
 			}
 
 
@@ -450,7 +455,7 @@ class CatmullRomGorbe {
 
 			if (vprajzolasa) {
 				/* A kontrollpontok kirajzolasa: */
-				glColor3f(1.00f,0.00f,0.00f);
+				glColor3f(vpszin[0],vpszin[1],vpszin[2]);
 				glPointSize(10.0f);
 				glBegin(GL_POINTS);
 				for (int i = 0; i < CRVSZ; i++) {
@@ -499,8 +504,9 @@ void onInitialization( ) {
 							 Vector2D(+0.00,+0.50) };
 
 	float csigaszin[3] = {0.33333, 0.41961, 0.18431};
+	float csigavpszin[3] = {0,0,0};
 
-	csiga.Init(csigavp, csigaszin);
+	csiga.Init(csigavp, csigaszin, csigavpszin);
 
 	Vector2D palyavp[13] = { Vector2D(+0.10,+0.40),
 							 Vector2D(-0.15,+0.25),
@@ -517,8 +523,9 @@ void onInitialization( ) {
 							 Vector2D(+0.10,+0.40) };
 
 	float palyaszin[3] = {0.23, 0.56, 0.80};
+	float palyavpszin[3] = {0.93, 0.90, 0.00};
 
-	palya.Init(palyavp, palyaszin);
+	palya.Init(palyavp, palyaszin, palyavpszin);
 	palya.setVprajzolasa(true);
 
 	//bg.VezerlopontHozzaadasa(Vector2D(-0.50, +0.50));
