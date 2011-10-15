@@ -336,6 +336,8 @@ class CatmullRomGorbe {
 
 		float ta[CRVSZ];
 
+		float gorbeszin[3];
+
 	public:
 		/*
 		 * Dr. Szirmay-Kalos L. - Haromdimenzios grafika, ... 327-330. old. alapjan
@@ -417,7 +419,12 @@ class CatmullRomGorbe {
 
 		Vector2D vi(int i) { return v[i]; }
 
-		void Init(Vector2D v[13]) {
+		void Init(Vector2D v[13], float _gorbeszin[3]) {
+
+			for (int i = 0; i < 3; i++) {
+				gorbeszin[i] = _gorbeszin[i];
+			}
+
 
 			for (int i = 0; i < 13; i++) {
 				vp[i] = v[i];
@@ -442,7 +449,7 @@ class CatmullRomGorbe {
 			}
 			glEnd();
 
-			glColor3f(1.00f,.00f,1.00f);
+			glColor3f(gorbeszin[0],gorbeszin[1],gorbeszin[2]);
 			glPointSize(2.5f);
 			glBegin(GL_POINTS);
 			for (int i = 0; i < CRVSZ; i++) {
@@ -481,7 +488,9 @@ void onInitialization( ) {
 							 Vector2D(+0.075,+0.525),
 							 Vector2D(+0.00,+0.50) };
 
-	csiga.Init(csigavp);
+	float csigaszin[3] = {0.33333, 0.41961, 0.18431};
+
+	csiga.Init(csigavp, csigaszin);
 
 	Vector2D palyavp[13] = { Vector2D(+0.10,+0.40),
 							 Vector2D(-0.15,+0.25),
@@ -497,7 +506,9 @@ void onInitialization( ) {
 							 Vector2D(+0.75,+0.25),
 							 Vector2D(+0.10,+0.40) };
 
-	palya.Init(palyavp);
+	float palyaszin[3] = {0.23, 0.56, 0.80};
+
+	palya.Init(palyavp, palyaszin);
 
 	//bg.VezerlopontHozzaadasa(Vector2D(-0.50, +0.50));
 	//bg.VezerlopontHozzaadasa(Vector2D(-0.25, +0.50));
@@ -514,7 +525,7 @@ void onDisplay( ) {
 
     // ...
     //bg.Rajzol();
-    //csiga.Rajzol();
+    csiga.Rajzol();
     palya.Rajzol();
 
 
