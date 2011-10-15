@@ -531,21 +531,76 @@ const int HAZPONT = 9;
 
 class Poligon {
 	private:
+		int aktualispszam;
 
 
 	public:
-		Vector2D p[HAZPONT];
-		Poligon() {}
+		Vector2D p[HAZPONT*4];
+		Poligon() {
+			aktualispszam = HAZPONT;
+		}
 
 		void Rajzol() {
 			glColor3f(0.20f,0.20f,0.20f);
+
+
+			#if defined(DEBUG)
+				/* A kontrollpontok kirajzolasa: */
+				glColor3f(1.0f,0.78f,0.56f);
+				glPointSize(5.0f);
+				glBegin(GL_POINTS);
+					for (int i = 0; i < aktualispszam; i++) {
+						cout << p[i].X() << "," << p[i].Y() << endl;
+						glVertex2f(p[i].X(), p[i].Y());
+					}
+				glEnd();
+			#endif
+
+			glColor3f(0.5f,1.0f,0.56f);
 			glBegin(GL_LINES);
-			for (int i = 0; i < HAZPONT-1; i++) {
+			for (int i = 0; i < aktualispszam-1; i++) {
 				glVertex2f(p[i].X(), p[i].Y());
 				glVertex2f(p[i+1].X(), p[i+1].Y());
 			}
 			glEnd();
 		}
+
+		Vector2D r(int i) {
+			Vector2D result;
+			if ((i >= 0) && (i < aktualispszam)) { result = p[i]; }
+			else {
+				if (i < 0) { result = p[aktualispszam+i]; }
+				if (i >= aktualispszam) { result = p[i-aktualispszam]; }
+			}
+			return result;
+		}
+
+		Vector2D getFelezoPont(Vector2D v1, Vector2D v2) {
+			return Vector2D((v1.X()+v2.X())/2,(v1.Y()+v2.Y())/2);
+		}
+
+		void CatmullClark() {
+			Vector2D temp[aktualispszam*2];
+			int j = 0;
+			for (int i = 0; i < aktualispszam; i++) {
+				temp[j] = p[i];
+				j++;
+				temp[j] = getFelezoPont(r(i),r(i+1));
+				j++;
+			}
+			aktualispszam = aktualispszam*2;
+
+			for (int i = 0; i < aktualispszam; i++) {
+				p[i] = temp[i];
+			}
+
+			for (int i = 0; i < aktualispszam; i = i + 2) {
+				p[i] = r(i)*0.5 + r(i-1)*0.25 + r(i+1)*0.25;
+			}
+
+		}
+
+
 };
 
 BezierGorbe szem1;
@@ -630,6 +685,12 @@ void onInitialization( ) {
 			   Vector2D(+0.05,+0.00),
 
 			   Vector2D(+0.00,-0.10) };
+
+	haz1.CatmullClark();
+	haz1.CatmullClark();
+
+	haz2.CatmullClark();
+	haz2.CatmullClark();
 
 }
 
