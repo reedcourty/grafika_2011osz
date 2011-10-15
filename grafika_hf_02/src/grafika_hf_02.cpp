@@ -255,6 +255,27 @@ class Vector3D {
 
 };
 
+Vector2D Pixel2Vector(int x, int y) {
+
+	int szelesseg = glutGet(GLUT_WINDOW_WIDTH);
+	int magassag = glutGet(GLUT_WINDOW_HEIGHT);
+
+	int x_egyseg = int(szelesseg/2);
+	int y_egyseg = int(magassag/2);
+
+	float vx, vy;
+
+	vx = 1.0/x_egyseg * (x - x_egyseg);
+	vy = 1.0/y_egyseg * -1 * (y - y_egyseg);
+
+	#if defined(DEBUG)
+	cout << "A koordinata vektorkent: " << vx << "," << vy << endl;
+	#endif
+
+	return Vector2D(vx, vy);
+
+}
+
 const int BEZIER_VEZERLOPONTOK_SZAMA = 4;
 const int BVSZ = BEZIER_VEZERLOPONTOK_SZAMA;
 
@@ -443,15 +464,17 @@ class CatmullRomGorbe {
 				vp[i] = v[i];
 			}
 
-			LoadTa();
-			LoadV();
-			LoadA();
-			LoadB();
+
 		}
 
 		CatmullRomGorbe() {}
 
 		void Rajzol() {
+
+			LoadTa();
+			LoadV();
+			LoadA();
+			LoadB();
 
 			glColor3f(gorbeszin[0],gorbeszin[1],gorbeszin[2]);
 			glPointSize(2.5f);
@@ -472,6 +495,33 @@ class CatmullRomGorbe {
 					glVertex2f(this->vp[i].X(), this->vp[i].Y());
 				}
 				glEnd();
+			}
+
+		}
+
+		void VezerloPontPakolo(int x, int y) {
+			Vector2D kp = Pixel2Vector(x, y);
+
+			float max_tavolsag;
+			float tavolsag;
+			int pont;
+
+			max_tavolsag = sqrt(pow(fabs(vp[0].X() - kp.X()),2) + pow(fabs(vp[0].Y() - kp.Y()),2));
+			pont = 0;
+
+			for (int i = 0; i < 13; i++) {
+				tavolsag = sqrt(pow(fabs(vp[i].X() - kp.X()),2) + pow(fabs(vp[i].Y() - kp.Y()),2));
+				if (max_tavolsag >= tavolsag) {
+					max_tavolsag = tavolsag;
+					pont = i;
+				}
+			}
+
+			if ((pont == 12) || (pont == 0)) {
+				vp[0] = vp[12] = kp;
+			}
+			else {
+				vp[pont] = kp;
 			}
 
 		}
@@ -534,6 +584,7 @@ void onInitialization( ) {
 	//bg.VezerlopontHozzaadasa(Vector2D(-0.30, +0.23));
 	//bg.VezerlopontHozzaadasa(Vector2D(-0.75, +0.80));
 	//bg.VezerlopontHozzaadasa(Vector2D(-0.50, +0.50));
+
 }
 
 // Rajzolas, ha az alkalmazas ablak ervenytelenne valik, akkor ez a fuggveny hivodik meg
@@ -561,11 +612,16 @@ void onKeyboard(unsigned char key, int x, int y) {
 
 	if (key == 'd') glutPostRedisplay( ); 		// d beture rajzold ujra a kepet
 
+	Pixel2Vector(x, y);
+
 }
 
 // Eger esemenyeket lekezelo fuggveny
 void onMouse(int button, int state, int x, int y) {
-    if (button == GLUT_LEFT && state == GLUT_DOWN);  // A GLUT_LEFT_BUTTON / GLUT_RIGHT_BUTTON illetve GLUT_DOWN / GLUT_UP
+    if (button == GLUT_LEFT && state == GLUT_DOWN) {  // A GLUT_LEFT_BUTTON / GLUT_RIGHT_BUTTON illetve GLUT_DOWN / GLUT_UP
+    	palya.VezerloPontPakolo(x, y);
+    	glutPostRedisplay( ) ;
+    }
 }
 
 // `Idle' esemenykezelo, jelzi, hogy az ido telik, az Idle esemenyek frekvenciajara csak a 0 a garantalt minimalis ertek
