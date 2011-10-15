@@ -360,7 +360,7 @@ class CatmullRomGorbe {
 		float gorbeszin[3];
 		float vpszin[3];
 
-		boolean vprajzolasa;
+		bool vprajzolasa;
 
 	public:
 		/*
@@ -385,7 +385,7 @@ class CatmullRomGorbe {
 		 *
 		 */
 
-		void setVprajzolasa(boolean _vprajzolasa) {
+		void setVprajzolasa(bool _vprajzolasa) {
 			vprajzolasa = _vprajzolasa;
 		}
 
@@ -558,19 +558,19 @@ void onInitialization( ) {
 
 	csiga.Init(csigavp, csigaszin, csigavpszin);
 
-	Vector2D palyavp[13] = { Vector2D(+0.10,+0.40),
-							 Vector2D(-0.15,+0.25),
-							 Vector2D(-0.25,+0.35),
-							 Vector2D(-0.40,+0.20),
-							 Vector2D(-0.25,+0.60),
-							 Vector2D(-0.50,-0.25),
-							 Vector2D(+0.30,-0.65),
-							 Vector2D(+0.20,-0.25),
-							 Vector2D(+0.45,+0.45),
-							 Vector2D(+0.60,+0.30),
-							 Vector2D(+0.25,+0.25),
-							 Vector2D(+0.75,+0.25),
-							 Vector2D(+0.10,+0.40) };
+	Vector2D palyavp[13] = { Vector2D(+0.34,+0.68),
+							 Vector2D(-0.05,+0.69),
+							 Vector2D(-0.09,+0.19),
+							 Vector2D(-0.54,+0.40),
+							 Vector2D(-0.81,+0.18),
+							 Vector2D(-0.82,-0.29),
+							 Vector2D(-0.25,-0.42),
+							 Vector2D(+0.19,-0.83),
+							 Vector2D(+0.37,-0.28),
+							 Vector2D(+0.65,-0.31),
+							 Vector2D(+0.80,-0.10),
+							 Vector2D(+0.84,+0.51),
+							 Vector2D(+0.34,+0.68) };
 
 	float palyaszin[3] = {0.23, 0.56, 0.80};
 	float palyavpszin[3] = {0.93, 0.90, 0.00};
