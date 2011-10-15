@@ -535,7 +535,7 @@ class Poligon {
 
 
 	public:
-		Vector2D p[HAZPONT*4];
+		Vector2D p[HAZPONT*8];
 		Poligon() {
 			aktualispszam = HAZPONT;
 		}
@@ -550,7 +550,7 @@ class Poligon {
 				glPointSize(5.0f);
 				glBegin(GL_POINTS);
 					for (int i = 0; i < aktualispszam; i++) {
-						cout << p[i].X() << "," << p[i].Y() << endl;
+						//cout << p[i].X() << "," << p[i].Y() << endl;
 						glVertex2f(p[i].X(), p[i].Y());
 					}
 				glEnd();
@@ -579,24 +579,29 @@ class Poligon {
 			return Vector2D((v1.X()+v2.X())/2,(v1.Y()+v2.Y())/2);
 		}
 
-		void CatmullClark() {
-			Vector2D temp[aktualispszam*2];
-			int j = 0;
-			for (int i = 0; i < aktualispszam; i++) {
-				temp[j] = p[i];
-				j++;
-				temp[j] = getFelezoPont(r(i),r(i+1));
-				j++;
-			}
-			aktualispszam = aktualispszam*2;
+		void CatmullClark(int szint) {
+			if (szint < 4) {
+				for (int s = 0; s < szint; s++) {
+					Vector2D temp[aktualispszam*2];
+					int j = 0;
+					for (int i = 0; i < aktualispszam; i++) {
+						temp[j] = p[i];
+						j++;
+						temp[j] = getFelezoPont(r(i),r(i+1));
+						j++;
+					}
+					aktualispszam = aktualispszam*2;
 
-			for (int i = 0; i < aktualispszam; i++) {
-				p[i] = temp[i];
+					for (int i = 0; i < aktualispszam; i++) {
+						p[i] = temp[i];
+					}
+
+					for (int i = 0; i < aktualispszam; i = i + 2) {
+						p[i] = r(i)*0.5 + r(i-1)*0.25 + r(i+1)*0.25;
+					}
+				}
 			}
 
-			for (int i = 0; i < aktualispszam; i = i + 2) {
-				p[i] = r(i)*0.5 + r(i-1)*0.25 + r(i+1)*0.25;
-			}
 
 		}
 
@@ -678,19 +683,17 @@ void onInitialization( ) {
 
 			   Vector2D(-0.05,+0.00),
 			   Vector2D(-0.05,-0.10),
-			   Vector2D(-0.15,-0.35),//
+			   Vector2D(-0.15,-0.35),
 			   Vector2D(+0.00,-0.55),
-			   Vector2D(+0.15,-0.35),//
+			   Vector2D(+0.15,-0.35),
 			   Vector2D(+0.05,-0.10),
 			   Vector2D(+0.05,+0.00),
 
 			   Vector2D(+0.00,-0.10) };
 
-	haz1.CatmullClark();
-	haz1.CatmullClark();
+	haz1.CatmullClark(3);
 
-	haz2.CatmullClark();
-	haz2.CatmullClark();
+	haz2.CatmullClark(3);
 
 }
 
