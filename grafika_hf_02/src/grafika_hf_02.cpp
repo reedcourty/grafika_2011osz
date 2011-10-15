@@ -338,6 +338,8 @@ class CatmullRomGorbe {
 
 		float gorbeszin[3];
 
+		boolean vprajzolasa;
+
 	public:
 		/*
 		 * Dr. Szirmay-Kalos L. - Haromdimenzios grafika, ... 327-330. old. alapjan
@@ -360,6 +362,10 @@ class CatmullRomGorbe {
 		 * v[i] = 0.5 * ((f[i]-f[i-1])/(t[i]-t[i-1]) + (f[i+1]-f[i])/(t[i+1]-t[i]))
 		 *
 		 */
+
+		void setVprajzolasa(boolean _vprajzolasa) {
+			vprajzolasa = _vprajzolasa;
+		}
 
 		void LoadTa() {
 			for (int i = 0; i < CRVSZ; i++) {
@@ -421,6 +427,8 @@ class CatmullRomGorbe {
 
 		void Init(Vector2D v[13], float _gorbeszin[3]) {
 
+			setVprajzolasa(false);
+
 			for (int i = 0; i < 3; i++) {
 				gorbeszin[i] = _gorbeszin[i];
 			}
@@ -440,14 +448,16 @@ class CatmullRomGorbe {
 
 		void Rajzol() {
 
-			/* A kontrollpontok kirajzolasa: */
-			glColor3f(1.00f,0.00f,0.00f);
-			glPointSize(10.0f);
-			glBegin(GL_POINTS);
-			for (int i = 0; i < CRVSZ; i++) {
-				glVertex2f(this->vp[i].X(), this->vp[i].Y());
+			if (vprajzolasa) {
+				/* A kontrollpontok kirajzolasa: */
+				glColor3f(1.00f,0.00f,0.00f);
+				glPointSize(10.0f);
+				glBegin(GL_POINTS);
+				for (int i = 0; i < CRVSZ; i++) {
+					glVertex2f(this->vp[i].X(), this->vp[i].Y());
+				}
+				glEnd();
 			}
-			glEnd();
 
 			glColor3f(gorbeszin[0],gorbeszin[1],gorbeszin[2]);
 			glPointSize(2.5f);
@@ -509,6 +519,7 @@ void onInitialization( ) {
 	float palyaszin[3] = {0.23, 0.56, 0.80};
 
 	palya.Init(palyavp, palyaszin);
+	palya.setVprajzolasa(true);
 
 	//bg.VezerlopontHozzaadasa(Vector2D(-0.50, +0.50));
 	//bg.VezerlopontHozzaadasa(Vector2D(-0.25, +0.50));
