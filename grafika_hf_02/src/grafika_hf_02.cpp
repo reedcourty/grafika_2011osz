@@ -453,6 +453,16 @@ class CatmullRomGorbe {
 
 		void Rajzol() {
 
+			glColor3f(gorbeszin[0],gorbeszin[1],gorbeszin[2]);
+			glPointSize(2.5f);
+			glBegin(GL_POINTS);
+			for (int i = 0; i < CRVSZ; i++) {
+				for (float t = ti(i); t < ti(i+1); t = t + 0.00001) {
+					glVertex2f(r(t,i).X(), r(t,i).Y());
+				}
+			}
+			glEnd();
+
 			if (vprajzolasa) {
 				/* A kontrollpontok kirajzolasa: */
 				glColor3f(vpszin[0],vpszin[1],vpszin[2]);
@@ -463,16 +473,6 @@ class CatmullRomGorbe {
 				}
 				glEnd();
 			}
-
-			glColor3f(gorbeszin[0],gorbeszin[1],gorbeszin[2]);
-			glPointSize(2.5f);
-			glBegin(GL_POINTS);
-			for (int i = 0; i < CRVSZ; i++) {
-				for (float t = ti(i); t < ti(i+1); t = t + 0.00001) {
-					glVertex2f(r(t,i).X(), r(t,i).Y());
-				}
-			}
-			glEnd();
 
 		}
 
