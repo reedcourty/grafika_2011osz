@@ -459,6 +459,7 @@ class CatmullRomGorbe {
 
 //BezierGorbe bg;
 CatmullRomGorbe csiga;
+CatmullRomGorbe palya;
 
 // Inicializacio, a program futasanak kezdeten, az OpenGL kontextus letrehozasa utan hivodik meg (ld. main() fv.)
 void onInitialization( ) { 
@@ -482,6 +483,22 @@ void onInitialization( ) {
 
 	csiga.Init(csigavp);
 
+	Vector2D palyavp[13] = { Vector2D(+0.10,+0.40),
+							 Vector2D(-0.15,+0.25),
+							 Vector2D(-0.25,+0.35),
+							 Vector2D(-0.40,+0.20),
+							 Vector2D(-0.25,+0.60),
+							 Vector2D(-0.50,-0.25),
+							 Vector2D(+0.30,-0.65),
+							 Vector2D(+0.20,-0.25),
+							 Vector2D(+0.45,+0.45),
+							 Vector2D(+0.60,+0.30),
+							 Vector2D(+0.25,+0.25),
+							 Vector2D(+0.75,+0.25),
+							 Vector2D(+0.10,+0.40) };
+
+	palya.Init(palyavp);
+
 	//bg.VezerlopontHozzaadasa(Vector2D(-0.50, +0.50));
 	//bg.VezerlopontHozzaadasa(Vector2D(-0.25, +0.50));
 	//bg.VezerlopontHozzaadasa(Vector2D(+0.00, +0.45));
@@ -497,7 +514,8 @@ void onDisplay( ) {
 
     // ...
     //bg.Rajzol();
-    csiga.Rajzol();
+    //csiga.Rajzol();
+    palya.Rajzol();
 
 
     glutSwapBuffers();     				// Buffercsere: rajzolas vege
