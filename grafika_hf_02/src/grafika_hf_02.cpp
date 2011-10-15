@@ -336,6 +336,11 @@ class CatmullRomGorbe {
 
 		float ta[CRVSZ];
 
+		float gorbeszin[3];
+		float vpszin[3];
+
+		boolean vprajzolasa;
+
 	public:
 		/*
 		 * Dr. Szirmay-Kalos L. - Haromdimenzios grafika, ... 327-330. old. alapjan
@@ -358,6 +363,10 @@ class CatmullRomGorbe {
 		 * v[i] = 0.5 * ((f[i]-f[i-1])/(t[i]-t[i-1]) + (f[i+1]-f[i])/(t[i+1]-t[i]))
 		 *
 		 */
+
+		void setVprajzolasa(boolean _vprajzolasa) {
+			vprajzolasa = _vprajzolasa;
+		}
 
 		void LoadTa() {
 			for (int i = 0; i < CRVSZ; i++) {
@@ -417,21 +426,22 @@ class CatmullRomGorbe {
 
 		Vector2D vi(int i) { return v[i]; }
 
-		CatmullRomGorbe() {
+		void Init(Vector2D v[13], float _gorbeszin[3], float _vpszin[3]) {
 
-			vp = { Vector2D(+0.00,+0.50),
-				   Vector2D(-0.075,+0.525),
-				   Vector2D(-0.35,+0.85),
-				   Vector2D(-0.20,+0.50),
-				   Vector2D(-0.15,+0.20),
-				   Vector2D(-0.30,-0.35),
-				   Vector2D(+0.00,-0.95),
-				   Vector2D(+0.30,-0.35),
-				   Vector2D(+0.15,+0.20),
-				   Vector2D(+0.20,+0.50),
-				   Vector2D(+0.35,+0.85),
-				   Vector2D(+0.075,+0.525),
-				   Vector2D(+0.00,+0.50) };
+			setVprajzolasa(false);
+
+			for (int i = 0; i < 3; i++) {
+				gorbeszin[i] = _gorbeszin[i];
+			}
+
+			for (int i = 0; i < 3; i++) {
+				vpszin[i] = _vpszin[i];
+			}
+
+
+			for (int i = 0; i < 13; i++) {
+				vp[i] = v[i];
+			}
 
 			LoadTa();
 			LoadV();
@@ -439,18 +449,11 @@ class CatmullRomGorbe {
 			LoadB();
 		}
 
+		CatmullRomGorbe() {}
+
 		void Rajzol() {
 
-			/* A kontrollpontok kirajzolasa: */
-			glColor3f(1.00f,0.00f,0.00f);
-			glPointSize(10.0f);
-			glBegin(GL_POINTS);
-			for (int i = 0; i < CRVSZ; i++) {
-				glVertex2f(this->vp[i].X(), this->vp[i].Y());
-			}
-			glEnd();
-
-			glColor3f(1.00f,.00f,1.00f);
+			glColor3f(gorbeszin[0],gorbeszin[1],gorbeszin[2]);
 			glPointSize(2.5f);
 			glBegin(GL_POINTS);
 			for (int i = 0; i < CRVSZ; i++) {
@@ -460,19 +463,70 @@ class CatmullRomGorbe {
 			}
 			glEnd();
 
+			if (vprajzolasa) {
+				/* A kontrollpontok kirajzolasa: */
+				glColor3f(vpszin[0],vpszin[1],vpszin[2]);
+				glPointSize(10.0f);
+				glBegin(GL_POINTS);
+				for (int i = 0; i < CRVSZ; i++) {
+					glVertex2f(this->vp[i].X(), this->vp[i].Y());
+				}
+				glEnd();
+			}
+
 		}
 
 };
 
 
 //BezierGorbe bg;
-CatmullRomGorbe cg;
+CatmullRomGorbe csiga;
+CatmullRomGorbe palya;
 
 // Inicializacio, a program futasanak kezdeten, az OpenGL kontextus letrehozasa utan hivodik meg (ld. main() fv.)
 void onInitialization( ) { 
 
 	// TODO: Megnezni, hogy mekkora lehet a vezerlopontok tombje
 	// TODO: Limitalni, hogy nem csorduljon tul a vezerlopontok tombje
+
+	Vector2D csigavp[13] = { Vector2D(+0.00,+0.50),
+							 Vector2D(-0.075,+0.525),
+							 Vector2D(-0.35,+0.85),
+							 Vector2D(-0.20,+0.50),
+							 Vector2D(-0.15,+0.20),
+							 Vector2D(-0.30,-0.35),
+							 Vector2D(+0.00,-0.95),
+							 Vector2D(+0.30,-0.35),
+							 Vector2D(+0.15,+0.20),
+							 Vector2D(+0.20,+0.50),
+							 Vector2D(+0.35,+0.85),
+							 Vector2D(+0.075,+0.525),
+							 Vector2D(+0.00,+0.50) };
+
+	float csigaszin[3] = {0.33333, 0.41961, 0.18431};
+	float csigavpszin[3] = {0,0,0};
+
+	csiga.Init(csigavp, csigaszin, csigavpszin);
+
+	Vector2D palyavp[13] = { Vector2D(+0.10,+0.40),
+							 Vector2D(-0.15,+0.25),
+							 Vector2D(-0.25,+0.35),
+							 Vector2D(-0.40,+0.20),
+							 Vector2D(-0.25,+0.60),
+							 Vector2D(-0.50,-0.25),
+							 Vector2D(+0.30,-0.65),
+							 Vector2D(+0.20,-0.25),
+							 Vector2D(+0.45,+0.45),
+							 Vector2D(+0.60,+0.30),
+							 Vector2D(+0.25,+0.25),
+							 Vector2D(+0.75,+0.25),
+							 Vector2D(+0.10,+0.40) };
+
+	float palyaszin[3] = {0.23, 0.56, 0.80};
+	float palyavpszin[3] = {0.93, 0.90, 0.00};
+
+	palya.Init(palyavp, palyaszin, palyavpszin);
+	palya.setVprajzolasa(true);
 
 	//bg.VezerlopontHozzaadasa(Vector2D(-0.50, +0.50));
 	//bg.VezerlopontHozzaadasa(Vector2D(-0.25, +0.50));
@@ -484,12 +538,13 @@ void onInitialization( ) {
 
 // Rajzolas, ha az alkalmazas ablak ervenytelenne valik, akkor ez a fuggveny hivodik meg
 void onDisplay( ) {
-    glClearColor(0.1f, 0.2f, 0.3f, 1.0f);		// torlesi szin beallitasa
+    glClearColor(0.55294f, 0.71373f, 0.00f, 1.0f);		// torlesi szin beallitasa
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // kepernyo torles
 
     // ...
     //bg.Rajzol();
-    cg.Rajzol();
+    csiga.Rajzol();
+    palya.Rajzol();
 
 
     glutSwapBuffers();     				// Buffercsere: rajzolas vege
