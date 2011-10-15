@@ -257,23 +257,17 @@ class Vector3D {
 
 Vector2D Pixel2Vector(int x, int y) {
 
-	int szelesseg = glutGet(GLUT_WINDOW_WIDTH);
-	int magassag = glutGet(GLUT_WINDOW_HEIGHT);
+	int x_egyseg = int(glutGet(GLUT_WINDOW_WIDTH)/2);
+	int y_egyseg = int(glutGet(GLUT_WINDOW_HEIGHT)/2);
 
-	int x_egyseg = int(szelesseg/2);
-	int y_egyseg = int(magassag/2);
-
-	float vx, vy;
-
-	vx = 1.0/x_egyseg * (x - x_egyseg);
-	vy = 1.0/y_egyseg * -1 * (y - y_egyseg);
+	float vx = 1.0/x_egyseg * (x - x_egyseg);
+	float vy = 1.0/y_egyseg * -1 * (y - y_egyseg);
 
 	#if defined(DEBUG)
-	cout << "A koordinata vektorkent: " << vx << "," << vy << endl;
+		cout << "A koordinata vektorkent: " << vx << "," << vy << endl;
 	#endif
 
 	return Vector2D(vx, vy);
-
 }
 
 const int BEZIER_VEZERLOPONTOK_SZAMA = 6;
