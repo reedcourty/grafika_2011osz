@@ -272,9 +272,13 @@ Vector2D Pixel2Vector(int x, int y) {
 
 const int BEZIER_VEZERLOPONTOK_SZAMA = 6;
 const int BVSZ = BEZIER_VEZERLOPONTOK_SZAMA;
+const int SZEGMENSEK_SZAMA = 10000;
+const int SZSZ = SZEGMENSEK_SZAMA;
 
 const int CATMULLROM_VEZERLOPONTOK_SZAMA = 13;
 const int CRVSZ = CATMULLROM_VEZERLOPONTOK_SZAMA;
+const long int CATMULLROM_SZEGMENSEK_SZAMA = 92222;
+const long int CRSZSZ = CATMULLROM_SZEGMENSEK_SZAMA;
 
 class Szin {
 	private:
@@ -295,7 +299,7 @@ class Szin {
 class BezierGorbe {
 	private:
 		Vector2D vezerlopontok[BVSZ+1];
-		Vector2D szegmensek[10000];
+		Vector2D szegmensek[SZSZ];
 		int mvpsz;
 		Szin korvonal_szin;
 		Vector2D eltolas;
@@ -345,21 +349,29 @@ class BezierGorbe {
 		}
 
 		void getSzegmensek() {
-			long int j = 0;
+			int j = 0;
 			for (float i = 0; i <= 1; i = i + 0.0001) {
 				szegmensek[j] = Vector2D(r(i).X(), r(i).Y());
 				j++;
 			}
 		}
 
-		void Kitolt() {
 
+		Vector2D szeg(int i) {
+			Vector2D result;
+			if ((i >= 0) && (i < SZSZ)) { result = this->szegmensek[i]; }
+			else {
+				if (i < 0) { result = szegmensek[SZSZ+i]; }
+				if (i >= SZSZ) { result = szegmensek[i-SZSZ]; }
+			}
+			return result;
 		}
 
 		void Rajzol(float scale_x = 1.0, float scale_y = 1.0) {
 
 			getSzegmensek();
 
+			glMatrixMode(GL_MODELVIEW);
 			glLoadIdentity();
 
 			glScalef(scale_x, scale_y, 0.0f);
@@ -380,7 +392,7 @@ class BezierGorbe {
 			glColor3f(korvonal_szin.R(),korvonal_szin.G(),korvonal_szin.B());
 			glPointSize(2.5f);
 			glBegin(GL_POINTS);
-				for (long int i = 0; i < 10000; i++) {
+				for (long int i = 0; i < SZSZ; i++) {
 					glVertex2f(szegmensek[i].X(), szegmensek[i].Y());
 				}
 			glEnd();
@@ -408,6 +420,8 @@ class CatmullRomGorbe {
 		float vpszin[3];
 
 		bool vprajzolasa;
+
+		Vector2D szegmensek[CRSZSZ];
 
 	public:
 		/*
@@ -516,6 +530,42 @@ class CatmullRomGorbe {
 
 		CatmullRomGorbe() {}
 
+		void getSzegmensek() {
+			long int j = 0;
+			for (int i = 0; i < CRVSZ; i++) {
+				for (float t = ti(i); t < ti(i+1); t = t + 0.00001) {
+					szegmensek[j] = Vector2D(r(t,i).X(), r(t,i).Y());
+					j++;
+				}
+			}
+		}
+
+		Vector2D sz(long int i) {
+			Vector2D result;
+			if ((i >= 0) && (i < CRSZSZ)) { result = this->szegmensek[i]; }
+			else {
+				if (i < 0) { result = szegmensek[CRSZSZ+i]; }
+				if (i >= CRVSZ) { result = szegmensek[i-CRSZSZ]; }
+			}
+			return result;
+		}
+
+		float getGorbehossz() {
+			Vector2D szegmens;
+			float hossz = 0;
+			for (long int i = 0; i < CRSZSZ; i++) {
+				szegmens = (sz(i) - sz(i+1));
+				hossz = hossz + szegmens.Length();
+			}
+			return hossz;
+		}
+
+		Vector2D setScale() {
+			float hossz = getGorbehossz();
+			float arany = hossz/100*4;
+			return Vector2D(arany, arany);
+		}
+
 		void Rajzol(float scale_x = 1.0, float scale_y = 1.0) {
 
 			LoadTa();
@@ -523,15 +573,20 @@ class CatmullRomGorbe {
 			LoadA();
 			LoadB();
 
+			getSzegmensek();
+
+			glMatrixMode(GL_MODELVIEW);
 			glLoadIdentity();
 			glScalef(scale_x, scale_y, 0.0f);
 
 			glColor3f(gorbeszin[0],gorbeszin[1],gorbeszin[2]);
 			glPointSize(2.5f);
 			glBegin(GL_POINTS);
+			long int j = 0;
 			for (int i = 0; i < CRVSZ; i++) {
 				for (float t = ti(i); t < ti(i+1); t = t + 0.00001) {
-					glVertex2f(r(t,i).X(), r(t,i).Y());
+					glVertex2f(szegmensek[j].X(), szegmensek[j].Y());
+					j++;
 				}
 			}
 			glEnd();
@@ -596,6 +651,7 @@ class Poligon {
 		void Rajzol(float scale_x = 1.0, float scale_y = 1.0) {
 			glColor3f(0.20f,0.20f,0.20f);
 
+			glMatrixMode(GL_MODELVIEW);
 			glLoadIdentity();
 			glScalef(scale_x, scale_y, 0.0f);
 
@@ -786,6 +842,10 @@ class Palya {
 			palyavonal.VezerloPontPakolo(x, y);
 		}
 
+		Vector2D setScale() {
+			return palyavonal.setScale();
+		}
+
 		void Rajzol() {
 			palyavonal.Rajzol();
 		}
@@ -809,7 +869,8 @@ void onDisplay( ) {
     // ...
 
     palya.Rajzol();
-    csiga.Rajzol(0.5, 0.5);
+
+    csiga.Rajzol(palya.setScale().X(), palya.setScale().Y());
 
 
     glutSwapBuffers();     				// Buffercsere: rajzolas vege
