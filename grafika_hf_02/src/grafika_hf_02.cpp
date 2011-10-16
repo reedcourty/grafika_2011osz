@@ -304,7 +304,6 @@ class BezierGorbe {
 		Szin korvonal_szin;
 		Vector2D eltolas;
 
-
 		float B(int i, float t) {
 			float choose = 1;
 			for (int j = 1; j <= i; j++) {
@@ -367,6 +366,10 @@ class BezierGorbe {
 			return result;
 		}
 
+		void setEltolas(Vector2D& _eltolas) {
+			eltolas = _eltolas;
+		}
+
 		void Rajzol(float scale_x = 1.0, float scale_y = 1.0) {
 
 			getSzegmensek();
@@ -374,8 +377,9 @@ class BezierGorbe {
 			glMatrixMode(GL_MODELVIEW);
 			glLoadIdentity();
 
-			glScalef(scale_x, scale_y, 0.0f);
 			glTranslatef(eltolas.X(), eltolas.Y(), 0.f);
+			glScalef(scale_x, scale_y, 0.0f);
+
 
 			#if defined(DEBUG)
 				/* A kontrollpontok kirajzolasa: */
@@ -422,6 +426,8 @@ class CatmullRomGorbe {
 		bool vprajzolasa;
 
 		Vector2D szegmensek[CRSZSZ];
+
+		Vector2D eltolas;
 
 	public:
 		/*
@@ -528,7 +534,17 @@ class CatmullRomGorbe {
 
 		}
 
-		CatmullRomGorbe() {}
+		CatmullRomGorbe() {
+			eltolas = Vector2D(0.0,0.0);
+		}
+
+		CatmullRomGorbe(Vector2D& _eltolas) {
+			eltolas = _eltolas;
+		}
+
+		void setEltolas(Vector2D& _eltolas) {
+			eltolas = _eltolas;
+		}
 
 		void getSzegmensek() {
 			long int j = 0;
@@ -577,7 +593,9 @@ class CatmullRomGorbe {
 
 			glMatrixMode(GL_MODELVIEW);
 			glLoadIdentity();
+			glTranslatef(eltolas.X(), eltolas.Y(), 0.f);
 			glScalef(scale_x, scale_y, 0.0f);
+
 
 			glColor3f(gorbeszin[0],gorbeszin[1],gorbeszin[2]);
 			glPointSize(2.5f);
@@ -640,12 +658,18 @@ const int HAZPONT = 9;
 class Poligon {
 	private:
 		int aktualispszam;
-
+		Vector2D eltolas;
 
 	public:
 		Vector2D p[HAZPONT*8];
 		Poligon() {
 			aktualispszam = HAZPONT;
+			eltolas = Vector2D(0.0,0.0);
+		}
+
+		Poligon(Vector2D& _eltolas) {
+			aktualispszam = HAZPONT;
+			eltolas = _eltolas;
 		}
 
 		void Rajzol(float scale_x = 1.0, float scale_y = 1.0) {
@@ -653,6 +677,7 @@ class Poligon {
 
 			glMatrixMode(GL_MODELVIEW);
 			glLoadIdentity();
+			glTranslatef(eltolas.X(), eltolas.Y(), 0.f);
 			glScalef(scale_x, scale_y, 0.0f);
 
 
@@ -693,6 +718,10 @@ class Poligon {
 			return Vector2D((v1.X()+v2.X())/2,(v1.Y()+v2.Y())/2);
 		}
 
+		void setEltolas(Vector2D& _eltolas) {
+			eltolas = _eltolas;
+		}
+
 		void CatmullClark(int szint) {
 			if (szint < 4) {
 				for (int s = 0; s < szint; s++) {
@@ -731,8 +760,10 @@ class Csiga {
 		BezierGorbe szem1, szem2;
 
 		Vector2D szem1_eltolas, szem2_eltolas;
+		Vector2D eltolas;
 	public:
 		Csiga() {
+			eltolas = Vector2D(0.0, 0.0);
 			szem1_eltolas = Vector2D(-0.35,+0.85);
 			szem2_eltolas = Vector2D(+0.35,+0.85);
 			szem1 = BezierGorbe(Black,szem1_eltolas);
@@ -756,6 +787,7 @@ class Csiga {
 			float testvpszin[3] = {0,0,0};
 
 			test.Init(testvp, testszin, testvpszin);
+			test.setEltolas(eltolas);
 
 			szem1.VezerlopontHozzaadasa(Vector2D(-0.00, +0.00));
 			szem1.VezerlopontHozzaadasa(Vector2D(-0.15, +0.00));
@@ -771,6 +803,10 @@ class Csiga {
 			szem2.VezerlopontHozzaadasa(Vector2D(+0.15, +0.00));
 			szem2.VezerlopontHozzaadasa(Vector2D(-0.00, +0.00));
 
+			szem1_eltolas = szem1_eltolas + eltolas;
+			szem2_eltolas = szem2_eltolas + eltolas;
+			szem1.setEltolas(szem1_eltolas);
+			szem2.setEltolas(szem2_eltolas);
 
 			haz1.p = { Vector2D(+0.00,+0.00),
 
@@ -800,6 +836,21 @@ class Csiga {
 
 			haz2.CatmullClark(3);
 
+			haz1.setEltolas(eltolas);
+			haz2.setEltolas(eltolas);
+
+		}
+
+		void setEltolas(Vector2D& _eltolas) {
+			eltolas = _eltolas;
+			test.setEltolas(eltolas);
+			haz1.setEltolas(eltolas);
+			haz2.setEltolas(eltolas);
+			szem1_eltolas = szem1_eltolas + eltolas;
+			szem2_eltolas = szem2_eltolas + eltolas;
+			szem1.setEltolas(szem1_eltolas);
+			szem2.setEltolas(szem2_eltolas);
+			cout << "eltolas: " << eltolas.X() << "," << eltolas.Y() << endl;
 		}
 
 		void Rajzol(float scale_x = 1.0, float scale_y = 1.0) {
@@ -846,6 +897,11 @@ class Palya {
 			return palyavonal.setScale();
 		}
 
+		Vector2D getPalyapont(long int i) {
+			cout << "palyapont: " << palyavonal.sz(i).X() << "," << palyavonal.sz(i).Y() << endl;
+			return palyavonal.sz(i);
+		}
+
 		void Rajzol() {
 			palyavonal.Rajzol();
 		}
@@ -869,7 +925,8 @@ void onDisplay( ) {
     // ...
 
     palya.Rajzol();
-
+    Vector2D eltolas = palya.getPalyapont(0);
+    csiga.setEltolas(eltolas);
     csiga.Rajzol(palya.setScale().X(), palya.setScale().Y());
 
 
