@@ -850,7 +850,6 @@ class Csiga {
 			szem2_eltolas = szem2_eltolas + eltolas;
 			szem1.setEltolas(szem1_eltolas);
 			szem2.setEltolas(szem2_eltolas);
-			cout << "eltolas: " << eltolas.X() << "," << eltolas.Y() << endl;
 		}
 
 		void Rajzol(float scale_x = 1.0, float scale_y = 1.0) {
@@ -898,7 +897,6 @@ class Palya {
 		}
 
 		Vector2D getPalyapont(long int i) {
-			cout << "palyapont: " << palyavonal.sz(i).X() << "," << palyavonal.sz(i).Y() << endl;
 			return palyavonal.sz(i);
 		}
 
