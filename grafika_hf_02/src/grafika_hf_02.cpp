@@ -255,6 +255,12 @@ class Vector3D {
 
 };
 
+float Szog(Vector2D v1, Vector2D v2) {
+	float skalarszorzat = v1*v2;
+	double cosa = skalarszorzat/(v1.Length()*v2.Length());
+	return acos(cosa);
+}
+
 Vector2D Pixel2Vector(int x, int y) {
 
 	int x_egyseg = int(glutGet(GLUT_WINDOW_WIDTH)/2);
@@ -298,11 +304,13 @@ class Szin {
 
 class BezierGorbe {
 	private:
-		Vector2D vezerlopontok[BVSZ+1];
+		Vector2D vezerlopontok[BVSZ];
 		Vector2D szegmensek[SZSZ];
+		Vector2D forgatott_szegmensek[SZSZ];
 		int mvpsz;
 		Szin korvonal_szin;
 		Vector2D eltolas;
+		Vector2D v_vektor;
 
 		float B(int i, float t) {
 			float choose = 1;
@@ -355,6 +363,9 @@ class BezierGorbe {
 			}
 		}
 
+		void setVvektor(Vector2D v) {
+			v_vektor = v;
+		}
 
 		Vector2D szeg(int i) {
 			Vector2D result;
@@ -370,15 +381,32 @@ class BezierGorbe {
 			eltolas = _eltolas;
 		}
 
+		void Forgatas() {
+			Vector2D y_tengely = Vector2D(0,1.0);
+			double szog = Szog(y_tengely, v_vektor);
+
+			int j = 0;
+			for (float i = 0; i <= 1; i = i + 0.0001) {
+				float x = szeg(i).X() * cos(szog) - szeg(i).Y() * sin(szog);
+				float y = szeg(i).X() * sin(szog) + szeg(i).Y() * cos(szog);
+				forgatott_szegmensek[j] = Vector2D(x, y);
+				j++;
+			}
+
+		}
+
 		void Rajzol(float scale_x = 1.0, float scale_y = 1.0) {
 
 			getSzegmensek();
+
+			Forgatas();
 
 			glMatrixMode(GL_MODELVIEW);
 			glLoadIdentity();
 
 			glTranslatef(eltolas.X(), eltolas.Y(), 0.f);
 			glScalef(scale_x, scale_y, 0.0f);
+
 
 
 			#if defined(DEBUG)
@@ -397,7 +425,7 @@ class BezierGorbe {
 			glPointSize(2.5f);
 			glBegin(GL_POINTS);
 				for (long int i = 0; i < SZSZ; i++) {
-					glVertex2f(szegmensek[i].X(), szegmensek[i].Y());
+					glVertex2f(forgatott_szegmensek[i].X(), forgatott_szegmensek[i].Y());
 				}
 			glEnd();
 
@@ -426,8 +454,13 @@ class CatmullRomGorbe {
 		bool vprajzolasa;
 
 		Vector2D szegmensek[CRSZSZ];
+		Vector2D forgatott_szegmensek[CRSZSZ];
 
 		Vector2D eltolas;
+
+		Vector2D v_vektor;
+
+		bool forgatas;
 
 	public:
 		/*
@@ -536,14 +569,20 @@ class CatmullRomGorbe {
 
 		CatmullRomGorbe() {
 			eltolas = Vector2D(0.0,0.0);
+			forgatas = false;
 		}
 
 		CatmullRomGorbe(Vector2D& _eltolas) {
 			eltolas = _eltolas;
+			forgatas = false;
 		}
 
 		void setEltolas(Vector2D& _eltolas) {
 			eltolas = _eltolas;
+		}
+
+		void setForgatas(bool _forgatas) {
+			forgatas = _forgatas;
 		}
 
 		void getSzegmensek() {
@@ -582,6 +621,22 @@ class CatmullRomGorbe {
 			return Vector2D(arany, arany);
 		}
 
+		void setVvektor(Vector2D v) {
+			v_vektor = v;
+		}
+
+		void Forgatas() {
+			Vector2D y_tengely = Vector2D(0,1.0);
+			double szog = Szog(y_tengely, v_vektor);
+
+			for (long int i = 0; i < CRSZSZ; i++) {
+				float x = sz(i).X() * cos(szog) - sz(i).Y() * sin(szog);
+				float y = sz(i).X() * sin(szog) + sz(i).Y() * cos(szog);
+				forgatott_szegmensek[i] = Vector2D(x, y);
+			}
+
+		}
+
 		void Rajzol(float scale_x = 1.0, float scale_y = 1.0) {
 
 			LoadTa();
@@ -590,6 +645,8 @@ class CatmullRomGorbe {
 			LoadB();
 
 			getSzegmensek();
+
+			if (forgatas) {	Forgatas(); }
 
 			glMatrixMode(GL_MODELVIEW);
 			glLoadIdentity();
@@ -603,7 +660,12 @@ class CatmullRomGorbe {
 			long int j = 0;
 			for (int i = 0; i < CRVSZ; i++) {
 				for (float t = ti(i); t < ti(i+1); t = t + 0.00001) {
-					glVertex2f(szegmensek[j].X(), szegmensek[j].Y());
+					if (forgatas) {
+						glVertex2f(forgatott_szegmensek[j].X(), forgatott_szegmensek[j].Y());
+					}
+					else {
+						glVertex2f(szegmensek[j].X(), szegmensek[j].Y());
+					}
 					j++;
 				}
 			}
@@ -761,17 +823,17 @@ class Csiga {
 
 		Vector2D szem1_eltolas, szem2_eltolas;
 		Vector2D eltolas;
+
+		Vector2D v_vektor;
 	public:
 		Csiga() {
 			eltolas = Vector2D(0.0, 0.0);
-			szem1_eltolas = Vector2D(-0.35,+0.85);
-			szem2_eltolas = Vector2D(+0.35,+0.85);
-			szem1 = BezierGorbe(Black,szem1_eltolas);
-			szem2 = BezierGorbe(Black,szem2_eltolas);
+			szem1 = BezierGorbe(Black,eltolas);
+			szem2 = BezierGorbe(Black,eltolas);
 
 			Vector2D testvp[13] = { Vector2D(+0.00,+0.50),
 									Vector2D(-0.075,+0.525),
-									szem1_eltolas,
+									Vector2D(-0.35,+0.85),
 									Vector2D(-0.20,+0.50),
 									Vector2D(-0.15,+0.20),
 									Vector2D(-0.30,-0.35),
@@ -779,7 +841,7 @@ class Csiga {
 									Vector2D(+0.30,-0.35),
 									Vector2D(+0.15,+0.20),
 									Vector2D(+0.20,+0.50),
-									szem2_eltolas,
+									Vector2D(+0.35,+0.85),
 									Vector2D(+0.075,+0.525),
 									Vector2D(+0.00,+0.50) };
 
@@ -788,25 +850,24 @@ class Csiga {
 
 			test.Init(testvp, testszin, testvpszin);
 			test.setEltolas(eltolas);
+			test.setForgatas(true);
 
-			szem1.VezerlopontHozzaadasa(Vector2D(-0.00, +0.00));
-			szem1.VezerlopontHozzaadasa(Vector2D(-0.15, +0.00));
-			szem1.VezerlopontHozzaadasa(Vector2D(-0.15, +0.25));
-			szem1.VezerlopontHozzaadasa(Vector2D(+0.15, +0.25));
-			szem1.VezerlopontHozzaadasa(Vector2D(+0.15, +0.00));
-			szem1.VezerlopontHozzaadasa(Vector2D(-0.00, +0.00));
+			szem1.VezerlopontHozzaadasa(Vector2D(-0.35, +1.00));
+			szem1.VezerlopontHozzaadasa(Vector2D(-0.50, +1.00));
+			szem1.VezerlopontHozzaadasa(Vector2D(-0.50, +0.45));
+			szem1.VezerlopontHozzaadasa(Vector2D(-0.20, +0.45));
+			szem1.VezerlopontHozzaadasa(Vector2D(-0.20, +1.00));
+			szem1.VezerlopontHozzaadasa(Vector2D(-0.35, +1.00));
 
-			szem2.VezerlopontHozzaadasa(Vector2D(-0.00, +0.00));
-			szem2.VezerlopontHozzaadasa(Vector2D(-0.15, +0.00));
-			szem2.VezerlopontHozzaadasa(Vector2D(-0.15, +0.25));
-			szem2.VezerlopontHozzaadasa(Vector2D(+0.15, +0.25));
-			szem2.VezerlopontHozzaadasa(Vector2D(+0.15, +0.00));
-			szem2.VezerlopontHozzaadasa(Vector2D(-0.00, +0.00));
+			szem2.VezerlopontHozzaadasa(Vector2D(+0.35, +1.00));
+			szem2.VezerlopontHozzaadasa(Vector2D(+0.20, +1.00));
+			szem2.VezerlopontHozzaadasa(Vector2D(+0.20, +0.45));
+			szem2.VezerlopontHozzaadasa(Vector2D(+0.50, +0.45));
+			szem2.VezerlopontHozzaadasa(Vector2D(+0.50, +1.00));
+			szem2.VezerlopontHozzaadasa(Vector2D(+0.35, +1.00));
 
-			szem1_eltolas = szem1_eltolas + eltolas;
-			szem2_eltolas = szem2_eltolas + eltolas;
-			szem1.setEltolas(szem1_eltolas);
-			szem2.setEltolas(szem2_eltolas);
+			szem1.setEltolas(eltolas);
+			szem2.setEltolas(eltolas);
 
 			haz1.p = { Vector2D(+0.00,+0.00),
 
@@ -846,15 +907,19 @@ class Csiga {
 			test.setEltolas(eltolas);
 			haz1.setEltolas(eltolas);
 			haz2.setEltolas(eltolas);
-			szem1_eltolas = szem1_eltolas + eltolas;
-			szem2_eltolas = szem2_eltolas + eltolas;
-			szem1.setEltolas(szem1_eltolas);
-			szem2.setEltolas(szem2_eltolas);
+ 			szem1.setEltolas(eltolas);
+			szem2.setEltolas(eltolas);
+		}
+
+		void setVvektor(Vector2D v) {
+			v_vektor = v;
 		}
 
 		void Rajzol(float scale_x = 1.0, float scale_y = 1.0) {
+			szem1.setVvektor(v_vektor);
 		    szem1.Rajzol(scale_x, scale_y);
 		    szem2.Rajzol(scale_x, scale_y);
+		    test.setVvektor(v_vektor);
 		    test.Rajzol(scale_x, scale_y);
 		    haz1.Rajzol(scale_x, scale_y);
 		    haz2.Rajzol(scale_x, scale_y);
@@ -920,6 +985,9 @@ void Animalas(float utolso_rajzolas, float time) {
 	float eltelt_ido = time - utolso_rajzolas;
 	float s = palya.getPalyahossz();
 	Vector2D r = palya.r(eltelt_ido);
+	Vector2D v = r/eltelt_ido;
+
+	csiga.setVvektor(v);
 	csiga.setEltolas(r);
 }
 
