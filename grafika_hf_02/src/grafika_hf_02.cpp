@@ -1003,7 +1003,11 @@ Palya palya;
 void Animalas(float utolso_rajzolas, float time) {
 	float eltelt_ido = time - utolso_rajzolas;
 	float s = palya.getPalyahossz();
-	Vector2D r = palya.r(eltelt_ido);
+	float sebesseg = s/5000;
+	float megtett_ut = eltelt_ido * sebesseg;
+	float szegmensmeret = s/CRSZSZ;
+	long int i = (long int)megtett_ut/szegmensmeret;
+	Vector2D r = palya.r(eltelt_ido*(long int)(CRSZSZ/5000));
 	Vector2D v = r/eltelt_ido;
 
 	csiga.setVvektor(v);
@@ -1057,7 +1061,7 @@ float time = 0;
 void onIdle( ) {
 	float utolso_rajzolas = time;
 
-	long time = glutGet(GLUT_ELAPSED_TIME);		// program inditasa ota eltelt ido
+	long time = glutGet(GLUT_ELAPSED_TIME) % 5000;		// program inditasa ota eltelt ido
 
 	Animalas(utolso_rajzolas, time);
 
