@@ -308,6 +308,9 @@ class BezierGorbe {
 		}
 
 	public:
+
+		BezierGorbe() {}
+
 		BezierGorbe(Szin& _korvonal_szin) {
 			this->mvpsz = 0;
 			this->korvonal_szin = _korvonal_szin;
@@ -637,98 +640,121 @@ class Poligon {
 
 Szin Black(0.0,0.0,0.0);
 
-Vector2D szem1_eltolas = Vector2D(-0.35,+0.85);
-Vector2D szem2_eltolas = Vector2D(+0.35,+0.85);
-BezierGorbe szem1(Black,szem1_eltolas);
-BezierGorbe szem2(Black,szem2_eltolas);
-CatmullRomGorbe csiga;
+class Csiga {
+	private:
+		CatmullRomGorbe test;
+		Poligon haz1, haz2;
+		BezierGorbe szem1, szem2;
+
+		Vector2D szem1_eltolas, szem2_eltolas;
+	public:
+		Csiga() {
+			szem1_eltolas = Vector2D(-0.35,+0.85);
+			szem2_eltolas = Vector2D(+0.35,+0.85);
+			szem1 = BezierGorbe(Black,szem1_eltolas);
+			szem2 = BezierGorbe(Black,szem2_eltolas);
+
+			Vector2D testvp[13] = { Vector2D(+0.00,+0.50),
+									Vector2D(-0.075,+0.525),
+									szem1_eltolas,
+									Vector2D(-0.20,+0.50),
+									Vector2D(-0.15,+0.20),
+									Vector2D(-0.30,-0.35),
+									Vector2D(+0.00,-0.95),
+									Vector2D(+0.30,-0.35),
+									Vector2D(+0.15,+0.20),
+									Vector2D(+0.20,+0.50),
+									szem2_eltolas,
+									Vector2D(+0.075,+0.525),
+									Vector2D(+0.00,+0.50) };
+
+			float testszin[3] = {0.33333, 0.41961, 0.18431};
+			float testvpszin[3] = {0,0,0};
+
+			test.Init(testvp, testszin, testvpszin);
+
+			szem1.VezerlopontHozzaadasa(Vector2D(-0.00, +0.00));
+			szem1.VezerlopontHozzaadasa(Vector2D(-0.15, +0.00));
+			szem1.VezerlopontHozzaadasa(Vector2D(-0.15, +0.25));
+			szem1.VezerlopontHozzaadasa(Vector2D(+0.15, +0.25));
+			szem1.VezerlopontHozzaadasa(Vector2D(+0.15, +0.00));
+			szem1.VezerlopontHozzaadasa(Vector2D(-0.00, +0.00));
+
+			szem2.VezerlopontHozzaadasa(Vector2D(-0.00, +0.00));
+			szem2.VezerlopontHozzaadasa(Vector2D(-0.15, +0.00));
+			szem2.VezerlopontHozzaadasa(Vector2D(-0.15, +0.25));
+			szem2.VezerlopontHozzaadasa(Vector2D(+0.15, +0.25));
+			szem2.VezerlopontHozzaadasa(Vector2D(+0.15, +0.00));
+			szem2.VezerlopontHozzaadasa(Vector2D(-0.00, +0.00));
+
+
+			haz1.p = { Vector2D(+0.00,+0.00),
+
+					   Vector2D(-0.15,+0.10),
+					   Vector2D(-0.15,-0.10),
+					   Vector2D(-0.25,-0.35),
+					   Vector2D(+0.00,-0.75),
+					   Vector2D(+0.25,-0.35),
+					   Vector2D(+0.15,-0.10),
+					   Vector2D(+0.15,+0.10),
+
+					   Vector2D(+0.00,+0.00) };
+
+			haz2.p = { Vector2D(-0.00,-0.10),
+
+					   Vector2D(-0.05,+0.00),
+					   Vector2D(-0.05,-0.10),
+					   Vector2D(-0.15,-0.35),
+					   Vector2D(+0.00,-0.55),
+					   Vector2D(+0.15,-0.35),
+					   Vector2D(+0.05,-0.10),
+					   Vector2D(+0.05,+0.00),
+
+					   Vector2D(+0.00,-0.10) };
+
+			haz1.CatmullClark(3);
+
+			haz2.CatmullClark(3);
+
+		}
+
+		void Rajzol() {
+		    szem1.Rajzol();
+		    szem2.Rajzol();
+		    test.Rajzol();
+		    haz1.Rajzol();
+		    haz2.Rajzol();
+		}
+
+};
+
+
+Csiga csiga;
 CatmullRomGorbe palya;
 Poligon haz1, haz2;
 
 // Inicializacio, a program futasanak kezdeten, az OpenGL kontextus letrehozasa utan hivodik meg (ld. main() fv.)
 void onInitialization( ) {
 
-	Vector2D csigavp[13] = { Vector2D(+0.00,+0.50),
-							 Vector2D(-0.075,+0.525),
-							 szem1_eltolas,
-							 Vector2D(-0.20,+0.50),
-							 Vector2D(-0.15,+0.20),
-							 Vector2D(-0.30,-0.35),
-							 Vector2D(+0.00,-0.95),
-							 Vector2D(+0.30,-0.35),
-							 Vector2D(+0.15,+0.20),
-							 Vector2D(+0.20,+0.50),
-							 szem2_eltolas,
-							 Vector2D(+0.075,+0.525),
-							 Vector2D(+0.00,+0.50) };
-
-	float csigaszin[3] = {0.33333, 0.41961, 0.18431};
-	float csigavpszin[3] = {0,0,0};
-
-	csiga.Init(csigavp, csigaszin, csigavpszin);
-
 	Vector2D palyavp[13] = { Vector2D(+0.34,+0.68),
-							 Vector2D(-0.05,+0.69),
-							 Vector2D(-0.09,+0.19),
-							 Vector2D(-0.54,+0.40),
-							 Vector2D(-0.81,+0.18),
-							 Vector2D(-0.82,-0.29),
-							 Vector2D(-0.25,-0.42),
-							 Vector2D(+0.19,-0.83),
-							 Vector2D(+0.37,-0.28),
-							 Vector2D(+0.65,-0.31),
-							 Vector2D(+0.80,-0.10),
-							 Vector2D(+0.84,+0.51),
-							 Vector2D(+0.34,+0.68) };
+											 Vector2D(-0.05,+0.69),
+											 Vector2D(-0.09,+0.19),
+											 Vector2D(-0.54,+0.40),
+											 Vector2D(-0.81,+0.18),
+											 Vector2D(-0.82,-0.29),
+											 Vector2D(-0.25,-0.42),
+											 Vector2D(+0.19,-0.83),
+											 Vector2D(+0.37,-0.28),
+											 Vector2D(+0.65,-0.31),
+											 Vector2D(+0.80,-0.10),
+											 Vector2D(+0.84,+0.51),
+											 Vector2D(+0.34,+0.68) };
 
-	float palyaszin[3] = {0.23, 0.56, 0.80};
-	float palyavpszin[3] = {0.93, 0.90, 0.00};
+					float palyaszin[3] = {0.23, 0.56, 0.80};
+					float palyavpszin[3] = {0.93, 0.90, 0.00};
 
-	palya.Init(palyavp, palyaszin, palyavpszin);
-	palya.setVprajzolasa(true);
-
-	szem1.VezerlopontHozzaadasa(Vector2D(-0.00, +0.00));
-	szem1.VezerlopontHozzaadasa(Vector2D(-0.15, +0.00));
-	szem1.VezerlopontHozzaadasa(Vector2D(-0.15, +0.25));
-	szem1.VezerlopontHozzaadasa(Vector2D(+0.15, +0.25));
-	szem1.VezerlopontHozzaadasa(Vector2D(+0.15, +0.00));
-	szem1.VezerlopontHozzaadasa(Vector2D(-0.00, +0.00));
-
-	szem2.VezerlopontHozzaadasa(Vector2D(-0.00, +0.00));
-	szem2.VezerlopontHozzaadasa(Vector2D(-0.15, +0.00));
-	szem2.VezerlopontHozzaadasa(Vector2D(-0.15, +0.25));
-	szem2.VezerlopontHozzaadasa(Vector2D(+0.15, +0.25));
-	szem2.VezerlopontHozzaadasa(Vector2D(+0.15, +0.00));
-	szem2.VezerlopontHozzaadasa(Vector2D(-0.00, +0.00));
-
-
-	haz1.p = { Vector2D(+0.00,+0.00),
-
-			   Vector2D(-0.15,+0.10),
-			   Vector2D(-0.15,-0.10),
-			   Vector2D(-0.25,-0.35),
-			   Vector2D(+0.00,-0.75),
-			   Vector2D(+0.25,-0.35),
-			   Vector2D(+0.15,-0.10),
-			   Vector2D(+0.15,+0.10),
-
-			   Vector2D(+0.00,+0.00) };
-
-	haz2.p = { Vector2D(-0.00,-0.10),
-
-			   Vector2D(-0.05,+0.00),
-			   Vector2D(-0.05,-0.10),
-			   Vector2D(-0.15,-0.35),
-			   Vector2D(+0.00,-0.55),
-			   Vector2D(+0.15,-0.35),
-			   Vector2D(+0.05,-0.10),
-			   Vector2D(+0.05,+0.00),
-
-			   Vector2D(+0.00,-0.10) };
-
-	haz1.CatmullClark(3);
-
-	haz2.CatmullClark(3);
+					palya.Init(palyavp, palyaszin, palyavpszin);
+					palya.setVprajzolasa(true);
 
 }
 
@@ -738,12 +764,9 @@ void onDisplay( ) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // kepernyo torles
 
     // ...
-    szem1.Rajzol();
-    szem2.Rajzol();
-    csiga.Rajzol();
+
     palya.Rajzol();
-    haz1.Rajzol();
-    haz2.Rajzol();
+    csiga.Rajzol();
 
 
     glutSwapBuffers();     				// Buffercsere: rajzolas vege
