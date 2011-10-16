@@ -637,9 +637,10 @@ class Poligon {
 
 Szin Black(0.0,0.0,0.0);
 
-Vector2D szem1_eltolas = Vector2D(0.5,0.5);
+Vector2D szem1_eltolas = Vector2D(-0.35,+0.85);
+Vector2D szem2_eltolas = Vector2D(+0.35,+0.85);
 BezierGorbe szem1(Black,szem1_eltolas);
-BezierGorbe szem2(Black);
+BezierGorbe szem2(Black,szem2_eltolas);
 CatmullRomGorbe csiga;
 CatmullRomGorbe palya;
 Poligon haz1, haz2;
@@ -652,7 +653,7 @@ void onInitialization( ) {
 
 	Vector2D csigavp[13] = { Vector2D(+0.00,+0.50),
 							 Vector2D(-0.075,+0.525),
-							 Vector2D(-0.35,+0.85),
+							 szem1_eltolas,
 							 Vector2D(-0.20,+0.50),
 							 Vector2D(-0.15,+0.20),
 							 Vector2D(-0.30,-0.35),
@@ -660,7 +661,7 @@ void onInitialization( ) {
 							 Vector2D(+0.30,-0.35),
 							 Vector2D(+0.15,+0.20),
 							 Vector2D(+0.20,+0.50),
-							 Vector2D(+0.35,+0.85),
+							 szem2_eltolas,
 							 Vector2D(+0.075,+0.525),
 							 Vector2D(+0.00,+0.50) };
 
@@ -695,6 +696,13 @@ void onInitialization( ) {
 	szem1.VezerlopontHozzaadasa(Vector2D(+0.15, +0.25));
 	szem1.VezerlopontHozzaadasa(Vector2D(+0.15, +0.00));
 	szem1.VezerlopontHozzaadasa(Vector2D(-0.00, +0.00));
+
+	szem2.VezerlopontHozzaadasa(Vector2D(-0.00, +0.00));
+	szem2.VezerlopontHozzaadasa(Vector2D(-0.15, +0.00));
+	szem2.VezerlopontHozzaadasa(Vector2D(-0.15, +0.25));
+	szem2.VezerlopontHozzaadasa(Vector2D(+0.15, +0.25));
+	szem2.VezerlopontHozzaadasa(Vector2D(+0.15, +0.00));
+	szem2.VezerlopontHozzaadasa(Vector2D(-0.00, +0.00));
 
 
 	haz1.p = { Vector2D(+0.00,+0.00),
@@ -734,6 +742,7 @@ void onDisplay( ) {
 
     // ...
     szem1.Rajzol();
+    szem2.Rajzol();
     csiga.Rajzol();
     palya.Rajzol();
     haz1.Rajzol();
