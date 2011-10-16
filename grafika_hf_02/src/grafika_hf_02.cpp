@@ -540,6 +540,32 @@ class CatmullRomGorbe {
 			}
 		}
 
+		Vector2D sz(long int i) {
+			Vector2D result;
+			if ((i >= 0) && (i < CRSZSZ)) { result = this->szegmensek[i]; }
+			else {
+				if (i < 0) { result = szegmensek[CRSZSZ+i]; }
+				if (i >= CRVSZ) { result = szegmensek[i-CRSZSZ]; }
+			}
+			return result;
+		}
+
+		float getGorbehossz() {
+			Vector2D szegmens;
+			float hossz = 0;
+			for (long int i = 0; i < CRSZSZ; i++) {
+				szegmens = (sz(i) - sz(i+1));
+				hossz = hossz + szegmens.Length();
+			}
+			return hossz;
+		}
+
+		Vector2D setScale() {
+			float hossz = getGorbehossz();
+			float arany = hossz/100*4;
+			return Vector2D(arany, arany);
+		}
+
 		void Rajzol(float scale_x = 1.0, float scale_y = 1.0) {
 
 			LoadTa();
@@ -816,6 +842,10 @@ class Palya {
 			palyavonal.VezerloPontPakolo(x, y);
 		}
 
+		Vector2D setScale() {
+			return palyavonal.setScale();
+		}
+
 		void Rajzol() {
 			palyavonal.Rajzol();
 		}
@@ -839,7 +869,8 @@ void onDisplay( ) {
     // ...
 
     palya.Rajzol();
-    csiga.Rajzol(0.5, 0.5);
+
+    csiga.Rajzol(palya.setScale().X(), palya.setScale().Y());
 
 
     glutSwapBuffers();     				// Buffercsere: rajzolas vege
