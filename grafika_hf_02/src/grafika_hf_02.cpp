@@ -810,8 +810,6 @@ void onKeyboard(unsigned char key, int x, int y) {
 
 	if (key == 'd') glutPostRedisplay( ); 		// d beture rajzold ujra a kepet
 
-	Pixel2Vector(x, y);
-
 }
 
 // Eger esemenyeket lekezelo fuggveny
