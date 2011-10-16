@@ -411,8 +411,6 @@ class BezierGorbe {
 
 			getSzegmensek();
 
-
-
 			glMatrixMode(GL_MODELVIEW);
 			glLoadIdentity();
 
@@ -465,8 +463,8 @@ class CatmullRomGorbe {
 
 		float ta[CRVSZ];
 
-		float gorbeszin[3];
-		float vpszin[3];
+		Szin gorbeszin;
+		Szin vpszin;
 
 		bool vprajzolasa;
 
@@ -501,6 +499,16 @@ class CatmullRomGorbe {
 		 * v[i] = 0.5 * ((f[i]-f[i-1])/(t[i]-t[i-1]) + (f[i+1]-f[i])/(t[i+1]-t[i]))
 		 *
 		 */
+
+		CatmullRomGorbe() {
+			eltolas = Vector2D(0.0,0.0);
+			forgatas = false;
+		}
+
+		CatmullRomGorbe(Vector2D& _eltolas) {
+			eltolas = _eltolas;
+			forgatas = false;
+		}
 
 		void setVprajzolasa(bool _vprajzolasa) {
 			vprajzolasa = _vprajzolasa;
@@ -564,34 +572,18 @@ class CatmullRomGorbe {
 
 		Vector2D vi(int i) { return v[i]; }
 
-		void Init(Vector2D v[13], float _gorbeszin[3], float _vpszin[3]) {
+		void Init(Vector2D v[13], Szin _gorbeszin, Szin _vpszin) {
 
 			setVprajzolasa(false);
 
-			for (int i = 0; i < 3; i++) {
-				gorbeszin[i] = _gorbeszin[i];
-			}
-
-			for (int i = 0; i < 3; i++) {
-				vpszin[i] = _vpszin[i];
-			}
-
+			gorbeszin = _gorbeszin;
+			vpszin = _vpszin;
 
 			for (int i = 0; i < 13; i++) {
 				vp[i] = v[i];
 			}
 
 
-		}
-
-		CatmullRomGorbe() {
-			eltolas = Vector2D(0.0,0.0);
-			forgatas = false;
-		}
-
-		CatmullRomGorbe(Vector2D& _eltolas) {
-			eltolas = _eltolas;
-			forgatas = false;
 		}
 
 		void setEltolas(Vector2D& _eltolas) {
@@ -669,7 +661,7 @@ class CatmullRomGorbe {
 			if (forgatas) {	Forgatas(); }
 			glScalef(scale_x, scale_y, 0.0f);
 
-			glColor3f(gorbeszin[0],gorbeszin[1],gorbeszin[2]);
+			glColor3f(gorbeszin.R(),gorbeszin.G(),gorbeszin.B());
 			glPointSize(2.5f);
 			glBegin(GL_POINTS);
 			long int j = 0;
@@ -688,7 +680,7 @@ class CatmullRomGorbe {
 
 			if (vprajzolasa) {
 				/* A kontrollpontok kirajzolasa: */
-				glColor3f(vpszin[0],vpszin[1],vpszin[2]);
+				glColor3f(vpszin.R(),vpszin.G(),vpszin.B());
 				glPointSize(10.0f);
 				glBegin(GL_POINTS);
 				for (int i = 0; i < CRVSZ; i++) {
@@ -860,8 +852,8 @@ class Csiga {
 									Vector2D(+0.075,+0.525),
 									Vector2D(+0.00,+0.50) };
 
-			float testszin[3] = {0.33333, 0.41961, 0.18431};
-			float testvpszin[3] = {0,0,0};
+			Szin testszin(0.33333, 0.41961, 0.18431);
+			Szin testvpszin(0,0,0);
 
 			test.Init(testvp, testszin, testvpszin);
 			test.setEltolas(eltolas);
@@ -968,8 +960,9 @@ class Palya {
 										  Vector2D(+0.84,+0.51),
 										  Vector2D(+0.34,+0.68) };
 
-			float palyavonalszin[3] = {0.23, 0.56, 0.80};
-			float palyavonalvpszin[3] = {0.93, 0.90, 0.00};
+			Szin palyavonalszin(0.23, 0.56, 0.80);
+
+			Szin palyavonalvpszin(0.93, 0.90, 0.00);
 
 			palyavonal.Init(palyavonalvp, palyavonalszin, palyavonalvpszin);
 			palyavonal.setVprajzolasa(true);
@@ -1007,11 +1000,6 @@ bool zoom = false;
 
 void Animalas(float utolso_rajzolas, float time) {
 	float eltelt_ido = time - utolso_rajzolas;
-	float s = palya.getPalyahossz();
-	float sebesseg = s/5000;
-	float megtett_ut = eltelt_ido * sebesseg;
-	float szegmensmeret = s/CRSZSZ;
-	long int i = (long int)megtett_ut/szegmensmeret;
 	Vector2D r = palya.r(eltelt_ido*(long int)(CRSZSZ/5000));
 	Vector2D v = r/eltelt_ido;
 
