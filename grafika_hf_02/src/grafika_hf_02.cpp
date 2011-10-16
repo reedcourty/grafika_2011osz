@@ -276,10 +276,27 @@ const int BVSZ = BEZIER_VEZERLOPONTOK_SZAMA;
 const int CATMULLROM_VEZERLOPONTOK_SZAMA = 13;
 const int CRVSZ = CATMULLROM_VEZERLOPONTOK_SZAMA;
 
+class Szin {
+	private:
+		float r, g, b;
+	public:
+		Szin() {}
+		Szin(float _r, float _g, float _b) {
+			this->r = _r;
+			this->g = _g;
+			this->b = _b;
+		}
+
+		float R() { return this->r; }
+		float G() { return this->g; }
+		float B() { return this->b; }
+};
+
 class BezierGorbe {
 	private:
 		Vector2D vezerlopontok[BVSZ+1];
 		int mvpsz;
+		Szin korvonal_szin;
 
 		float B(int i, float t) {
 			float choose = 1;
@@ -290,8 +307,9 @@ class BezierGorbe {
 		}
 
 	public:
-		BezierGorbe() {
+		BezierGorbe(Szin& _korvonal_szin) {
 			this->mvpsz = 0;
+			this->korvonal_szin = _korvonal_szin;
 		}
 
 		Vector2D r(float t) {
@@ -326,7 +344,7 @@ class BezierGorbe {
 				glEnd();
 			#endif
 
-			glColor3f(0.72157f,0.62353f,0.61961f);
+			glColor3f(korvonal_szin.R(),korvonal_szin.G(),korvonal_szin.B());
 			glPointSize(2.5f);
 			glBegin(GL_POINTS);
 				for (float i = 0; i <= 1; i = i + 0.0001) {
@@ -602,8 +620,10 @@ class Poligon {
 
 };
 
-BezierGorbe szem1;
-BezierGorbe szem2;
+Szin Black(0.0,0.0,0.0);
+
+BezierGorbe szem1(Black);
+BezierGorbe szem2(Black);
 CatmullRomGorbe csiga;
 CatmullRomGorbe palya;
 Poligon haz1, haz2;
