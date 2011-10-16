@@ -411,12 +411,13 @@ class BezierGorbe {
 
 			getSzegmensek();
 
-			if (forgatas) {	Forgatas(); }
+
 
 			glMatrixMode(GL_MODELVIEW);
 			glLoadIdentity();
 
 			glTranslatef(eltolas.X(), eltolas.Y(), 0.f);
+			if (forgatas) {	Forgatas(); }
 			glScalef(scale_x, scale_y, 0.0f);
 
 			#if defined(DEBUG)
@@ -662,13 +663,11 @@ class CatmullRomGorbe {
 
 			getSzegmensek();
 
-			if (forgatas) {	Forgatas(); }
-
 			glMatrixMode(GL_MODELVIEW);
 			glLoadIdentity();
 			glTranslatef(eltolas.X(), eltolas.Y(), 0.f);
+			if (forgatas) {	Forgatas(); }
 			glScalef(scale_x, scale_y, 0.0f);
-
 
 			glColor3f(gorbeszin[0],gorbeszin[1],gorbeszin[2]);
 			glPointSize(2.5f);
@@ -929,6 +928,10 @@ class Csiga {
 			szem2.setEltolas(eltolas);
 		}
 
+		Vector2D getEltolas() {
+			return eltolas;
+		}
+
 		void setVvektor(Vector2D v) {
 			v_vektor = v;
 		}
@@ -1000,6 +1003,8 @@ class Palya {
 Csiga csiga;
 Palya palya;
 
+bool zoom = false;
+
 void Animalas(float utolso_rajzolas, float time) {
 	float eltelt_ido = time - utolso_rajzolas;
 	float s = palya.getPalyahossz();
@@ -1026,9 +1031,13 @@ void onDisplay( ) {
 
     // ...
 
+    if (zoom) {
+    	glMatrixMode(GL_PROJECTION);
+    	glLoadIdentity();
+    	gluOrtho2D(csiga.getEltolas().X()-0.5, csiga.getEltolas().X()+0.5, csiga.getEltolas().Y()-0.5, csiga.getEltolas().Y()+0.5);
+    }
+
     palya.Rajzol();
-    //Vector2D eltolas = palya.getPalyapont(0);
-    //csiga.setEltolas(eltolas);
     csiga.Rajzol(palya.setScale().X(), palya.setScale().Y());
 
     glutSwapBuffers();     				// Buffercsere: rajzolas vege
@@ -1043,6 +1052,9 @@ void onKeyboard(unsigned char key, int x, int y) {
 	#endif
 
 	if (key == 'd') glutPostRedisplay( ); 		// d beture rajzold ujra a kepet
+	if (key == 'z') {
+		zoom = !zoom;
+	}
 
 }
 
