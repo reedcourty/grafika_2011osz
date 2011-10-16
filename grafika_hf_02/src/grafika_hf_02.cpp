@@ -295,9 +295,11 @@ class Szin {
 class BezierGorbe {
 	private:
 		Vector2D vezerlopontok[BVSZ+1];
+		Vector2D szegmensek[10000];
 		int mvpsz;
 		Szin korvonal_szin;
 		Vector2D eltolas;
+
 
 		float B(int i, float t) {
 			float choose = 1;
@@ -342,7 +344,21 @@ class BezierGorbe {
 			}
 		}
 
+		void getSzegmensek() {
+			long int j = 0;
+			for (float i = 0; i <= 1; i = i + 0.0001) {
+				szegmensek[j] = Vector2D(r(i).X(), r(i).Y());
+				j++;
+			}
+		}
+
+		void Kitolt() {
+
+		}
+
 		void Rajzol(float scale_x = 1.0, float scale_y = 1.0) {
+
+			getSzegmensek();
 
 			glLoadIdentity();
 
@@ -364,8 +380,8 @@ class BezierGorbe {
 			glColor3f(korvonal_szin.R(),korvonal_szin.G(),korvonal_szin.B());
 			glPointSize(2.5f);
 			glBegin(GL_POINTS);
-				for (float i = 0; i <= 1; i = i + 0.0001) {
-					glVertex2f(r(i).X(), r(i).Y());
+				for (long int i = 0; i < 10000; i++) {
+					glVertex2f(szegmensek[i].X(), szegmensek[i].Y());
 				}
 			glEnd();
 
