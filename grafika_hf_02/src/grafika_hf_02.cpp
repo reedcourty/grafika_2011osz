@@ -900,6 +900,14 @@ class Palya {
 			return palyavonal.sz(i);
 		}
 
+		float getPalyahossz() {
+			return palyavonal.getGorbehossz();
+		}
+
+		Vector2D r(long int i) {
+			return palyavonal.sz(i);
+		}
+
 		void Rajzol() {
 			palyavonal.Rajzol();
 		}
@@ -908,10 +916,15 @@ class Palya {
 Csiga csiga;
 Palya palya;
 
+void Animalas(float utolso_rajzolas, float time) {
+	float eltelt_ido = time - utolso_rajzolas;
+	float s = palya.getPalyahossz();
+	Vector2D r = palya.r(eltelt_ido);
+	csiga.setEltolas(r);
+}
+
 // Inicializacio, a program futasanak kezdeten, az OpenGL kontextus letrehozasa utan hivodik meg (ld. main() fv.)
 void onInitialization( ) {
-
-
 
 }
 
@@ -923,13 +936,11 @@ void onDisplay( ) {
     // ...
 
     palya.Rajzol();
-    Vector2D eltolas = palya.getPalyapont(0);
-    csiga.setEltolas(eltolas);
+    //Vector2D eltolas = palya.getPalyapont(0);
+    //csiga.setEltolas(eltolas);
     csiga.Rajzol(palya.setScale().X(), palya.setScale().Y());
 
-
     glutSwapBuffers();     				// Buffercsere: rajzolas vege
-
 }
 
 // Billentyuzet esemenyeket lekezelo fuggveny
@@ -953,10 +964,17 @@ void onMouse(int button, int state, int x, int y) {
 }
 
 // `Idle' esemenykezelo, jelzi, hogy az ido telik, az Idle esemenyek frekvenciajara csak a 0 a garantalt minimalis ertek
-void onIdle( ) {
-	//long time = glutGet(GLUT_ELAPSED_TIME);		// program inditasa ota eltelt ido
 
-	//glutPostRedisplay();
+float time = 0;
+
+void onIdle( ) {
+	float utolso_rajzolas = time;
+
+	long time = glutGet(GLUT_ELAPSED_TIME);		// program inditasa ota eltelt ido
+
+	Animalas(utolso_rajzolas, time);
+
+	glutPostRedisplay();
 
 }
 
