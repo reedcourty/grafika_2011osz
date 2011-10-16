@@ -646,10 +646,7 @@ CatmullRomGorbe palya;
 Poligon haz1, haz2;
 
 // Inicializacio, a program futasanak kezdeten, az OpenGL kontextus letrehozasa utan hivodik meg (ld. main() fv.)
-void onInitialization( ) { 
-
-	// TODO: Megnezni, hogy mekkora lehet a vezerlopontok tombje
-	// TODO: Limitalni, hogy nem csorduljon tul a vezerlopontok tombje
+void onInitialization( ) {
 
 	Vector2D csigavp[13] = { Vector2D(+0.00,+0.50),
 							 Vector2D(-0.075,+0.525),
