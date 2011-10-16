@@ -297,6 +297,7 @@ class BezierGorbe {
 		Vector2D vezerlopontok[BVSZ+1];
 		int mvpsz;
 		Szin korvonal_szin;
+		Vector2D eltolas;
 
 		float B(int i, float t) {
 			float choose = 1;
@@ -310,6 +311,13 @@ class BezierGorbe {
 		BezierGorbe(Szin& _korvonal_szin) {
 			this->mvpsz = 0;
 			this->korvonal_szin = _korvonal_szin;
+			this->eltolas = Vector2D(0.0, 0.0);
+		}
+
+		BezierGorbe(Szin& _korvonal_szin, Vector2D& _eltolas) {
+			this->mvpsz = 0;
+			this->korvonal_szin = _korvonal_szin;
+			this->eltolas = _eltolas;
 		}
 
 		Vector2D r(float t) {
@@ -332,6 +340,10 @@ class BezierGorbe {
 		}
 
 		void Rajzol() {
+
+			glLoadIdentity();
+			glTranslatef(eltolas.X(), eltolas.Y(), 0.f);
+
 			#if defined(DEBUG)
 				/* A kontrollpontok kirajzolasa: */
 				glColor3f(0.5f,1.0f,0.56f);
@@ -351,6 +363,9 @@ class BezierGorbe {
 					glVertex2f(r(i).X(), r(i).Y());
 				}
 			glEnd();
+
+			glLoadIdentity();
+
 		}
 
 
@@ -622,7 +637,8 @@ class Poligon {
 
 Szin Black(0.0,0.0,0.0);
 
-BezierGorbe szem1(Black);
+Vector2D szem1_eltolas = Vector2D(0.5,0.5);
+BezierGorbe szem1(Black,szem1_eltolas);
 BezierGorbe szem2(Black);
 CatmullRomGorbe csiga;
 CatmullRomGorbe palya;
