@@ -1036,6 +1036,11 @@ void onDisplay( ) {
     	glLoadIdentity();
     	gluOrtho2D(csiga.getEltolas().X()-0.5, csiga.getEltolas().X()+0.5, csiga.getEltolas().Y()-0.5, csiga.getEltolas().Y()+0.5);
     }
+    else {
+    	glMatrixMode(GL_PROJECTION);
+    	glLoadIdentity();
+    	gluOrtho2D(-1,1,-1,1);
+    }
 
     palya.Rajzol();
     csiga.Rajzol(palya.setScale().X(), palya.setScale().Y());
