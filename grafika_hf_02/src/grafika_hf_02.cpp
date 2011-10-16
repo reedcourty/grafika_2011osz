@@ -342,9 +342,11 @@ class BezierGorbe {
 			}
 		}
 
-		void Rajzol() {
+		void Rajzol(float scale_x = 1.0, float scale_y = 1.0) {
 
 			glLoadIdentity();
+
+			glScalef(scale_x, scale_y, 0.0f);
 			glTranslatef(eltolas.X(), eltolas.Y(), 0.f);
 
 			#if defined(DEBUG)
@@ -498,12 +500,15 @@ class CatmullRomGorbe {
 
 		CatmullRomGorbe() {}
 
-		void Rajzol() {
+		void Rajzol(float scale_x = 1.0, float scale_y = 1.0) {
 
 			LoadTa();
 			LoadV();
 			LoadA();
 			LoadB();
+
+			glLoadIdentity();
+			glScalef(scale_x, scale_y, 0.0f);
 
 			glColor3f(gorbeszin[0],gorbeszin[1],gorbeszin[2]);
 			glPointSize(2.5f);
@@ -525,6 +530,8 @@ class CatmullRomGorbe {
 				}
 				glEnd();
 			}
+
+			glLoadIdentity();
 
 		}
 
@@ -570,8 +577,11 @@ class Poligon {
 			aktualispszam = HAZPONT;
 		}
 
-		void Rajzol() {
+		void Rajzol(float scale_x = 1.0, float scale_y = 1.0) {
 			glColor3f(0.20f,0.20f,0.20f);
+
+			glLoadIdentity();
+			glScalef(scale_x, scale_y, 0.0f);
 
 
 			#if defined(DEBUG)
@@ -593,6 +603,8 @@ class Poligon {
 				glVertex2f(p[i+1].X(), p[i+1].Y());
 			}
 			glEnd();
+
+			glLoadIdentity();
 		}
 
 		Vector2D r(int i) {
@@ -718,12 +730,12 @@ class Csiga {
 
 		}
 
-		void Rajzol() {
-		    szem1.Rajzol();
-		    szem2.Rajzol();
-		    test.Rajzol();
-		    haz1.Rajzol();
-		    haz2.Rajzol();
+		void Rajzol(float scale_x = 1.0, float scale_y = 1.0) {
+		    szem1.Rajzol(scale_x, scale_y);
+		    szem2.Rajzol(scale_x, scale_y);
+		    test.Rajzol(scale_x, scale_y);
+		    haz1.Rajzol(scale_x, scale_y);
+		    haz2.Rajzol(scale_x, scale_y);
 		}
 
 };
@@ -781,7 +793,7 @@ void onDisplay( ) {
     // ...
 
     palya.Rajzol();
-    csiga.Rajzol();
+    csiga.Rajzol(0.5, 0.5);
 
 
     glutSwapBuffers();     				// Buffercsere: rajzolas vege
