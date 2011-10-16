@@ -255,6 +255,8 @@ class Vector3D {
 
 };
 
+const float pi = 3.14159265358979323846;
+
 float Szog(Vector2D v1, Vector2D v2) {
 	float skalarszorzat = v1*v2;
 	double cosa = skalarszorzat/(v1.Length()*v2.Length());
@@ -312,6 +314,8 @@ class BezierGorbe {
 		Vector2D eltolas;
 		Vector2D v_vektor;
 
+		bool forgatas;
+
 		float B(int i, float t) {
 			float choose = 1;
 			for (int j = 1; j <= i; j++) {
@@ -322,18 +326,22 @@ class BezierGorbe {
 
 	public:
 
-		BezierGorbe() {}
+		BezierGorbe() {
+			forgatas = false;
+		}
 
 		BezierGorbe(Szin& _korvonal_szin) {
 			this->mvpsz = 0;
 			this->korvonal_szin = _korvonal_szin;
 			this->eltolas = Vector2D(0.0, 0.0);
+			forgatas = false;
 		}
 
 		BezierGorbe(Szin& _korvonal_szin, Vector2D& _eltolas) {
 			this->mvpsz = 0;
 			this->korvonal_szin = _korvonal_szin;
 			this->eltolas = _eltolas;
+			forgatas = false;
 		}
 
 		Vector2D r(float t) {
@@ -381,6 +389,10 @@ class BezierGorbe {
 			eltolas = _eltolas;
 		}
 
+		void setForgatas(bool _forgatas) {
+			forgatas = _forgatas;
+		}
+
 		void Forgatas() {
 			Vector2D y_tengely = Vector2D(0,1.0);
 			double szog = Szog(y_tengely, v_vektor);
@@ -399,15 +411,13 @@ class BezierGorbe {
 
 			getSzegmensek();
 
-			Forgatas();
+			if (forgatas) {	Forgatas(); }
 
 			glMatrixMode(GL_MODELVIEW);
 			glLoadIdentity();
 
 			glTranslatef(eltolas.X(), eltolas.Y(), 0.f);
 			glScalef(scale_x, scale_y, 0.0f);
-
-
 
 			#if defined(DEBUG)
 				/* A kontrollpontok kirajzolasa: */
@@ -425,7 +435,13 @@ class BezierGorbe {
 			glPointSize(2.5f);
 			glBegin(GL_POINTS);
 				for (long int i = 0; i < SZSZ; i++) {
-					glVertex2f(forgatott_szegmensek[i].X(), forgatott_szegmensek[i].Y());
+					if (forgatas) {
+						glVertex2f(forgatott_szegmensek[i].X(), forgatott_szegmensek[i].Y());
+					}
+					else {
+						glVertex2f(szegmensek[i].X(), szegmensek[i].Y());
+					}
+
 				}
 			glEnd();
 
@@ -868,6 +884,8 @@ class Csiga {
 
 			szem1.setEltolas(eltolas);
 			szem2.setEltolas(eltolas);
+			szem1.setForgatas(false);
+			szem2.setForgatas(false);
 
 			haz1.p = { Vector2D(+0.00,+0.00),
 
@@ -918,6 +936,7 @@ class Csiga {
 		void Rajzol(float scale_x = 1.0, float scale_y = 1.0) {
 			szem1.setVvektor(v_vektor);
 		    szem1.Rajzol(scale_x, scale_y);
+		    szem1.setVvektor(v_vektor);
 		    szem2.Rajzol(scale_x, scale_y);
 		    test.setVvektor(v_vektor);
 		    test.Rajzol(scale_x, scale_y);
