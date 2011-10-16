@@ -728,33 +728,48 @@ class Csiga {
 
 };
 
+class Palya {
+	private:
+		CatmullRomGorbe palyavonal;
+	public:
+		Palya() {
+			Vector2D palyavonalvp[13] = { Vector2D(+0.34,+0.68),
+									 	  Vector2D(-0.05,+0.69),
+									 	  Vector2D(-0.09,+0.19),
+										  Vector2D(-0.54,+0.40),
+										  Vector2D(-0.81,+0.18),
+										  Vector2D(-0.82,-0.29),
+										  Vector2D(-0.25,-0.42),
+										  Vector2D(+0.19,-0.83),
+										  Vector2D(+0.37,-0.28),
+										  Vector2D(+0.65,-0.31),
+										  Vector2D(+0.80,-0.10),
+										  Vector2D(+0.84,+0.51),
+										  Vector2D(+0.34,+0.68) };
+
+			float palyavonalszin[3] = {0.23, 0.56, 0.80};
+			float palyavonalvpszin[3] = {0.93, 0.90, 0.00};
+
+			palyavonal.Init(palyavonalvp, palyavonalszin, palyavonalvpszin);
+			palyavonal.setVprajzolasa(true);
+		}
+
+		void VezerloPontPakolo(int x, int y) {
+			palyavonal.VezerloPontPakolo(x, y);
+		}
+
+		void Rajzol() {
+			palyavonal.Rajzol();
+		}
+};
 
 Csiga csiga;
-CatmullRomGorbe palya;
-Poligon haz1, haz2;
+Palya palya;
 
 // Inicializacio, a program futasanak kezdeten, az OpenGL kontextus letrehozasa utan hivodik meg (ld. main() fv.)
 void onInitialization( ) {
 
-	Vector2D palyavp[13] = { Vector2D(+0.34,+0.68),
-											 Vector2D(-0.05,+0.69),
-											 Vector2D(-0.09,+0.19),
-											 Vector2D(-0.54,+0.40),
-											 Vector2D(-0.81,+0.18),
-											 Vector2D(-0.82,-0.29),
-											 Vector2D(-0.25,-0.42),
-											 Vector2D(+0.19,-0.83),
-											 Vector2D(+0.37,-0.28),
-											 Vector2D(+0.65,-0.31),
-											 Vector2D(+0.80,-0.10),
-											 Vector2D(+0.84,+0.51),
-											 Vector2D(+0.34,+0.68) };
 
-					float palyaszin[3] = {0.23, 0.56, 0.80};
-					float palyavpszin[3] = {0.93, 0.90, 0.00};
-
-					palya.Init(palyavp, palyaszin, palyavpszin);
-					palya.setVprajzolasa(true);
 
 }
 
