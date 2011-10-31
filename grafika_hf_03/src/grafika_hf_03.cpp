@@ -72,6 +72,99 @@ using namespace std;
 #if defined(DEBUG)
 #endif
 
+class Vector3D {
+	// Dr. Szirmay-Kalos L. - Haromdimenzios grafika, ... 35. old. alapjan
+	private:
+		float x, y, z;
+	public:
+		Vector3D() { x = y = z = 0.00; }
+
+		Vector3D(float _x, float _y, float _z) {
+			this->x = _x;
+			this->y = _y;
+			this->z = _z;
+		}
+
+		Vector3D operator+(const Vector3D& v) {
+			float X = this->x + v.x;
+			float Y = this->y + v.y;
+			float Z = this->z + v.z;
+			return Vector3D(X, Y, Z);
+		}
+
+		void operator+=(const Vector3D& v) {
+			this->x+=v.x;
+			this->y+=v.y;
+			this->z+=v.z;
+		}
+
+		Vector3D operator-(const Vector3D& v) {
+			float X = this->x - v.x;
+			float Y = this->y - v.y;
+			float Z = this->z - v.z;
+			return Vector3D(X, Y, Z);
+		}
+
+		void operator-=(const Vector3D& v) {
+			this->x-=v.x;
+			this->y-=v.y;
+			this->y-=v.z;
+		}
+
+		Vector3D operator*(float f) {
+			return Vector3D(this->x * f, this->y * f, this->z * f);
+		}
+
+		void operator*=(float f) {
+			this->x*=f;
+			this->y*=f;
+			this->z*=f;
+		}
+
+		float operator*(const Vector3D& v) {
+			return (this->x * v.x + this->y * v.y + this->z * v.z);
+		}
+
+		Vector3D operator%(const Vector3D& v) {
+			return Vector3D(this->y * v.z - this->z * v.y, this->z * v.x - this->x * v.z, this->x * v.y - this->y * v.x);
+		}
+
+		Vector3D operator/(float f) {
+			return Vector3D(x/f, y/f, z/f);
+		}
+
+		float Length() {
+			return (float)sqrt(this->x * this->x + this->y * this->y + this->z * this->z);
+		}
+
+		void Normalize() {
+			float len = Length();
+			if (len < 0.000001f) {
+				this->x = 1;
+				this->y = 0;
+				this->z = 0;
+			}
+			else {
+				x /= len;
+				y /= len;
+				z /= len;
+			}
+		}
+
+		Vector3D UnitVector() {
+			Vector3D r = * this;
+			r.Normalize();
+			return r;
+		}
+
+		float& X() { return this->x; }
+
+		float& Y() { return this->y; }
+
+		float& Z() { return this->z; }
+
+};
+
 // Inicializacio, a program futasanak kezdeten, az OpenGL kontextus letrehozasa utan hivodik meg (ld. main() fv.)
 void onInitialization( ) { 
 }
