@@ -1,9 +1,6 @@
 .project
 .cproject
-grafika_hf_01/Debug
-grafika_hf_01/.settings
-grafika_hf_02/Debug
-grafika_hf_02/.settings
-grafika_hf_03/Debug
-grafika_hf_03/.settings
+.settings
+*/Debug/*
+
 
