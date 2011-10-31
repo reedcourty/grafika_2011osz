@@ -165,6 +165,22 @@ class Vector3D {
 
 };
 
+class Color {
+	private:
+		float r, g, b;
+	public:
+		Color() {}
+		Color(float _r, float _g, float _b) {
+			this->r = _r;
+			this->g = _g;
+			this->b = _b;
+		}
+
+		float R() { return this->r; }
+		float G() { return this->g; }
+		float B() { return this->b; }
+};
+
 // Inicializacio, a program futasanak kezdeten, az OpenGL kontextus letrehozasa utan hivodik meg (ld. main() fv.)
 void onInitialization( ) { 
 }
