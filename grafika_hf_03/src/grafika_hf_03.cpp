@@ -72,6 +72,9 @@ using namespace std;
 #if defined(DEBUG)
 #endif
 
+const int WIDTH = 600;
+const int HEIGHT = 600;
+
 class Vector3D {
 	// Dr. Szirmay-Kalos L. - Haromdimenzios grafika, ... 35. old. alapjan
 	private:
@@ -261,6 +264,26 @@ class Color {
 		float B() { return this->b; }
 };
 
+class Bitmap {
+	private:
+		Color pixels[WIDTH][HEIGHT];
+	public:
+		Bitmap() {
+			for (int x=0; x<WIDTH; x++) {
+				for (int y=0; y<HEIGHT; y++) {
+					pixels[x][y] = Color(1.0,1.0,1.0);
+				}
+			}
+		}
+
+		void PutBitmap() {
+			glDrawPixels(WIDTH, HEIGHT, GL_RGB, GL_FLOAT, pixels);
+		}
+
+};
+
+Bitmap bm;
+
 // Inicializacio, a program futasanak kezdeten, az OpenGL kontextus letrehozasa utan hivodik meg (ld. main() fv.)
 void onInitialization( ) {
 }
@@ -270,7 +293,7 @@ void onDisplay( ) {
     glClearColor(0.1f, 0.2f, 0.3f, 1.0f);		// torlesi szin beallitasa
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // kepernyo torles
 
-    // ...
+    bm.PutBitmap();
 
     glutSwapBuffers();     				// Buffercsere: rajzolas vege
 
