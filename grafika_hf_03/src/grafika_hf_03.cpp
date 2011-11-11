@@ -176,13 +176,93 @@ class Color {
 			this->b = _b;
 		}
 
+		Color operator+(const Color &c) {
+			return Color(this->r+c.r, this->g+c.g, this->b+c.b);
+		}
+
+		void operator+=(const Color &c) {
+			this->r+=c.r;
+			this->g+=c.g;
+			this->b+=c.b;
+		}
+
+		Color operator+(const float c) {
+			return Color(this->r+c, this->g+c, this->b+c);
+		}
+
+		void operator+=(const float c) {
+			this->r+=c;
+			this->g+=c;
+			this->b+=c;
+		}
+
+		Color operator-(const Color &c) {
+			return Color(this->r-c.r, this->g-c.g, this->b-c.b);
+		}
+
+		void operator-=(const Color &c) {
+			this->r-=c.r;
+			this->g-=c.g;
+			this->b-=c.b;
+		}
+
+		Color operator-(const float c) {
+			return Color(this->r-c, this->g-c, this->b-c);
+		}
+
+		void operator-=(const float c) {
+			this->r-=c;
+			this->g-=c;
+			this->b-=c;
+		}
+
+		Color operator*(const Color &c) {
+			return Color(this->r*c.r, this->g*c.g, this->b*c.b);
+		}
+
+		void operator*=(const Color &c) {
+			this->r*=c.r;
+			this->g*=c.g;
+			this->b*=c.b;
+		}
+
+		Color operator*(const float c) {
+			return Color(this->r*c, this->g*c, this->b*c);
+		}
+
+		void operator*=(const float c) {
+			this->r*=c;
+			this->g*=c;
+			this->b*=c;
+		}
+
+		Color operator/(const Color &c) {
+			return Color(this->r/c.r, this->g/c.g, this->b/c.b);
+		}
+
+		void operator/=(const Color &c) {
+			this->r/=c.r;
+			this->g/=c.g;
+			this->b/=c.b;
+		}
+
+		Color operator/(const float c) {
+			return Color(this->r/c, this->g/c, this->b/c);
+		}
+
+		void operator/=(const float c) {
+			this->r/=c;
+			this->g/=c;
+			this->b/=c;
+		}
+
 		float R() { return this->r; }
 		float G() { return this->g; }
 		float B() { return this->b; }
 };
 
 // Inicializacio, a program futasanak kezdeten, az OpenGL kontextus letrehozasa utan hivodik meg (ld. main() fv.)
-void onInitialization( ) { 
+void onInitialization( ) {
 }
 
 // Rajzolas, ha az alkalmazas ablak ervenytelenne valik, akkor ez a fuggveny hivodik meg
