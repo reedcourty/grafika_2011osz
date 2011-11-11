@@ -290,6 +290,14 @@ class Ray {
 		Ray();
 };
 
+class Light {
+	private:
+		Color szin;
+		Vector3D pont;
+	public:
+		Light();
+};
+
 Bitmap bm;
 
 // Inicializacio, a program futasanak kezdeten, az OpenGL kontextus letrehozasa utan hivodik meg (ld. main() fv.)
