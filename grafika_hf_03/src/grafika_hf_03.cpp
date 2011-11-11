@@ -305,6 +305,15 @@ class Camera {
 		Camera();
 };
 
+class Object {
+	private:
+		Color szin;
+	public:
+		Object();
+
+		virtual double Intersect(Ray &r) = 0;
+};
+
 Bitmap bm;
 
 // Inicializacio, a program futasanak kezdeten, az OpenGL kontextus letrehozasa utan hivodik meg (ld. main() fv.)
