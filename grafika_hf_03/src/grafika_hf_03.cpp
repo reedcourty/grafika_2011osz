@@ -282,6 +282,14 @@ class Bitmap {
 
 };
 
+class Ray {
+	private:
+		Vector3D kezdo_pont;
+		Vector3D irany_vektor;
+	public:
+		Ray();
+};
+
 Bitmap bm;
 
 // Inicializacio, a program futasanak kezdeten, az OpenGL kontextus letrehozasa utan hivodik meg (ld. main() fv.)
