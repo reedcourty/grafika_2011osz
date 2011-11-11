@@ -298,6 +298,13 @@ class Light {
 		Light();
 };
 
+class Camera {
+	private:
+		Vector3D pont;
+	public:
+		Camera();
+};
+
 Bitmap bm;
 
 // Inicializacio, a program futasanak kezdeten, az OpenGL kontextus letrehozasa utan hivodik meg (ld. main() fv.)
