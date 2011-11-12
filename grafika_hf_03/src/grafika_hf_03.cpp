@@ -75,6 +75,8 @@ using namespace std;
 const int WIDTH = 600;
 const int HEIGHT = 600;
 
+const int OBJECTSNUM = 1;
+
 class Vector3D {
 	// Dr. Szirmay-Kalos L. - Haromdimenzios grafika, ... 35. old. alapjan
 	private:
@@ -265,9 +267,9 @@ class Color {
 };
 
 class Bitmap {
-	private:
-		Color pixels[WIDTH][HEIGHT];
 	public:
+		Color pixels[WIDTH][HEIGHT];
+
 		Bitmap() {
 			for (int x=0; x<WIDTH; x++) {
 				for (int y=0; y<HEIGHT; y++) {
@@ -287,7 +289,19 @@ class Ray {
 		Vector3D kezdo_pont;
 		Vector3D irany_vektor;
 	public:
-		Ray();
+		Ray() {
+			kezdo_pont = Vector3D(0,0,0);
+			irany_vektor = Vector3D(0,0,0);
+		}
+
+		Vector3D getKezdo_pont() { return this->kezdo_pont; }
+		Vector3D getIrany_vektor() { return this->irany_vektor; }
+
+		void setKezdo_pont(Vector3D v) { this->kezdo_pont = v; }
+		void setIrany_vektor(Vector3D v) {
+			this->irany_vektor = v;
+			this->irany_vektor.Normalize();
+		}
 
 		float& Px() { return this->kezdo_pont.X(); }
 		float& Py() { return this->kezdo_pont.Y(); }
@@ -311,16 +325,18 @@ class Camera {
 	private:
 		Vector3D pont;
 	public:
-		Camera();
+		Camera() {this->pont = Vector3D(0,0,-200);}
+
+	Vector3D getPont() { return this->pont; }
 };
 
 class Object {
-	private:
+	protected:
 		Color szin;
 	public:
-		Object();
-
 		virtual double Intersect(Ray &r) = 0;
+
+		Color getSzin() { return this->szin; }
 };
 
 class TheOneRing : public Object {
@@ -331,6 +347,13 @@ class TheOneRing : public Object {
 		Vector3D kozeppont;
 
 	public:
+		TheOneRing(double _radios, double _vastagsag, double _magassag, Vector3D _kozeppont) {
+			this->radius = _radios;
+			this->vastagsag = _vastagsag;
+			this->magassag = _magassag;
+			this->kozeppont = _kozeppont;
+		}
+
 		double Intersect(Ray &r) {
 
 			double a = pow(r.Vx(),2) + pow(r.Vy(),2);
@@ -343,18 +366,68 @@ class TheOneRing : public Object {
 		}
 };
 
+class Scene {
+	private:
+		Object* objects[OBJECTSNUM];
 
+		int obj_szam;
+	public:
+		Scene() { obj_szam = 0; }
+
+		Camera cam;
+
+		void addObject(Object* obj) {
+			this->objects[obj_szam] = obj;
+			this->obj_szam++;
+		}
+
+		Color Trace(Ray& r) {
+			double t;
+			Object* o;
+			Color c = Color(0,0,0);
+			for (int obj = 0; obj<OBJECTSNUM; obj++) {
+				o = this->objects[obj];
+				t = o->Intersect(r);
+				if (t > 0) {
+					c = o->getSzin();
+				}
+				else {
+
+				}
+			}
+			return c;
+		}
+
+
+};
+
+TheOneRing tor(0.05, 0.05, 0.05, Vector3D(0.5, 0.5, 0.5));
+Scene sc;
 
 Bitmap bm;
 
 // Inicializacio, a program futasanak kezdeten, az OpenGL kontextus letrehozasa utan hivodik meg (ld. main() fv.)
 void onInitialization( ) {
+	sc.addObject(&tor);
 }
 
 // Rajzolas, ha az alkalmazas ablak ervenytelenne valik, akkor ez a fuggveny hivodik meg
 void onDisplay( ) {
     glClearColor(0.1f, 0.2f, 0.3f, 1.0f);		// torlesi szin beallitasa
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // kepernyo torles
+
+    for (int i = 0; i < HEIGHT; i++) {
+    	for (int j = 0; j < WIDTH; j++) {
+
+    		Ray ray;
+    		Vector3D kezdo_pont = Vector3D((j - WIDTH/2), (i - HEIGHT/2), 0);
+    		Vector3D irany_vektor = ray.getKezdo_pont() - sc.cam.getPont();
+    		ray.setKezdo_pont(kezdo_pont);
+    		ray.setIrany_vektor(irany_vektor);
+    		bm.pixels[i][j] = sc.Trace(ray);
+    	}
+    }
+
 
     bm.PutBitmap();
 
