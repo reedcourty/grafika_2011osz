@@ -288,6 +288,15 @@ class Ray {
 		Vector3D irany_vektor;
 	public:
 		Ray();
+
+		float& Px() { return this->kezdo_pont.X(); }
+		float& Py() { return this->kezdo_pont.Y(); }
+		float& Pz() { return this->kezdo_pont.Z(); }
+
+		float& Vx() { return this->irany_vektor.X(); }
+		float& Vy() { return this->irany_vektor.Y(); }
+		float& Vz() { return this->irany_vektor.Z(); }
+
 };
 
 class Light {
@@ -313,6 +322,28 @@ class Object {
 
 		virtual double Intersect(Ray &r) = 0;
 };
+
+class TheOneRing : public Object {
+	private:
+		double radius;
+		double vastagsag;
+		double magassag;
+		Vector3D kozeppont;
+
+	public:
+		double Intersect(Ray &r) {
+
+			double a = pow(r.Vx(),2) + pow(r.Vy(),2);
+			double b = 2*r.Px()*r.Vx()+2*r.Py()*r.Vy();
+			double c = pow(r.Px(),2) + pow(r.Py(),2) - pow(radius,2);
+
+			double d = pow(b,2) - 4*a*c;
+
+			return d;
+		}
+};
+
+
 
 Bitmap bm;
 
