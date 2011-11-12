@@ -352,6 +352,7 @@ class TheOneRing : public Object {
 			this->vastagsag = _vastagsag;
 			this->magassag = _magassag;
 			this->kozeppont = _kozeppont;
+			this->szin = Color(1.00, 0.00, 0.00);
 		}
 
 		double Intersect(Ray &r) {
@@ -362,9 +363,74 @@ class TheOneRing : public Object {
 
 			double d = pow(b,2) - 4*a*c;
 
+			/*
+			double t1 = (-b + sqrt(pow(b,2)-4*a*c)) / (2*a);
+			double t2 = (-b - sqrt(pow(b,2)-4*a*c)) / (2*a);
+
+			Vector3D p = Vector3D(r.getKezdo_pont() + r.getIrany_vektor()*t1);
+			//cout << r.getIrany_vektor().Y() << " ";
+			if ((p.Y()>magassag) && (p.Y()<0)) {
+				d = -1;
+			}
+			*/
+
 			return d;
 		}
 };
+
+class Sphere : public Object {
+	public:
+		Vector3D kozeppont;
+		double radius;
+
+		Sphere(Vector3D _kozeppont = Vector3D(0,0,0), double _radius = 1) {
+			this->kozeppont = _kozeppont;
+			this->radius = _radius;
+			this->szin = Color(0.0,0.0,1.0);
+		}
+
+		double Intersect(Ray &r) {
+			double dx = r.Vx();
+			double dy = r.Vy();
+			double dz = r.Vz();
+
+			double x0 = r.Px();
+			double y0 = r.Py();
+			double z0 = r.Pz();
+
+			double cx = kozeppont.X();
+			double cy = kozeppont.Y();
+			double cz = kozeppont.Z();
+
+			double R = radius;
+
+			double a = dx * dx + dy * dy + dz * dz;
+			double b = 2 * dx * (x0 - cx) + 2 * dy * (y0 - cy) + 2 * dz * (z0 - cz);
+			double c = cx * cx + cy * cy + cz * cz + x0 * x0 + y0 * y0 + z0 * z0 - 2 * (cx * x0 + cy * y0 + cz * z0) - R * R;
+
+			double d = b * b - 4 * a * c;
+
+			if(d < 0) {
+				return -1.0;
+			}
+
+			double t = ((-1.0 * b - sqrt(d)) / (2.0 * a));
+
+			if (t > 0.00005) {
+				return t;
+			}
+			else {
+				return 0.0;
+			}
+		}
+
+		Vector3D getNormal(Vector3D& intersect) {
+			Vector3D v = intersect - kozeppont;
+			v.Normalize();
+			return v;
+		}
+};
+
 
 class Scene {
 	private:
@@ -401,14 +467,15 @@ class Scene {
 
 };
 
-TheOneRing tor(0.05, 0.05, 0.05, Vector3D(0.5, 0.5, 0.5));
+TheOneRing tor(50, 50, 50, Vector3D(0.5, 0.5, 0.5));
+Sphere gomb;
 Scene sc;
 
 Bitmap bm;
 
 // Inicializacio, a program futasanak kezdeten, az OpenGL kontextus letrehozasa utan hivodik meg (ld. main() fv.)
 void onInitialization( ) {
-	sc.addObject(&tor);
+	sc.addObject(&gomb);
 }
 
 // Rajzolas, ha az alkalmazas ablak ervenytelenne valik, akkor ez a fuggveny hivodik meg
@@ -421,8 +488,11 @@ void onDisplay( ) {
 
     		Ray ray;
     		Vector3D kezdo_pont = Vector3D((j - WIDTH/2), (i - HEIGHT/2), 0);
-    		Vector3D irany_vektor = ray.getKezdo_pont() - sc.cam.getPont();
     		ray.setKezdo_pont(kezdo_pont);
+
+    		Vector3D irany_vektor = ray.getKezdo_pont() - sc.cam.getPont();
+    		//cout << ray.getKezdo_pont().X() << " ";
+
     		ray.setIrany_vektor(irany_vektor);
     		bm.pixels[i][j] = sc.Trace(ray);
     	}
