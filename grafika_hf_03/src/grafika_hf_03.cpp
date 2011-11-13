@@ -45,7 +45,7 @@
 #include <stdlib.h>
 
 // TODO: A beadas elott kapcsold ki a DEBUG modot:
-#define DEBUG
+//#define DEBUG
 
 #if defined(DEBUG)
 #include <iostream>
