@@ -144,15 +144,16 @@ class Vector3D {
 
 		void Normalize() {
 			float len = Length();
+
 			if (len < 0.000001f) {
 				this->x = 1;
 				this->y = 0;
 				this->z = 0;
 			}
 			else {
-				x /= len;
-				y /= len;
-				z /= len;
+				this->x /= len;
+				this->y /= len;
+				this->z /= len;
 			}
 		}
 
@@ -300,7 +301,7 @@ class Ray {
 		void setKezdo_pont(Vector3D v) { this->kezdo_pont = v; }
 		void setIrany_vektor(Vector3D v) {
 			this->irany_vektor = v;
-			this->irany_vektor.Normalize();
+			//this->irany_vektor.Normalize();
 		}
 
 		float& Px() { return this->kezdo_pont.X(); }
@@ -325,7 +326,7 @@ class Camera {
 	private:
 		Vector3D pont;
 	public:
-		Camera() {this->pont = Vector3D(0,0,-200);}
+		Camera() {this->pont = Vector3D(0,0,-500);}
 
 	Vector3D getPont() { return this->pont; }
 };
@@ -394,6 +395,10 @@ class Sphere : public Object {
 			double dy = r.Vy();
 			double dz = r.Vz();
 
+			#if defined(DEBUG)
+    			cout << "Intersect - dx: " << dx << ", dy: " << dy << ", dz: " << dz << endl;
+			#endif
+
 			double x0 = r.Px();
 			double y0 = r.Py();
 			double z0 = r.Pz();
@@ -410,11 +415,19 @@ class Sphere : public Object {
 
 			double d = b * b - 4 * a * c;
 
+			#if defined(DEBUG)
+    			cout << "Intersect - a: " << a << ", b: " << b << ", c: " << c << ", d: " << d << endl;
+			#endif
+
 			if(d < 0) {
 				return -1.0;
 			}
 
 			double t = ((-1.0 * b - sqrt(d)) / (2.0 * a));
+
+			#if defined(DEBUG)
+    			cout << "Intersect - t: " << t << endl;
+			#endif
 
 			if (t > 0.00005) {
 				return t;
@@ -454,6 +467,11 @@ class Scene {
 			for (int obj = 0; obj<OBJECTSNUM; obj++) {
 				o = this->objects[obj];
 				t = o->Intersect(r);
+
+				#if defined(DEBUG)
+    				cout << "Trace - t: " << t << endl;
+				#endif
+
 				if (t > 0) {
 					c = o->getSzin();
 				}
@@ -461,6 +479,11 @@ class Scene {
 
 				}
 			}
+
+			//#if defined(DEBUG)
+    		//	cout << "Trace - c: " << c.R() << "," << c.G() << "," << c.B() << endl;
+			//#endif
+
 			return c;
 		}
 
@@ -483,17 +506,30 @@ void onDisplay( ) {
     glClearColor(0.1f, 0.2f, 0.3f, 1.0f);		// torlesi szin beallitasa
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // kepernyo torles
 
-    for (int i = 0; i < HEIGHT; i++) {
-    	for (int j = 0; j < WIDTH; j++) {
+    for (int i = 0; i < WIDTH; i++) {
+    	for (int j = 0; j < HEIGHT; j++) {
 
     		Ray ray;
-    		Vector3D kezdo_pont = Vector3D((j - WIDTH/2), (i - HEIGHT/2), 0);
+    		Vector3D kezdo_pont = Vector3D((i - WIDTH/2), (j - HEIGHT/2), 0);
+
+    		//#if defined(DEBUG)
+    		//	cout << "onDisplay() - kezdo_pont: (" << kezdo_pont.X() << "," << kezdo_pont.Y() << "," << kezdo_pont.Z() << ")" << endl;
+			//#endif
+
     		ray.setKezdo_pont(kezdo_pont);
 
     		Vector3D irany_vektor = ray.getKezdo_pont() - sc.cam.getPont();
-    		//cout << ray.getKezdo_pont().X() << " ";
+
+    		//#if defined(DEBUG)
+    		//	cout << "onDisplay() - irany_vektor: (" << ray.getIrany_vektor().X() << "," << ray.getIrany_vektor().Y() << "," << ray.getIrany_vektor().Z() << ")" << endl;
+			//#endif
 
     		ray.setIrany_vektor(irany_vektor);
+
+			//#if defined(DEBUG)
+    		//	cout << "onDisplay() - irany_vektor set utan: (" << ray.getIrany_vektor().X() << "," << ray.getIrany_vektor().Y() << "," << ray.getIrany_vektor().Z() << ")" << endl;
+			//#endif
+
     		bm.pixels[i][j] = sc.Trace(ray);
     	}
     }
