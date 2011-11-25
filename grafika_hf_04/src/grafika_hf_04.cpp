@@ -189,7 +189,34 @@ class Camera {
 		}
 
 		void Init() {
+			glEnable(GL_DEPTH_TEST);
+			glEnable(GL_NORMALIZE);
+			glEnable(GL_LIGHTING);
+
+			glMatrixMode(GL_PROJECTION);
+			glLoadIdentity();
+			gluPerspective(50,0,1,100);
 		}
+};
+
+class Sun {
+	private:
+		Vector3D pozicio;
+		float h;
+	public:
+		Sun() {
+			pozicio = Vector3D(-1,1,1);
+			h = 0;
+		}
+
+		Vector3D getPozicio() {
+			return this->pozicio;
+		}
+
+		float getH() {
+			return this->h;
+		}
+
 };
 
 class Vertex {
@@ -252,7 +279,6 @@ class Teglatest {
 			for (int i = 0; i < 8; i++) {
 				this->csucspontok[i] = _csucspontok[i];
 			}
-
 
 			Vertex v;
 			v = Vertex(csucspontok[0], csucspontok[1], csucspontok[2]);
@@ -323,6 +349,11 @@ Teglatest t(csocsok);
 
 Vertex v(csucsok);
 Camera camera;
+Sun sun;
+
+
+
+float pos_amb[4]={0,0,1,0};
 
 // Inicializacio, a program futasanak kezdeten, az OpenGL kontextus letrehozasa utan hivodik meg (ld. main() fv.)
 void onInitialization( ) {
@@ -331,8 +362,25 @@ void onInitialization( ) {
 
 // Rajzolas, ha az alkalmazas ablak ervenytelenne valik, akkor ez a fuggveny hivodik meg
 void onDisplay( ) {
+
+	glViewport(0,0,600,600);
+
     glClearColor(0.1f, 0.2f, 0.3f, 1.0f);		// torlesi szin beallitasa
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // kepernyo torles
+
+
+    glMatrixMode(GL_MODELVIEW);
+    	glLoadIdentity();
+
+    	gluLookAt(30*sin(fok),30*cos(fok),300,0,0,0,0,1,0);
+
+    		glLightfv(GL_LIGHT0,GL_POSITION,pos_amb);
+    		glEnable(GL_LIGHT0);
+
+    		float nap[4] = {sun.getPozicio().X(), sun.getPozicio().Y(), sun.getPozicio().Z(), sun.getH()};
+    		glLightfv(GL_LIGHT1,GL_POSITION,nap);
+
+    		glEnable(GL_LIGHT1);
 
     //v.Rajzol();
     t.Rajzol();
