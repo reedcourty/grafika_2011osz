@@ -82,6 +82,8 @@ void PrintTime() {
 
 #endif
 
+float AMBIENS_FENY[4] = {0,0,1,0};
+
 class Vector3D {
 	// Dr. Szirmay-Kalos L. - Haromdimenzios grafika, ... 35. old. alapjan
 	private:
@@ -332,9 +334,7 @@ class Teglatest {
 		}
 };
 
-Vector3D csucsok[3]={Vector3D(0.15,0.45,0.75), Vector3D(0.90,0.50,-0.10), Vector3D(0.23,0.87,0.87)};
-
-Vector3D csocsok[8]={
+Vector3D csucsok[8]={
 		Vector3D(+0.00,+0.00,+0.00),
 		Vector3D(+0.50,+0.00,+0.00),
 		Vector3D(+0.50,-0.50,+0.00),
@@ -345,15 +345,10 @@ Vector3D csocsok[8]={
 		Vector3D(+0.00,-0.50,+0.50),
 };
 
-Teglatest t(csocsok);
+Teglatest t(csucsok);
 
-Vertex v(csucsok);
 Camera camera;
 Sun sun;
-
-
-
-float pos_amb[4]={0,0,1,0};
 
 // Inicializacio, a program futasanak kezdeten, az OpenGL kontextus letrehozasa utan hivodik meg (ld. main() fv.)
 void onInitialization( ) {
@@ -374,7 +369,7 @@ void onDisplay( ) {
 
     	gluLookAt(30*sin(fok),30*cos(fok),300,0,0,0,0,1,0);
 
-    		glLightfv(GL_LIGHT0,GL_POSITION,pos_amb);
+    		glLightfv(GL_LIGHT0,GL_POSITION,AMBIENS_FENY);
     		glEnable(GL_LIGHT0);
 
     		float nap[4] = {sun.getPozicio().X(), sun.getPozicio().Y(), sun.getPozicio().Z(), sun.getH()};
