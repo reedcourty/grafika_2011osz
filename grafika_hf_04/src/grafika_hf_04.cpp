@@ -345,11 +345,19 @@ class Henger {
 		Henger() {};
 
 		void ComputeVertices() {
+			Vector3D teteje = Vector3D(kozeppont.X(),kozeppont.Y()+magassag/2,kozeppont.Z());
+			Vector3D alja = Vector3D(kozeppont.X(),kozeppont.Y()-magassag/2,kozeppont.Z());
 
 		}
 
 		void Rajzol() {
-
+			glMatrixMode(GL_MODELVIEW);
+			glLoadIdentity();
+			glRotatef(fok,0.45,1,0);
+			for (int i = 0; i < 12; i++) {
+				vertexek[i].Rajzol();
+			}
+			glLoadIdentity();
 		}
 };
 
