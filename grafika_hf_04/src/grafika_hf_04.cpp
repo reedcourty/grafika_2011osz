@@ -334,6 +334,25 @@ class Teglatest {
 		}
 };
 
+class Henger {
+	private:
+		float magassag;
+		float sugar;
+		Vector3D kozeppont;
+
+		Vertex vertexek[16];
+	public:
+		Henger() {};
+
+		void ComputeVertices() {
+
+		}
+
+		void Rajzol() {
+
+		}
+};
+
 Vector3D csucsok[8]={
 		Vector3D(+0.00,+0.00,+0.00),
 		Vector3D(+0.50,+0.00,+0.00),
