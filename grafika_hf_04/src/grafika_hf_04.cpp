@@ -82,6 +82,8 @@ void PrintTime() {
 
 #endif
 
+const float PI = 3.14159265358979323846;
+
 float AMBIENS_FENY[4] = {0,0,1,0};
 
 class Vector3D {
@@ -342,18 +344,47 @@ class Henger {
 
 		Vertex vertexek[16];
 	public:
-		Henger() {};
+		Henger() {
+			magassag = 0.5;
+			sugar = 0.5;
+			kozeppont = Vector3D(0,0,0);
+		};
 
 		void ComputeVertices() {
 			Vector3D teteje = Vector3D(kozeppont.X(),kozeppont.Y()+magassag/2,kozeppont.Z());
 			Vector3D alja = Vector3D(kozeppont.X(),kozeppont.Y()-magassag/2,kozeppont.Z());
+
+			Vector3D elsopont = Vector3D(kozeppont.X(),kozeppont.Y()+magassag/2,kozeppont.Z()+sugar);
+
+			#if defined(DEBUG)
+				cout << "teteje: " << teteje.X() << "," << teteje.Y() << "," << teteje.Z() << endl;
+				cout << "alja: " << alja.X() << "," << alja.Y() << "," << alja.Z() << endl;
+				cout << "elsopont: " << elsopont.X() << "," << elsopont.Y() << "," << elsopont.Z() << endl;
+			#endif
+
+			Vector3D palast[9];
+			float x, z, szog;
+
+			for (int i = 0; i < 8; i++) {
+				szog = 2*PI/8*i;
+				x = sugar*cos(szog);
+				z = sugar*sin(szog);
+				palast[i] = Vector3D(x,teteje.Y(),z);
+			}
+
+			palast[8] = palast[0];
+
+			for (int i = 0; i < 8; i++) {
+				vertexek[i] = Vertex(teteje,palast[i],palast[i+1]);
+			}
+
 
 		}
 
 		void Rajzol() {
 			glMatrixMode(GL_MODELVIEW);
 			glLoadIdentity();
-			glRotatef(fok,0.45,1,0);
+			glRotatef(fok,1,0,0);
 			for (int i = 0; i < 12; i++) {
 				vertexek[i].Rajzol();
 			}
@@ -372,7 +403,8 @@ Vector3D csucsok[8]={
 		Vector3D(+0.00,-0.50,+0.50),
 };
 
-Teglatest t(csucsok);
+//Teglatest t(csucsok);
+Henger henger;
 
 Camera camera;
 Sun sun;
@@ -380,6 +412,7 @@ Sun sun;
 // Inicializacio, a program futasanak kezdeten, az OpenGL kontextus letrehozasa utan hivodik meg (ld. main() fv.)
 void onInitialization( ) {
 	camera.Init();
+	henger.ComputeVertices();
 }
 
 // Rajzolas, ha az alkalmazas ablak ervenytelenne valik, akkor ez a fuggveny hivodik meg
@@ -404,8 +437,8 @@ void onDisplay( ) {
 
     		glEnable(GL_LIGHT1);
 
-    //v.Rajzol();
-    t.Rajzol();
+    //t.Rajzol();
+    henger.Rajzol();
 
     glutSwapBuffers();     				// Buffercsere: rajzolas vege
 
