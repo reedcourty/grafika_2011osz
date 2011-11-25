@@ -85,6 +85,7 @@ void PrintTime() {
 const float PI = 3.14159265358979323846;
 
 float AMBIENS_FENY[4] = {0,0,1,0};
+const int HENGERVERTEXSZAM = 64;
 
 class Vector3D {
 	// Dr. Szirmay-Kalos L. - Haromdimenzios grafika, ... 35. old. alapjan
@@ -342,7 +343,7 @@ class Henger {
 		float sugar;
 		Vector3D kozeppont;
 
-		Vertex vertexek[16];
+		Vertex vertexek[HENGERVERTEXSZAM*3];
 	public:
 		Henger() {
 			magassag = 0.5;
@@ -356,28 +357,48 @@ class Henger {
 
 			Vector3D elsopont = Vector3D(kozeppont.X(),kozeppont.Y()+magassag/2,kozeppont.Z()+sugar);
 
-			#if defined(DEBUG)
-				cout << "teteje: " << teteje.X() << "," << teteje.Y() << "," << teteje.Z() << endl;
-				cout << "alja: " << alja.X() << "," << alja.Y() << "," << alja.Z() << endl;
-				cout << "elsopont: " << elsopont.X() << "," << elsopont.Y() << "," << elsopont.Z() << endl;
-			#endif
+			//#if defined(DEBUG)
+			//	cout << "teteje: " << teteje.X() << "," << teteje.Y() << "," << teteje.Z() << endl;
+			//	cout << "alja: " << alja.X() << "," << alja.Y() << "," << alja.Z() << endl;
+			//	cout << "elsopont: " << elsopont.X() << "," << elsopont.Y() << "," << elsopont.Z() << endl;
+			//#endif
 
-			Vector3D palast[9];
+			Vector3D felsolap[HENGERVERTEXSZAM+1], alsolap[HENGERVERTEXSZAM+1];
 			float x, z, szog;
 
-			for (int i = 0; i < 8; i++) {
-				szog = 2*PI/8*i;
+			for (int i = 0; i < HENGERVERTEXSZAM/2; i++) {
+				szog = 2*PI/(HENGERVERTEXSZAM/2)*i;
 				x = sugar*cos(szog);
 				z = sugar*sin(szog);
-				palast[i] = Vector3D(x,teteje.Y(),z);
+				felsolap[i] = Vector3D(x,teteje.Y(),z);
 			}
 
-			palast[8] = palast[0];
+			felsolap[HENGERVERTEXSZAM/2] = felsolap[0];
 
-			for (int i = 0; i < 8; i++) {
-				vertexek[i] = Vertex(teteje,palast[i],palast[i+1]);
+			for (int i = 0; i < HENGERVERTEXSZAM/2; i++) {
+				vertexek[i] = Vertex(teteje,felsolap[i],felsolap[i+1]);
 			}
 
+			for (int i = 0; i < HENGERVERTEXSZAM/2; i++) {
+				szog = 2*PI/(HENGERVERTEXSZAM/2)*i;
+				x = sugar*cos(szog);
+				z = sugar*sin(szog);
+				alsolap[i] = Vector3D(x,alja.Y(),z);
+			}
+
+			alsolap[HENGERVERTEXSZAM/2] = alsolap[0];
+
+			for (int i = 0; i < HENGERVERTEXSZAM/2; i++) {
+				vertexek[i+HENGERVERTEXSZAM/2] = Vertex(alja,alsolap[i],alsolap[i+1]);
+			}
+
+			for (int i = 0; i < HENGERVERTEXSZAM/2; i++) {
+				vertexek[i+HENGERVERTEXSZAM] = Vertex(felsolap[i],felsolap[i+1],alsolap[i]);
+			}
+
+			for (int i = 0; i < HENGERVERTEXSZAM/2; i++) {
+				vertexek[i+HENGERVERTEXSZAM*2] = Vertex(felsolap[i+1],alsolap[i+1],alsolap[i]);
+			}
 
 		}
 
@@ -385,7 +406,7 @@ class Henger {
 			glMatrixMode(GL_MODELVIEW);
 			glLoadIdentity();
 			glRotatef(fok,1,0,0);
-			for (int i = 0; i < 12; i++) {
+			for (int i = 0; i < HENGERVERTEXSZAM*3; i++) {
 				vertexek[i].Rajzol();
 			}
 			glLoadIdentity();
