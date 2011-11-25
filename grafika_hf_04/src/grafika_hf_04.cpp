@@ -197,6 +197,7 @@ class Vertex {
 		Vector3D csucspont[3];
 		Vector3D normalvektor;
 	public:
+		Vertex() {};
 		Vertex(Vector3D _csucspont[3]) {
 			this->csucspont[0] = _csucspont[0];
 			this->csucspont[1] = _csucspont[1];
@@ -207,6 +208,17 @@ class Vertex {
 
 			this->normalvektor = v1%v2;
 		};
+
+		Vertex(Vector3D &v1, Vector3D &v2, Vector3D &v3) {
+			this->csucspont[0] = v1;
+			this->csucspont[1] = v2;
+			this->csucspont[2] = v3;
+
+			Vector3D n1 = csucspont[0]-csucspont[1];
+			Vector3D n2 = csucspont[2]-csucspont[1];
+
+			this->normalvektor = n1%n2;
+		}
 
 		void Rajzol() {
 
@@ -229,7 +241,85 @@ class Vertex {
 		}
 };
 
+float fok = 0;
+
+class Teglatest {
+	private:
+		Vector3D csucspontok[8];
+		Vertex vertexek[12];
+	public:
+		Teglatest(Vector3D _csucspontok[8]) {
+			for (int i = 0; i < 8; i++) {
+				this->csucspontok[i] = _csucspontok[i];
+			}
+
+
+			Vertex v;
+			v = Vertex(csucspontok[0], csucspontok[1], csucspontok[2]);
+			this->vertexek[0] = v;
+
+			v = Vertex(csucspontok[0], csucspontok[2], csucspontok[3]);
+			this->vertexek[1] = v;
+
+			v = Vertex(csucspontok[1], csucspontok[5], csucspontok[6]);
+			this->vertexek[2] = v;
+
+			v = Vertex(csucspontok[1], csucspontok[6], csucspontok[2]);
+			this->vertexek[3] = v;
+
+			v = Vertex(csucspontok[5], csucspontok[4], csucspontok[7]);
+			this->vertexek[4] = v;
+
+			v = Vertex(csucspontok[5], csucspontok[7], csucspontok[6]);
+			this->vertexek[5] = v;
+
+			v = Vertex(csucspontok[4], csucspontok[0], csucspontok[3]);
+			this->vertexek[6] = v;
+
+			v = Vertex(csucspontok[4], csucspontok[3], csucspontok[7]);
+			this->vertexek[7] = v;
+
+			v = Vertex(csucspontok[0], csucspontok[4], csucspontok[5]);
+			this->vertexek[8] = v;
+
+			v = Vertex(csucspontok[0], csucspontok[5], csucspontok[1]);
+			this->vertexek[9] = v;
+
+			v = Vertex(csucspontok[3], csucspontok[7], csucspontok[6]);
+			this->vertexek[10] = v;
+
+			v = Vertex(csucspontok[3], csucspontok[2], csucspontok[2]);
+			this->vertexek[11] = v;
+
+		}
+
+		void Rajzol() {
+
+			glMatrixMode(GL_MODELVIEW);
+			glLoadIdentity();
+			glRotatef(fok,0.45,1,0);
+
+			for (int i = 0; i < 12; i++) {
+				vertexek[i].Rajzol();
+			}
+			glLoadIdentity();
+		}
+};
+
 Vector3D csucsok[3]={Vector3D(0.15,0.45,0.75), Vector3D(0.90,0.50,-0.10), Vector3D(0.23,0.87,0.87)};
+
+Vector3D csocsok[8]={
+		Vector3D(+0.00,+0.00,+0.00),
+		Vector3D(+0.50,+0.00,+0.00),
+		Vector3D(+0.50,-0.50,+0.00),
+		Vector3D(+0.00,-0.50,+0.00),
+		Vector3D(+0.00,+0.00,+0.50),
+		Vector3D(+0.50,+0.00,+0.50),
+		Vector3D(+0.50,-0.50,+0.50),
+		Vector3D(+0.00,-0.50,+0.50),
+};
+
+Teglatest t(csocsok);
 
 Vertex v(csucsok);
 Camera camera;
@@ -244,7 +334,8 @@ void onDisplay( ) {
     glClearColor(0.1f, 0.2f, 0.3f, 1.0f);		// torlesi szin beallitasa
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // kepernyo torles
 
-    v.Rajzol();
+    //v.Rajzol();
+    t.Rajzol();
 
     glutSwapBuffers();     				// Buffercsere: rajzolas vege
 
@@ -259,6 +350,16 @@ void onKeyboard(unsigned char key, int x, int y) {
 	#endif
 
     if (key == 'd') glutPostRedisplay( ); 		// d beture rajzold ujra a kepet
+
+    if (key == 'w') {
+    	fok += 1;
+    	glutPostRedisplay();
+    }
+
+    if (key == 's') {
+        fok -= 1;
+        glutPostRedisplay();
+    }
 
 }
 
