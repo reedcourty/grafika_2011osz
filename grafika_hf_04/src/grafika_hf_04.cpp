@@ -193,23 +193,45 @@ class Camera {
 };
 
 class Vertex {
+	private:
+		Vector3D csucspont[3];
+		Vector3D normalvektor;
 	public:
-		Vertex() {};
+		Vertex(Vector3D _csucspont[3]) {
+			this->csucspont[0] = _csucspont[0];
+			this->csucspont[1] = _csucspont[1];
+			this->csucspont[2] = _csucspont[2];
+
+			Vector3D v1 = csucspont[0]-csucspont[1];
+			Vector3D v2 = csucspont[2]-csucspont[1];
+
+			this->normalvektor = v1%v2;
+		};
 
 		void Rajzol() {
+
+			#if defined(DEBUG)
+				cout << "1. csucspont: " << csucspont[0].X() << "," << csucspont[0].Y() << "," << csucspont[0].Z() << endl;
+				cout << "2. csucspont: " << csucspont[1].X() << "," << csucspont[1].Y() << "," << csucspont[1].Z() << endl;
+				cout << "3. csucspont: " << csucspont[2].X() << "," << csucspont[2].Y() << "," << csucspont[2].Z() << endl;
+				cout << "Normalvektor: " << normalvektor.X() << "," << normalvektor.Y() << "," << normalvektor.Z() << endl;
+			#endif
+
 			glBegin(GL_TRIANGLES);
-				glNormal3f(0.5,0.75,0.25);
+				glNormal3f(normalvektor.X(),normalvektor.Y(),normalvektor.Z());
 				glTexCoord2d(0,0);
-				glVertex3f(0.15,0.45,0.75);
+				glVertex3f(csucspont[0].X(),csucspont[0].Y(),csucspont[0].Z());
 				glTexCoord2d(1,1);
-				glVertex3f(0.90,0.24,0.10);
+				glVertex3f(csucspont[1].X(),csucspont[1].Y(),csucspont[1].Z());
 				glTexCoord2d(0,0);
-				glVertex3f(0.23,0.87,0.87);
+				glVertex3f(csucspont[2].X(),csucspont[2].Y(),csucspont[2].Z());
 			glEnd();
 		}
 };
 
-Vertex v;
+Vector3D csucsok[3]={Vector3D(0.15,0.45,0.75), Vector3D(0.90,0.50,-0.10), Vector3D(0.23,0.87,0.87)};
+
+Vertex v(csucsok);
 Camera camera;
 
 // Inicializacio, a program futasanak kezdeten, az OpenGL kontextus letrehozasa utan hivodik meg (ld. main() fv.)
