@@ -82,6 +82,28 @@ void PrintTime() {
 
 #endif
 
+class MyVertex {
+
+
+	public:
+		MyVertex() {};
+
+		void Rajzol() {
+
+			glBegin(GL_TRIANGLES);
+				glNormal3f(0.5,0.75,0.25);
+				glTexCoord2d(0,0);
+				glVertex3f(0.15,0.45,0.75);
+				glTexCoord2d(1,1);
+				glVertex3f(0.90,0.24,0.10);
+				glTexCoord2d(0,0);
+				glVertex3f(0.23,0.87,0.87);
+			glEnd();
+		}
+};
+
+MyVertex v;
+
 // Inicializacio, a program futasanak kezdeten, az OpenGL kontextus letrehozasa utan hivodik meg (ld. main() fv.)
 void onInitialization( ) { 
 }
@@ -91,6 +113,7 @@ void onDisplay( ) {
     glClearColor(0.1f, 0.2f, 0.3f, 1.0f);		// torlesi szin beallitasa
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // kepernyo torles
 
+    v.Rajzol();
     // ...
 
     glutSwapBuffers();     				// Buffercsere: rajzolas vege
