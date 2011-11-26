@@ -279,6 +279,37 @@ class Vertex {
 
 float fok = 0;
 
+
+class Ojjektum {
+	private:
+		float forgatas_szog;
+		float forgatas_x;
+		float forgatas_y;
+		float forgatas_z;
+	protected:
+		Vertex vertexek[1024];
+		int vertexszam;
+
+	public:
+		void setRotate(float szog, float x, float y, float z) {
+			forgatas_szog = szog;
+			forgatas_x = x;
+			forgatas_y = y;
+			forgatas_z = z;
+		}
+
+		void Rajzol() {
+			glMatrixMode(GL_MODELVIEW);
+			glLoadIdentity();
+			glRotatef(forgatas_szog,forgatas_x,forgatas_y,forgatas_z);
+			for (int i = 0; i < vertexszam; i++) {
+				vertexek[i].Rajzol();
+			}
+			glLoadIdentity();
+		}
+
+};
+
 class Teglatest {
 	private:
 		Vector3D csucspontok[8];
@@ -341,13 +372,12 @@ class Teglatest {
 		}
 };
 
-class Henger {
+class Henger : public Ojjektum {
 	private:
 		float magassag;
 		float sugar;
 		Vector3D kozeppont;
 
-		Vertex vertexek[HENGERVERTEXSZAM*3];
 	public:
 		Henger() {
 			magassag = 0.5;
@@ -393,27 +423,20 @@ class Henger {
 			alsolap[HENGERVERTEXSZAM/2] = alsolap[0];
 
 			for (int i = 0; i < HENGERVERTEXSZAM/2; i++) {
-				vertexek[i+HENGERVERTEXSZAM/2] = Vertex(alja,alsolap[i],alsolap[i+1]);
+				vertexek[vertexszam] = Vertex(alja,alsolap[i],alsolap[i+1]);
+				vertexszam++;
 			}
 
 			for (int i = 0; i < HENGERVERTEXSZAM/2; i++) {
-				vertexek[i+HENGERVERTEXSZAM] = Vertex(felsolap[i],felsolap[i+1],alsolap[i]);
+				vertexek[vertexszam] = Vertex(felsolap[i],felsolap[i+1],alsolap[i]);
+				vertexszam++;
 			}
 
 			for (int i = 0; i < HENGERVERTEXSZAM/2; i++) {
-				vertexek[i+HENGERVERTEXSZAM*2] = Vertex(felsolap[i+1],alsolap[i+1],alsolap[i]);
+				vertexek[vertexszam] = Vertex(felsolap[i+1],alsolap[i+1],alsolap[i]);
+				vertexszam++;
 			}
 
-		}
-
-		void Rajzol() {
-			glMatrixMode(GL_MODELVIEW);
-			glLoadIdentity();
-			glRotatef(45,1,0,0);
-			for (int i = 0; i < HENGERVERTEXSZAM*3; i++) {
-				vertexek[i].Rajzol();
-			}
-			glLoadIdentity();
 		}
 };
 
@@ -479,7 +502,7 @@ class Ellipszoid {
 		int vszam;
 	public:
 		Ellipszoid() {
-			hossz = 0.50;
+			hossz = 0.60;
 			sugar = 0.25;
 			kozeppont = Vector3D(0,0,0);
 			vszam = 0;
@@ -549,14 +572,7 @@ class Ellipszoid {
 
 			for (int i = 0; i < szint/2; i++) {
 				sugar1 = sugar/szint*(szint-(i+1)*i*0.5);
-
-
-				if (i == szint/2-1) {
-					magassag1 = hossz/szint*(i+1)*2.5;
-				}
-				else {
-					magassag1 = hossz/szint*(i+1)*2.5-(i+1)*0.05;
-				}
+				magassag1 = hossz/szint*(i+1)*2.5-(i+1)*0.05;
 
 				ComputeSzalag(sugar0, sugar1, magassag0, magassag1, 0);
 				ComputeSzalag(sugar0, sugar1, magassag0, magassag1, 1);
@@ -627,9 +643,9 @@ void onDisplay( ) {
     		glEnable(GL_LIGHT1);
 
     //t.Rajzol();
-    //henger.Rajzol();
+    henger.Rajzol();
     //kup.Rajzol();
-    ellipszoid.Rajzol();
+    //ellipszoid.Rajzol();
 
 
     glutSwapBuffers();     				// Buffercsere: rajzolas vege
@@ -648,14 +664,15 @@ void onKeyboard(unsigned char key, int x, int y) {
 
     if (key == 'w') {
     	fok += 1;
+    	henger.setRotate(fok,1,0,0);
     	glutPostRedisplay();
     }
 
     if (key == 's') {
         fok -= 1;
+        henger.setRotate(fok,1,0,0);
         glutPostRedisplay();
     }
-
 }
 
 // Eger esemenyeket lekezelo fuggveny
