@@ -634,8 +634,8 @@ class Uthenger {
 
 			motor = Teglatest(0.4,0.4,0.4, Vector3D(0.0,-0.25,0.0));
 
-			elsokerek = Henger(0.8, 0.2, Vector3D(-0.20,-0.50,0));
-			hatsokerek = Henger(0.8, 0.2, Vector3D(+0.20,+0.50,0));
+			elsokerek = Henger(0.8, 0.25, Vector3D(-0.20,-0.50,0));
+			hatsokerek = Henger(0.8, 0.25, Vector3D(+0.20,+0.50,0));
 
 		}
 
@@ -648,16 +648,16 @@ class Uthenger {
 			test.Rajzol();
 			kemeny.Rajzol();
 
+			motor.setRotate(0,1,0,0);
 			motor.Rajzol();
 
 			elsokerek.setRotate(90,1,0,0);
+			elsokerek.setEltolas(Vector3D(-0.40,-0.30,0.0));
 			elsokerek.Rajzol();
 
 			hatsokerek.setRotate(90,1,0,0);
-			hatsokerek.setEltolas(Vector3D(0.5,0.9,0.1));
+			hatsokerek.setEltolas(Vector3D(0.40,-0.30,0.0));
 			hatsokerek.Rajzol();
-			glLoadIdentity();
-
 		}
 
 };
