@@ -87,6 +87,7 @@ const float PI = 3.14159265358979323846;
 float AMBIENS_FENY[4] = {0,0,1,0};
 const int HENGERVERTEXSZAM = 128;
 const int KUPVERTEXSZAM = 128;
+const int ELLIPSZOIDVERTEXSZAM = 64;
 
 class Vector3D {
 	// Dr. Szirmay-Kalos L. - Haromdimenzios grafika, ... 35. old. alapjan
@@ -319,10 +320,10 @@ class Teglatest {
 			v = Vertex(csucspontok[0], csucspontok[5], csucspontok[1]);
 			this->vertexek[9] = v;
 
-			v = Vertex(csucspontok[3], csucspontok[7], csucspontok[6]);
+			v = Vertex(csucspontok[3], csucspontok[6], csucspontok[7]);
 			this->vertexek[10] = v;
 
-			v = Vertex(csucspontok[3], csucspontok[2], csucspontok[2]);
+			v = Vertex(csucspontok[3], csucspontok[2], csucspontok[6]);
 			this->vertexek[11] = v;
 
 		}
@@ -331,7 +332,7 @@ class Teglatest {
 
 			glMatrixMode(GL_MODELVIEW);
 			glLoadIdentity();
-			glRotatef(fok,0.45,1,0);
+			glRotatef(45,0.45,1,0);
 
 			for (int i = 0; i < 12; i++) {
 				vertexek[i].Rajzol();
@@ -408,7 +409,7 @@ class Henger {
 		void Rajzol() {
 			glMatrixMode(GL_MODELVIEW);
 			glLoadIdentity();
-			glRotatef(fok,1,0,0);
+			glRotatef(45,1,0,0);
 			for (int i = 0; i < HENGERVERTEXSZAM*3; i++) {
 				vertexek[i].Rajzol();
 			}
@@ -469,6 +470,114 @@ private:
 		}
 };
 
+class Ellipszoid {
+	private:
+		float hossz;
+		float sugar;
+		Vector3D kozeppont;
+		Vertex vertexek[ELLIPSZOIDVERTEXSZAM*20];
+		int vszam;
+	public:
+		Ellipszoid() {
+			hossz = 0.50;
+			sugar = 0.25;
+			kozeppont = Vector3D(0,0,0);
+			vszam = 0;
+			ComputeVertices();
+		}
+
+
+		void ComputeSzalag(float sugar0, float sugar1, float magassag0, float magassag1, int irany) {
+			float x, z, szog;
+
+			Vector3D kkorlap[ELLIPSZOIDVERTEXSZAM+1];
+			Vector3D mkorlap[ELLIPSZOIDVERTEXSZAM+1];
+
+			if (irany == 1) {
+				magassag0 = -1*magassag0;
+				magassag1 = -1*magassag1;
+			}
+
+			for (int i = 0; i < ELLIPSZOIDVERTEXSZAM; i++) {
+				szog = 2*PI/(ELLIPSZOIDVERTEXSZAM)*i;
+				x = sugar0*cos(szog);
+				z = sugar0*sin(szog);
+				kkorlap[i] = Vector3D(x,kozeppont.Y()+magassag0,z);
+			}
+
+			kkorlap[ELLIPSZOIDVERTEXSZAM] = kkorlap[0];
+
+			for (int i = 0; i < ELLIPSZOIDVERTEXSZAM; i++) {
+				szog = 2*PI/(ELLIPSZOIDVERTEXSZAM)*i;
+				x = sugar1*cos(szog);
+				z = sugar1*sin(szog);
+				mkorlap[i] = Vector3D(x,kozeppont.Y()+magassag1,z);
+			}
+
+			mkorlap[ELLIPSZOIDVERTEXSZAM] = mkorlap[0];
+
+			if (irany == 0) {
+				for (int i = 0; i < ELLIPSZOIDVERTEXSZAM; i++) {
+					vertexek[vszam] = Vertex(kkorlap[i],mkorlap[i],mkorlap[i+1]);
+					vszam++;
+					vertexek[vszam] = Vertex(kkorlap[i],mkorlap[i+1],kkorlap[i+1]);
+					vszam++;
+				}
+			}
+			else {
+				for (int i = 0; i < ELLIPSZOIDVERTEXSZAM; i++) {
+					vertexek[vszam] = Vertex(kkorlap[i],mkorlap[i+1],mkorlap[i]);
+					vszam++;
+					vertexek[vszam] = Vertex(kkorlap[i],kkorlap[i+1],mkorlap[i+1]);
+					vszam++;
+				}
+			}
+
+
+		}
+
+		void ComputeVertices() {
+			float sugar0;
+			float sugar1;
+			float magassag0;
+			float magassag1;
+
+			int szint = 10;
+
+			sugar0 = sugar;
+			magassag0 = 0;
+
+			for (int i = 0; i < szint/2; i++) {
+				sugar1 = sugar/szint*(szint-(i+1)*i*0.5);
+
+
+				if (i == szint/2-1) {
+					magassag1 = hossz/szint*(i+1)*2.5;
+				}
+				else {
+					magassag1 = hossz/szint*(i+1)*2.5-(i+1)*0.05;
+				}
+
+				ComputeSzalag(sugar0, sugar1, magassag0, magassag1, 0);
+				ComputeSzalag(sugar0, sugar1, magassag0, magassag1, 1);
+
+				sugar0 = sugar1;
+				magassag0 = magassag1;
+			}
+
+		}
+
+		void Rajzol() {
+			glMatrixMode(GL_MODELVIEW);
+			glLoadIdentity();
+			glRotatef(fok,1,0,0);
+			for (int i = 0; i < vszam; i++) {
+				vertexek[i].Rajzol();
+			}
+			glLoadIdentity();
+		}
+};
+
 Vector3D csucsok[8]={
 		Vector3D(+0.00,+0.00,+0.00),
 		Vector3D(+0.50,+0.00,+0.00),
@@ -483,6 +592,7 @@ Vector3D csucsok[8]={
 Teglatest t(csucsok);
 Henger henger;
 Kup kup;
+Ellipszoid ellipszoid;
 
 Camera camera;
 Sun sun;
@@ -516,9 +626,10 @@ void onDisplay( ) {
 
     		glEnable(GL_LIGHT1);
 
-    t.Rajzol();
-    henger.Rajzol();
-    kup.Rajzol();
+    //t.Rajzol();
+    //henger.Rajzol();
+    //kup.Rajzol();
+    ellipszoid.Rajzol();
 
 
     glutSwapBuffers();     				// Buffercsere: rajzolas vege
