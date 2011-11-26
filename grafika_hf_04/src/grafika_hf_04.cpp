@@ -85,7 +85,8 @@ void PrintTime() {
 const float PI = 3.14159265358979323846;
 
 float AMBIENS_FENY[4] = {0,0,1,0};
-const int HENGERVERTEXSZAM = 64;
+const int HENGERVERTEXSZAM = 128;
+const int KUPVERTEXSZAM = 128;
 
 class Vector3D {
 	// Dr. Szirmay-Kalos L. - Haromdimenzios grafika, ... 35. old. alapjan
@@ -254,12 +255,14 @@ class Vertex {
 
 		void Rajzol() {
 
+			/*
 			#if defined(DEBUG)
 				cout << "1. csucspont: " << csucspont[0].X() << "," << csucspont[0].Y() << "," << csucspont[0].Z() << endl;
 				cout << "2. csucspont: " << csucspont[1].X() << "," << csucspont[1].Y() << "," << csucspont[1].Z() << endl;
 				cout << "3. csucspont: " << csucspont[2].X() << "," << csucspont[2].Y() << "," << csucspont[2].Z() << endl;
 				cout << "Normalvektor: " << normalvektor.X() << "," << normalvektor.Y() << "," << normalvektor.Z() << endl;
 			#endif
+			*/
 
 			glBegin(GL_TRIANGLES);
 				glNormal3f(normalvektor.X(),normalvektor.Y(),normalvektor.Z());
@@ -419,11 +422,11 @@ private:
 		float sugar;
 		Vector3D kozeppont;
 
-		Vertex vertexek[HENGERVERTEXSZAM*3];
+		Vertex vertexek[KUPVERTEXSZAM*3];
 	public:
 		Kup() {
-			magassag = 0.5;
-			sugar = 0.5;
+			magassag = 0.70;
+			sugar = 0.25;
 			kozeppont = Vector3D(0,0,0);
 		};
 
@@ -433,47 +436,24 @@ private:
 
 			Vector3D elsopont = Vector3D(kozeppont.X(),kozeppont.Y()+magassag/2,kozeppont.Z()+sugar);
 
-			//#if defined(DEBUG)
-			//	cout << "teteje: " << teteje.X() << "," << teteje.Y() << "," << teteje.Z() << endl;
-			//	cout << "alja: " << alja.X() << "," << alja.Y() << "," << alja.Z() << endl;
-			//	cout << "elsopont: " << elsopont.X() << "," << elsopont.Y() << "," << elsopont.Z() << endl;
-			//#endif
-
-			Vector3D felsolap[HENGERVERTEXSZAM+1], alsolap[HENGERVERTEXSZAM+1];
+			Vector3D alsolap[KUPVERTEXSZAM+1];
 			float x, z, szog;
 
-			for (int i = 0; i < HENGERVERTEXSZAM/2; i++) {
-				szog = 2*PI/(HENGERVERTEXSZAM/2)*i;
-				x = sugar*cos(szog);
-				z = sugar*sin(szog);
-				felsolap[i] = Vector3D(teteje.X(),teteje.Y(),teteje.Z());
-			}
-
-			felsolap[HENGERVERTEXSZAM/2] = felsolap[0];
-
-			for (int i = 0; i < HENGERVERTEXSZAM/2; i++) {
-				vertexek[i] = Vertex(teteje,felsolap[i],felsolap[i+1]);
-			}
-
-			for (int i = 0; i < HENGERVERTEXSZAM/2; i++) {
-				szog = 2*PI/(HENGERVERTEXSZAM/2)*i;
+			for (int i = 0; i < KUPVERTEXSZAM/2; i++) {
+				szog = 2*PI/(KUPVERTEXSZAM/2)*i;
 				x = sugar*cos(szog);
 				z = sugar*sin(szog);
 				alsolap[i] = Vector3D(x,alja.Y(),z);
 			}
 
-			alsolap[HENGERVERTEXSZAM/2] = alsolap[0];
+			alsolap[KUPVERTEXSZAM/2] = alsolap[0];
 
-			for (int i = 0; i < HENGERVERTEXSZAM/2; i++) {
-				vertexek[i+HENGERVERTEXSZAM/2] = Vertex(alja,alsolap[i],alsolap[i+1]);
+			for (int i = 0; i < KUPVERTEXSZAM/2; i++) {
+				vertexek[i+KUPVERTEXSZAM/2] = Vertex(alja,alsolap[i],alsolap[i+1]);
 			}
 
-			for (int i = 0; i < HENGERVERTEXSZAM/2; i++) {
-				vertexek[i+HENGERVERTEXSZAM] = Vertex(felsolap[i],felsolap[i+1],alsolap[i]);
-			}
-
-			for (int i = 0; i < HENGERVERTEXSZAM/2; i++) {
-				vertexek[i+HENGERVERTEXSZAM*2] = Vertex(felsolap[i+1],alsolap[i+1],alsolap[i]);
+			for (int i = 0; i < KUPVERTEXSZAM/2; i++) {
+				vertexek[i+KUPVERTEXSZAM*2] = Vertex(teteje,alsolap[i+1],alsolap[i]);
 			}
 
 		}
@@ -482,7 +462,7 @@ private:
 			glMatrixMode(GL_MODELVIEW);
 			glLoadIdentity();
 			glRotatef(fok,1,0,0);
-			for (int i = 0; i < HENGERVERTEXSZAM*3; i++) {
+			for (int i = 0; i < KUPVERTEXSZAM*3; i++) {
 				vertexek[i].Rajzol();
 			}
 			glLoadIdentity();
@@ -500,8 +480,8 @@ Vector3D csucsok[8]={
 		Vector3D(+0.00,-0.50,+0.50),
 };
 
-//Teglatest t(csucsok);
-//Henger henger;
+Teglatest t(csucsok);
+Henger henger;
 Kup kup;
 
 Camera camera;
@@ -510,7 +490,7 @@ Sun sun;
 // Inicializacio, a program futasanak kezdeten, az OpenGL kontextus letrehozasa utan hivodik meg (ld. main() fv.)
 void onInitialization( ) {
 	camera.Init();
-	//henger.ComputeVertices();
+	henger.ComputeVertices();
 	kup.ComputeVertices();
 }
 
@@ -536,9 +516,10 @@ void onDisplay( ) {
 
     		glEnable(GL_LIGHT1);
 
-    //t.Rajzol();
-    //henger.Rajzol();
+    t.Rajzol();
+    henger.Rajzol();
     kup.Rajzol();
+
 
     glutSwapBuffers();     				// Buffercsere: rajzolas vege
 
