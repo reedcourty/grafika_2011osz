@@ -780,6 +780,9 @@ class Csirke {
 };
 
 Teglatest teglatest(0.30,0.45,0.5, Vector3D(-0.5,-0.5,-0.5));
+
+Teglatest mezo(5.00,5.00,0.01, Vector3D(0,0,-0.60));
+Teglatest ut(5.00,1.00,0.01, Vector3D(0,0,-0.60));
 Henger henger;
 Kup kup;
 Ellipszoid ellipszoid;
@@ -810,9 +813,9 @@ void onDisplay( ) {
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-    //gluLookAt(30*sin(fok),30*cos(fok),60,0,0,0,0,0,1);
+    gluLookAt(30*sin(fok),30*cos(fok),60,0,0,0,0,0,1);
 
-    gluLookAt(90*sin(fok),30,-10,0,0,0,0,0,1);
+    //gluLookAt(90*sin(fok),30,-10,0,0,1,0,0,1);
 
     glLightfv(GL_LIGHT0,GL_POSITION,AMBIENS_FENY);
     glEnable(GL_LIGHT0);
@@ -827,8 +830,16 @@ void onDisplay( ) {
     //henger.Rajzol();
     //kup.Rajzol();
     //ellipszoid.Rajzol();
-    //csirkenyomda.Rajzol();
+
+    //mezo.Rajzol();
+    ut.Rajzol();
+    csirkenyomda.Rajzol();
+
+    glPushMatrix();
+    glTranslatef(1.0,1.0,0.0);
+    glScalef(0.4,0.4,0.4);
     csirke.Rajzol();
+    glPopMatrix();
     //glPopMatrix();
 
     glutSwapBuffers();     				// Buffercsere: rajzolas vege
