@@ -684,7 +684,8 @@ class Uthenger {
 class Csirke {
 	private:
 	public:
-		Henger jlab1, jlab2, jlab3, blab1, blab2, blab3;
+		Henger jlab1, jlab2, blab1, blab2;
+		Kup jlab3, blab3;
 		Ellipszoid test;
 		Henger nyak;
 		Ellipszoid fej;
@@ -692,12 +693,12 @@ class Csirke {
 		Kup taraj0, taraj1, taraj2, taraj3;
 		Kup farok;
 		Csirke() {
-			jlab1 = Henger(0.8, 0.25, Vector3D(-0.20,-0.50,0));
-			jlab2 = Henger(0.8, 0.25, Vector3D(-0.20,-0.50,0));
-			jlab3 = Henger(0.8, 0.25, Vector3D(-0.20,-0.50,0));
-			blab1 = Henger(0.8, 0.25, Vector3D(-0.20,-0.50,0));
-			blab2 = Henger(0.8, 0.25, Vector3D(-0.20,-0.50,0));
-			blab3 = Henger(0.8, 0.25, Vector3D(-0.20,-0.50,0));
+			jlab1 = Henger(0.8, 0.10, Vector3D(0,0,0));
+			jlab2 = Henger(0.8, 0.10, Vector3D(0,0,0));
+			jlab3 = Kup(0.2, 0.25, Vector3D(0,0,0));
+			blab1 = Henger(0.8, 0.10, Vector3D(0,0,0));
+			blab2 = Henger(0.8, 0.10, Vector3D(0,0,0));
+			blab3 = Kup(0.2, 0.25, Vector3D(0,0,0));
 
 			test = Ellipszoid(0.8, 0.5, Vector3D(0,0,0));
 
@@ -718,12 +719,29 @@ class Csirke {
 
 		void Rajzol() {
 
-			//jlab1.Rajzol();
-			//jlab2.Rajzol();
-			//jlab3.Rajzol();
-			//blab1.Rajzol();
-			//blab2.Rajzol();
-			//blab3.Rajzol();
+			jlab1.setRotate(-50,1,0,0);
+			jlab1.setEltolas(Vector3D(0.25,-0.0,-0.40));
+			jlab1.Rajzol();
+
+			jlab2.setRotate(50,1,0,0);
+			jlab2.setEltolas(Vector3D(0.25,-0.0,-0.90));
+			jlab2.Rajzol();
+
+			jlab3.setRotate(90,1,0,0);
+			jlab3.setEltolas(Vector3D(0.25,-0.30,-1.2));
+			jlab3.Rajzol();
+
+			blab1.setRotate(-50,1,0,0);
+			blab1.setEltolas(Vector3D(-0.25,-0.0,-0.40));
+			blab1.Rajzol();
+
+			blab2.setRotate(50,1,0,0);
+			blab2.setEltolas(Vector3D(-0.25,-0.0,-0.90));
+			blab2.Rajzol();
+
+			blab3.setRotate(90,1,0,0);
+			blab3.setEltolas(Vector3D(-0.25,-0.30,-1.2));
+			blab3.Rajzol();
 
 			test.Rajzol();
 
@@ -731,7 +749,7 @@ class Csirke {
 			nyak.setEltolas(Vector3D(0,-0.35,-0.2));
 			nyak.Rajzol();
 
-			fej.setEltolas(Vector3D(0,-0.95,0.60));
+			fej.setEltolas(Vector3D(0,-0.95,0.50));
 			fej.Rajzol();
 
 			farok.setRotate(200,1,0,0);
@@ -739,23 +757,23 @@ class Csirke {
 			farok.Rajzol();
 
 			csor.setRotate(200,1,0,0);
-			csor.setEltolas(Vector3D(0,-1.4,0.50));
+			csor.setEltolas(Vector3D(0,-1.4,0.40));
 			csor.Rajzol();
 
 			taraj0.setRotate(80,1,0,0);
-			taraj0.setEltolas(Vector3D(0,-0.75,1.00));
+			taraj0.setEltolas(Vector3D(0,-0.75,0.90));
 			taraj0.Rajzol();
 
 			taraj1.setRotate(60,1,0,0);
-			taraj1.setEltolas(Vector3D(0,-0.65,0.90));
+			taraj1.setEltolas(Vector3D(0,-0.65,0.80));
 			taraj1.Rajzol();
 
 			taraj2.setRotate(40,1,0,0);
-			taraj2.setEltolas(Vector3D(0,-0.55,0.80));
+			taraj2.setEltolas(Vector3D(0,-0.55,0.70));
 			taraj2.Rajzol();
 
 			taraj3.setRotate(20,1,0,0);
-			taraj3.setEltolas(Vector3D(0,-0.50,0.70));
+			taraj3.setEltolas(Vector3D(0,-0.50,0.60));
 			taraj3.Rajzol();
 
 		}
@@ -792,7 +810,9 @@ void onDisplay( ) {
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-    gluLookAt(30*sin(fok),30*cos(fok),60,0,0,0,0,0,1);
+    //gluLookAt(30*sin(fok),30*cos(fok),60,0,0,0,0,0,1);
+
+    gluLookAt(90*sin(fok),30,-10,0,0,0,0,0,1);
 
     glLightfv(GL_LIGHT0,GL_POSITION,AMBIENS_FENY);
     glEnable(GL_LIGHT0);
