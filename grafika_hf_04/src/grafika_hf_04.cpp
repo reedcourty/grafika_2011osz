@@ -256,14 +256,14 @@ class Vertex {
 
 		void Rajzol() {
 
-			/*
+
 			#if defined(DEBUG)
 				cout << "1. csucspont: " << csucspont[0].X() << "," << csucspont[0].Y() << "," << csucspont[0].Z() << endl;
 				cout << "2. csucspont: " << csucspont[1].X() << "," << csucspont[1].Y() << "," << csucspont[1].Z() << endl;
 				cout << "3. csucspont: " << csucspont[2].X() << "," << csucspont[2].Y() << "," << csucspont[2].Z() << endl;
 				cout << "Normalvektor: " << normalvektor.X() << "," << normalvektor.Y() << "," << normalvektor.Z() << endl;
 			#endif
-			*/
+
 
 			glBegin(GL_TRIANGLES);
 				glNormal3f(normalvektor.X(),normalvektor.Y(),normalvektor.Z());
@@ -291,6 +291,11 @@ class Ojjektum {
 		int vertexszam;
 
 	public:
+
+		Ojjektum() {
+			vertexszam = 0;
+		}
+
 		void setRotate(float szog, float x, float y, float z) {
 			forgatas_szog = szog;
 			forgatas_x = x;
@@ -310,65 +315,84 @@ class Ojjektum {
 
 };
 
-class Teglatest {
+class Teglatest : public Ojjektum {
 	private:
+		float a;
+		float b;
+		float c;
+		Vector3D kozeppont;
 		Vector3D csucspontok[8];
-		Vertex vertexek[12];
 	public:
-		Teglatest(Vector3D _csucspontok[8]) {
-			for (int i = 0; i < 8; i++) {
-				this->csucspontok[i] = _csucspontok[i];
-			}
-
-			Vertex v;
-			v = Vertex(csucspontok[0], csucspontok[1], csucspontok[2]);
-			this->vertexek[0] = v;
-
-			v = Vertex(csucspontok[0], csucspontok[2], csucspontok[3]);
-			this->vertexek[1] = v;
-
-			v = Vertex(csucspontok[1], csucspontok[5], csucspontok[6]);
-			this->vertexek[2] = v;
-
-			v = Vertex(csucspontok[1], csucspontok[6], csucspontok[2]);
-			this->vertexek[3] = v;
-
-			v = Vertex(csucspontok[5], csucspontok[4], csucspontok[7]);
-			this->vertexek[4] = v;
-
-			v = Vertex(csucspontok[5], csucspontok[7], csucspontok[6]);
-			this->vertexek[5] = v;
-
-			v = Vertex(csucspontok[4], csucspontok[0], csucspontok[3]);
-			this->vertexek[6] = v;
-
-			v = Vertex(csucspontok[4], csucspontok[3], csucspontok[7]);
-			this->vertexek[7] = v;
-
-			v = Vertex(csucspontok[0], csucspontok[4], csucspontok[5]);
-			this->vertexek[8] = v;
-
-			v = Vertex(csucspontok[0], csucspontok[5], csucspontok[1]);
-			this->vertexek[9] = v;
-
-			v = Vertex(csucspontok[3], csucspontok[6], csucspontok[7]);
-			this->vertexek[10] = v;
-
-			v = Vertex(csucspontok[3], csucspontok[2], csucspontok[6]);
-			this->vertexek[11] = v;
-
+		Teglatest(float _a, float _b, float _c, Vector3D _kozeppont) {
+			this->a = _a;
+			this->b = _b;
+			this->c = _c;
+			this->kozeppont = _kozeppont;
+			ComputeCsucsok();
+			ComputeVertices();
 		}
 
-		void Rajzol() {
+		void ComputeCsucsok() {
+			csucspontok[0]=Vector3D(kozeppont.X()-a/2,kozeppont.Y()+b/2,kozeppont.Z()-c/2);
+			csucspontok[1]=Vector3D(kozeppont.X()+a/2,kozeppont.Y()+b/2,kozeppont.Z()-c/2);
+			csucspontok[2]=Vector3D(kozeppont.X()+a/2,kozeppont.Y()-b/2,kozeppont.Z()-c/2);
+			csucspontok[3]=Vector3D(kozeppont.X()-a/2,kozeppont.Y()-b/2,kozeppont.Z()-c/2);
 
-			glMatrixMode(GL_MODELVIEW);
-			glLoadIdentity();
-			glRotatef(45,0.45,1,0);
+			csucspontok[4]=Vector3D(kozeppont.X()-a/2,kozeppont.Y()+b/2,kozeppont.Z()+c/2);
+			csucspontok[5]=Vector3D(kozeppont.X()+a/2,kozeppont.Y()+b/2,kozeppont.Z()+c/2);
+			csucspontok[6]=Vector3D(kozeppont.X()+a/2,kozeppont.Y()-b/2,kozeppont.Z()+c/2);
+			csucspontok[7]=Vector3D(kozeppont.X()-a/2,kozeppont.Y()-b/2,kozeppont.Z()+c/2);
+		}
 
-			for (int i = 0; i < 12; i++) {
-				vertexek[i].Rajzol();
-			}
-			glLoadIdentity();
+		void ComputeVertices() {
+			Vertex v;
+			v = Vertex(csucspontok[0], csucspontok[1], csucspontok[2]);
+			this->vertexek[vertexszam] = v;
+			vertexszam++;
+
+			v = Vertex(csucspontok[0], csucspontok[2], csucspontok[3]);
+			this->vertexek[vertexszam] = v;
+			vertexszam++;
+
+			v = Vertex(csucspontok[1], csucspontok[5], csucspontok[6]);
+			this->vertexek[vertexszam] = v;
+			vertexszam++;
+
+			v = Vertex(csucspontok[1], csucspontok[6], csucspontok[2]);
+			this->vertexek[vertexszam] = v;
+			vertexszam++;
+
+			v = Vertex(csucspontok[5], csucspontok[4], csucspontok[7]);
+			this->vertexek[vertexszam] = v;
+			vertexszam++;
+
+			v = Vertex(csucspontok[5], csucspontok[7], csucspontok[6]);
+			this->vertexek[vertexszam] = v;
+			vertexszam++;
+
+			v = Vertex(csucspontok[4], csucspontok[0], csucspontok[3]);
+			this->vertexek[vertexszam] = v;
+			vertexszam++;
+
+			v = Vertex(csucspontok[4], csucspontok[3], csucspontok[7]);
+			this->vertexek[vertexszam] = v;
+			vertexszam++;
+
+			v = Vertex(csucspontok[0], csucspontok[4], csucspontok[5]);
+			this->vertexek[vertexszam] = v;
+			vertexszam++;
+
+			v = Vertex(csucspontok[0], csucspontok[5], csucspontok[1]);
+			this->vertexek[vertexszam] = v;
+			vertexszam++;
+
+			v = Vertex(csucspontok[3], csucspontok[6], csucspontok[7]);
+			this->vertexek[vertexszam] = v;
+			vertexszam++;
+
+			v = Vertex(csucspontok[3], csucspontok[2], csucspontok[6]);
+			this->vertexek[vertexszam] = v;
+			vertexszam++;
 		}
 };
 
@@ -452,6 +476,7 @@ private:
 			magassag = 0.70;
 			sugar = 0.25;
 			kozeppont = Vector3D(0,0,0);
+			ComputeVertices();
 		};
 
 		void ComputeVertices() {
@@ -594,18 +619,7 @@ class Ellipszoid {
 		}
 };
 
-Vector3D csucsok[8]={
-		Vector3D(+0.00,+0.00,+0.00),
-		Vector3D(+0.50,+0.00,+0.00),
-		Vector3D(+0.50,-0.50,+0.00),
-		Vector3D(+0.00,-0.50,+0.00),
-		Vector3D(+0.00,+0.00,+0.50),
-		Vector3D(+0.50,+0.00,+0.50),
-		Vector3D(+0.50,-0.50,+0.50),
-		Vector3D(+0.00,-0.50,+0.50),
-};
-
-Teglatest t(csucsok);
+Teglatest teglatest(0.30,0.45,0.5, Vector3D(-0.5,-0.5,-0.5));
 Henger henger;
 Kup kup;
 Ellipszoid ellipszoid;
@@ -617,7 +631,6 @@ Sun sun;
 void onInitialization( ) {
 	camera.Init();
 	henger.ComputeVertices();
-	kup.ComputeVertices();
 }
 
 // Rajzolas, ha az alkalmazas ablak ervenytelenne valik, akkor ez a fuggveny hivodik meg
@@ -630,23 +643,22 @@ void onDisplay( ) {
 
 
     glMatrixMode(GL_MODELVIEW);
-    	glLoadIdentity();
+    glLoadIdentity();
 
-    	gluLookAt(30*sin(fok),30*cos(fok),300,0,0,0,0,1,0);
+    gluLookAt(30*sin(fok),30*cos(fok),300,0,0,0,0,1,0);
 
-    		glLightfv(GL_LIGHT0,GL_POSITION,AMBIENS_FENY);
-    		glEnable(GL_LIGHT0);
+    glLightfv(GL_LIGHT0,GL_POSITION,AMBIENS_FENY);
+    glEnable(GL_LIGHT0);
 
-    		float nap[4] = {sun.getPozicio().X(), sun.getPozicio().Y(), sun.getPozicio().Z(), sun.getH()};
-    		glLightfv(GL_LIGHT1,GL_POSITION,nap);
+    float nap[4] = {sun.getPozicio().X(), sun.getPozicio().Y(), sun.getPozicio().Z(), sun.getH()};
+    glLightfv(GL_LIGHT1,GL_POSITION,nap);
 
-    		glEnable(GL_LIGHT1);
+    glEnable(GL_LIGHT1);
 
-    //t.Rajzol();
-    henger.Rajzol();
+    teglatest.Rajzol();
+    //henger.Rajzol();
     //kup.Rajzol();
     //ellipszoid.Rajzol();
-
 
     glutSwapBuffers();     				// Buffercsere: rajzolas vege
 
@@ -665,12 +677,14 @@ void onKeyboard(unsigned char key, int x, int y) {
     if (key == 'w') {
     	fok += 1;
     	henger.setRotate(fok,1,0,0);
+    	teglatest.setRotate(fok,0,1,0);
     	glutPostRedisplay();
     }
 
     if (key == 's') {
         fok -= 1;
         henger.setRotate(fok,1,0,0);
+        teglatest.setRotate(fok,0,1,0);
         glutPostRedisplay();
     }
 }
