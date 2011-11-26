@@ -257,13 +257,13 @@ class Vertex {
 		void Rajzol() {
 
 
-			#if defined(DEBUG)
+			/*#if defined(DEBUG)
 				cout << "1. csucspont: " << csucspont[0].X() << "," << csucspont[0].Y() << "," << csucspont[0].Z() << endl;
 				cout << "2. csucspont: " << csucspont[1].X() << "," << csucspont[1].Y() << "," << csucspont[1].Z() << endl;
 				cout << "3. csucspont: " << csucspont[2].X() << "," << csucspont[2].Y() << "," << csucspont[2].Z() << endl;
 				cout << "Normalvektor: " << normalvektor.X() << "," << normalvektor.Y() << "," << normalvektor.Z() << endl;
 			#endif
-
+			*/
 
 			glBegin(GL_TRIANGLES);
 				glNormal3f(normalvektor.X(),normalvektor.Y(),normalvektor.Z());
@@ -286,14 +286,16 @@ class Ojjektum {
 		float forgatas_x;
 		float forgatas_y;
 		float forgatas_z;
+		Vector3D eltolas;
 	protected:
-		Vertex vertexek[1024];
+		Vertex vertexek[2048];
 		int vertexszam;
 
 	public:
 
 		Ojjektum() {
 			vertexszam = 0;
+			eltolas = Vector3D(0,0,0);
 		}
 
 		void setRotate(float szog, float x, float y, float z) {
@@ -303,9 +305,14 @@ class Ojjektum {
 			forgatas_z = z;
 		}
 
+		void setEltolas(Vector3D v) {
+			eltolas = v;
+		}
+
 		void Rajzol() {
 			glMatrixMode(GL_MODELVIEW);
 			glLoadIdentity();
+			glTranslatef(eltolas.X(),eltolas.Y(),eltolas.Z());
 			glRotatef(forgatas_szog,forgatas_x,forgatas_y,forgatas_z);
 			for (int i = 0; i < vertexszam; i++) {
 				vertexek[i].Rajzol();
@@ -323,6 +330,7 @@ class Teglatest : public Ojjektum {
 		Vector3D kozeppont;
 		Vector3D csucspontok[8];
 	public:
+		Teglatest() {}
 		Teglatest(float _a, float _b, float _c, Vector3D _kozeppont) {
 			this->a = _a;
 			this->b = _b;
@@ -407,7 +415,15 @@ class Henger : public Ojjektum {
 			magassag = 0.5;
 			sugar = 0.5;
 			kozeppont = Vector3D(0,0,0);
+			ComputeVertices();
 		};
+
+		Henger(float _magassag, float _sugar, Vector3D _kozeppont) {
+			this->magassag = _magassag;
+			this->sugar = _sugar;
+			this->kozeppont = _kozeppont;
+			ComputeVertices();
+		}
 
 		void ComputeVertices() {
 			Vector3D teteje = Vector3D(kozeppont.X(),kozeppont.Y()+magassag/2,kozeppont.Z());
@@ -464,13 +480,12 @@ class Henger : public Ojjektum {
 		}
 };
 
-class Kup {
+class Kup : public Ojjektum {
 private:
 		float magassag;
 		float sugar;
 		Vector3D kozeppont;
 
-		Vertex vertexek[KUPVERTEXSZAM*3];
 	public:
 		Kup() {
 			magassag = 0.70;
@@ -498,39 +513,28 @@ private:
 			alsolap[KUPVERTEXSZAM/2] = alsolap[0];
 
 			for (int i = 0; i < KUPVERTEXSZAM/2; i++) {
-				vertexek[i+KUPVERTEXSZAM/2] = Vertex(alja,alsolap[i],alsolap[i+1]);
+				vertexek[vertexszam] = Vertex(alja,alsolap[i],alsolap[i+1]);
+				vertexszam++;
 			}
 
 			for (int i = 0; i < KUPVERTEXSZAM/2; i++) {
-				vertexek[i+KUPVERTEXSZAM*2] = Vertex(teteje,alsolap[i+1],alsolap[i]);
+				vertexek[vertexszam] = Vertex(teteje,alsolap[i+1],alsolap[i]);
+				vertexszam++;
 			}
-
 		}
 
-		void Rajzol() {
-			glMatrixMode(GL_MODELVIEW);
-			glLoadIdentity();
-			glRotatef(fok,1,0,0);
-			for (int i = 0; i < KUPVERTEXSZAM*3; i++) {
-				vertexek[i].Rajzol();
-			}
-			glLoadIdentity();
-		}
 };
 
-class Ellipszoid {
+class Ellipszoid : public Ojjektum {
 	private:
 		float hossz;
 		float sugar;
 		Vector3D kozeppont;
-		Vertex vertexek[ELLIPSZOIDVERTEXSZAM*20];
-		int vszam;
 	public:
 		Ellipszoid() {
 			hossz = 0.60;
 			sugar = 0.25;
 			kozeppont = Vector3D(0,0,0);
-			vszam = 0;
 			ComputeVertices();
 		}
 
@@ -566,18 +570,18 @@ class Ellipszoid {
 
 			if (irany == 0) {
 				for (int i = 0; i < ELLIPSZOIDVERTEXSZAM; i++) {
-					vertexek[vszam] = Vertex(kkorlap[i],mkorlap[i],mkorlap[i+1]);
-					vszam++;
-					vertexek[vszam] = Vertex(kkorlap[i],mkorlap[i+1],kkorlap[i+1]);
-					vszam++;
+					vertexek[vertexszam] = Vertex(kkorlap[i],mkorlap[i],mkorlap[i+1]);
+					vertexszam++;
+					vertexek[vertexszam] = Vertex(kkorlap[i],mkorlap[i+1],kkorlap[i+1]);
+					vertexszam++;
 				}
 			}
 			else {
 				for (int i = 0; i < ELLIPSZOIDVERTEXSZAM; i++) {
-					vertexek[vszam] = Vertex(kkorlap[i],mkorlap[i+1],mkorlap[i]);
-					vszam++;
-					vertexek[vszam] = Vertex(kkorlap[i],kkorlap[i+1],mkorlap[i+1]);
-					vszam++;
+					vertexek[vertexszam] = Vertex(kkorlap[i],mkorlap[i+1],mkorlap[i]);
+					vertexszam++;
+					vertexek[vertexszam] = Vertex(kkorlap[i],kkorlap[i+1],mkorlap[i+1]);
+					vertexszam++;
 				}
 			}
 
@@ -608,15 +612,54 @@ class Ellipszoid {
 
 		}
 
-		void Rajzol() {
-			glMatrixMode(GL_MODELVIEW);
-			glLoadIdentity();
-			glRotatef(fok,1,0,0);
-			for (int i = 0; i < vszam; i++) {
-				vertexek[i].Rajzol();
-			}
-			glLoadIdentity();
+};
+
+class Uthenger {
+	private:
+
+	public:
+		Teglatest teto, ttarto1, ttarto2, ttarto3, ttarto4, kemeny, test, motor, tengely1, tengely2;
+		Henger elsokerek, hatsokerek;
+
+		Uthenger() {
+			teto = Teglatest(0.8,0.1,0.6, Vector3D(0.0,0.50,0.0));
+			ttarto1 = Teglatest(0.1,0.4,0.1, Vector3D(0.25,0.25,0.25));
+			ttarto2 = Teglatest(0.1,0.4,0.1, Vector3D(-0.25,0.25,0.25));
+			ttarto3 = Teglatest(0.1,0.4,0.1, Vector3D(0.25,0.25,-0.25));
+			ttarto4 = Teglatest(0.1,0.4,0.1, Vector3D(-0.25,0.25,-0.25));
+
+			test = Teglatest(1.2,0.2,0.8, Vector3D(0.0,0.0,0.0));
+
+			kemeny = Teglatest(0.05,0.2,0.05, Vector3D(-0.50,0.20,-0.25));
+
+			motor = Teglatest(0.4,0.4,0.4, Vector3D(0.0,-0.25,0.0));
+
+			elsokerek = Henger(0.8, 0.2, Vector3D(-0.20,-0.50,0));
+			hatsokerek = Henger(0.8, 0.2, Vector3D(+0.20,+0.50,0));
+
 		}
+
+		void Rajzol() {
+			teto.Rajzol();
+			ttarto1.Rajzol();
+			ttarto2.Rajzol();
+			ttarto3.Rajzol();
+			ttarto4.Rajzol();
+			test.Rajzol();
+			kemeny.Rajzol();
+
+			motor.Rajzol();
+
+			elsokerek.setRotate(90,1,0,0);
+			elsokerek.Rajzol();
+
+			hatsokerek.setRotate(90,1,0,0);
+			hatsokerek.setEltolas(Vector3D(0.5,0.9,0.1));
+			hatsokerek.Rajzol();
+			glLoadIdentity();
+
+		}
+
 };
 
 Teglatest teglatest(0.30,0.45,0.5, Vector3D(-0.5,-0.5,-0.5));
@@ -624,13 +667,16 @@ Henger henger;
 Kup kup;
 Ellipszoid ellipszoid;
 
+Uthenger csirkenyomda;
+
 Camera camera;
 Sun sun;
+
+long time=glutGet(GLUT_ELAPSED_TIME);
 
 // Inicializacio, a program futasanak kezdeten, az OpenGL kontextus letrehozasa utan hivodik meg (ld. main() fv.)
 void onInitialization( ) {
 	camera.Init();
-	henger.ComputeVertices();
 }
 
 // Rajzolas, ha az alkalmazas ablak ervenytelenne valik, akkor ez a fuggveny hivodik meg
@@ -655,10 +701,13 @@ void onDisplay( ) {
 
     glEnable(GL_LIGHT1);
 
-    teglatest.Rajzol();
+    glPushMatrix();
+    //teglatest.Rajzol();
     //henger.Rajzol();
     //kup.Rajzol();
     //ellipszoid.Rajzol();
+    csirkenyomda.Rajzol();
+    glPopMatrix();
 
     glutSwapBuffers();     				// Buffercsere: rajzolas vege
 
@@ -678,6 +727,18 @@ void onKeyboard(unsigned char key, int x, int y) {
     	fok += 1;
     	henger.setRotate(fok,1,0,0);
     	teglatest.setRotate(fok,0,1,0);
+
+    	csirkenyomda.teto.setRotate(fok,0,1,0);
+    	csirkenyomda.ttarto1.setRotate(fok,0,1,0);
+    	csirkenyomda.ttarto2.setRotate(fok,0,1,0);
+    	csirkenyomda.ttarto3.setRotate(fok,0,1,0);
+    	csirkenyomda.ttarto4.setRotate(fok,0,1,0);
+    	csirkenyomda.test.setRotate(fok,0,1,0);
+    	csirkenyomda.kemeny.setRotate(fok,0,1,0);
+    	csirkenyomda.motor.setRotate(fok,0,1,0);
+    	csirkenyomda.elsokerek.setRotate(fok,0,1,0);
+    	csirkenyomda.hatsokerek.setRotate(fok,0,1,0);
+
     	glutPostRedisplay();
     }
 
@@ -685,6 +746,18 @@ void onKeyboard(unsigned char key, int x, int y) {
         fok -= 1;
         henger.setRotate(fok,1,0,0);
         teglatest.setRotate(fok,0,1,0);
+
+		csirkenyomda.teto.setRotate(fok,0,1,0);
+		csirkenyomda.ttarto1.setRotate(fok,0,1,0);
+		csirkenyomda.ttarto2.setRotate(fok,0,1,0);
+		csirkenyomda.ttarto3.setRotate(fok,0,1,0);
+		csirkenyomda.ttarto4.setRotate(fok,0,1,0);
+    	csirkenyomda.test.setRotate(fok,0,1,0);
+    	csirkenyomda.kemeny.setRotate(fok,0,1,0);
+    	csirkenyomda.motor.setRotate(fok,0,1,0);
+    	csirkenyomda.elsokerek.setRotate(fok,0,1,0);
+    	csirkenyomda.hatsokerek.setRotate(fok,0,1,0);
+
         glutPostRedisplay();
     }
 }
@@ -697,6 +770,14 @@ void onMouse(int button, int state, int x, int y) {
 // `Idle' esemenykezelo, jelzi, hogy az ido telik, az Idle esemenyek frekvenciajara csak a 0 a garantalt minimalis ertek
 void onIdle( ) {
      // long time = glutGet(GLUT_ELAPSED_TIME);		// program inditasa ota eltelt ido
+	long new_time=glutGet(GLUT_ELAPSED_TIME);
+		float dt=(float)(new_time - time)/(float)1000;
+		if(dt>0)
+		{
+			fok+=0.41888*dt*10;
+			time=new_time;
+			onDisplay();
+		}
 }
 
 // ...Idaig modosithatod
