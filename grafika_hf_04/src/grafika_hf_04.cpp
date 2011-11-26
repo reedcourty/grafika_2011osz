@@ -87,7 +87,7 @@ const float PI = 3.14159265358979323846;
 float AMBIENS_FENY[4] = {0,0,1,0};
 const int HENGERVERTEXSZAM = 128;
 const int KUPVERTEXSZAM = 128;
-const int ELLIPSZOIDVERTEXSZAM = 64;
+const int ELLIPSZOIDVERTEXSZAM = 32;
 
 class Vector3D {
 	// Dr. Szirmay-Kalos L. - Haromdimenzios grafika, ... 35. old. alapjan
@@ -496,6 +496,13 @@ private:
 			ComputeVertices();
 		};
 
+		Kup(float _magassag, float _sugar, Vector3D _kozeppont) {
+			magassag = _magassag;
+			sugar = _sugar;
+			kozeppont = _kozeppont;
+			ComputeVertices();
+		}
+
 		void ComputeVertices() {
 			Vector3D teteje = Vector3D(kozeppont.X(),kozeppont.Y()+magassag/2,kozeppont.Z());
 			Vector3D alja = Vector3D(kozeppont.X(),kozeppont.Y()-magassag/2,kozeppont.Z());
@@ -537,6 +544,13 @@ class Ellipszoid : public Ojjektum {
 			hossz = 0.60;
 			sugar = 0.25;
 			kozeppont = Vector3D(0,0,0);
+			ComputeVertices();
+		}
+
+		Ellipszoid(float _hossz, float _sugar, Vector3D v) {
+			hossz = _hossz;
+			sugar = _sugar;
+			kozeppont = v;
 			ComputeVertices();
 		}
 
@@ -667,12 +681,93 @@ class Uthenger {
 
 };
 
+class Csirke {
+	private:
+	public:
+		Henger jlab1, jlab2, jlab3, blab1, blab2, blab3;
+		Ellipszoid test;
+		Henger nyak;
+		Ellipszoid fej;
+		Kup csor;
+		Kup taraj0, taraj1, taraj2, taraj3;
+		Kup farok;
+		Csirke() {
+			jlab1 = Henger(0.8, 0.25, Vector3D(-0.20,-0.50,0));
+			jlab2 = Henger(0.8, 0.25, Vector3D(-0.20,-0.50,0));
+			jlab3 = Henger(0.8, 0.25, Vector3D(-0.20,-0.50,0));
+			blab1 = Henger(0.8, 0.25, Vector3D(-0.20,-0.50,0));
+			blab2 = Henger(0.8, 0.25, Vector3D(-0.20,-0.50,0));
+			blab3 = Henger(0.8, 0.25, Vector3D(-0.20,-0.50,0));
+
+			test = Ellipszoid(0.8, 0.5, Vector3D(0,0,0));
+
+			nyak = Henger(0.6, 0.20, Vector3D(0.20,-0.50,0));
+
+			fej = Ellipszoid(0.50, 0.30, Vector3D(0,0,0));
+
+			farok = Kup(0.5,0.4,Vector3D(0,0,0));
+
+			csor = Kup(0.5,0.15,Vector3D(0,0,0));
+
+			taraj0 = Kup(0.3,0.10,Vector3D(0,0,0));
+			taraj1 = Kup(0.3,0.10,Vector3D(0,0,0));
+			taraj2 = Kup(0.3,0.10,Vector3D(0,0,0));
+			taraj3 = Kup(0.3,0.10,Vector3D(0,0,0));
+
+		}
+
+		void Rajzol() {
+
+			//jlab1.Rajzol();
+			//jlab2.Rajzol();
+			//jlab3.Rajzol();
+			//blab1.Rajzol();
+			//blab2.Rajzol();
+			//blab3.Rajzol();
+
+			test.Rajzol();
+
+			nyak.setRotate(-45, 1, 0, 0);
+			nyak.setEltolas(Vector3D(0,-0.35,-0.2));
+			nyak.Rajzol();
+
+			fej.setEltolas(Vector3D(0,-0.95,0.60));
+			fej.Rajzol();
+
+			farok.setRotate(200,1,0,0);
+			farok.setEltolas(Vector3D(0,0.7,0.1));
+			farok.Rajzol();
+
+			csor.setRotate(200,1,0,0);
+			csor.setEltolas(Vector3D(0,-1.4,0.50));
+			csor.Rajzol();
+
+			taraj0.setRotate(80,1,0,0);
+			taraj0.setEltolas(Vector3D(0,-0.75,1.00));
+			taraj0.Rajzol();
+
+			taraj1.setRotate(60,1,0,0);
+			taraj1.setEltolas(Vector3D(0,-0.65,0.90));
+			taraj1.Rajzol();
+
+			taraj2.setRotate(40,1,0,0);
+			taraj2.setEltolas(Vector3D(0,-0.55,0.80));
+			taraj2.Rajzol();
+
+			taraj3.setRotate(20,1,0,0);
+			taraj3.setEltolas(Vector3D(0,-0.50,0.70));
+			taraj3.Rajzol();
+
+		}
+};
+
 Teglatest teglatest(0.30,0.45,0.5, Vector3D(-0.5,-0.5,-0.5));
 Henger henger;
 Kup kup;
 Ellipszoid ellipszoid;
 
 Uthenger csirkenyomda;
+Csirke csirke;
 
 Camera camera;
 Sun sun;
@@ -712,7 +807,8 @@ void onDisplay( ) {
     //henger.Rajzol();
     //kup.Rajzol();
     //ellipszoid.Rajzol();
-    csirkenyomda.Rajzol();
+    //csirkenyomda.Rajzol();
+    csirke.Rajzol();
     //glPopMatrix();
 
     glutSwapBuffers();     				// Buffercsere: rajzolas vege
