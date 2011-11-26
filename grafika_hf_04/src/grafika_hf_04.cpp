@@ -240,7 +240,7 @@ class Vertex {
 			Vector3D v1 = csucspont[0]-csucspont[1];
 			Vector3D v2 = csucspont[2]-csucspont[1];
 
-			this->normalvektor = v1%v2;
+			this->normalvektor = v2%v1;
 		};
 
 		Vertex(Vector3D &v1, Vector3D &v2, Vector3D &v3) {
@@ -251,7 +251,7 @@ class Vertex {
 			Vector3D n1 = csucspont[0]-csucspont[1];
 			Vector3D n2 = csucspont[2]-csucspont[1];
 
-			this->normalvektor = n1%n2;
+			this->normalvektor = n2%n1;
 		}
 
 		void Rajzol() {
@@ -312,11 +312,13 @@ class Ojjektum {
 		void Rajzol() {
 			//glMatrixMode(GL_MODELVIEW);
 			//glLoadIdentity();
+			glPushMatrix();
 			glTranslatef(eltolas.X(),eltolas.Y(),eltolas.Z());
 			glRotatef(forgatas_szog,forgatas_x,forgatas_y,forgatas_z);
 			for (int i = 0; i < vertexszam; i++) {
 				vertexek[i].Rajzol();
 			}
+			glPopMatrix();
 			//glLoadIdentity();
 		}
 
@@ -640,6 +642,8 @@ class Uthenger {
 		}
 
 		void Rajzol() {
+			glPushMatrix();
+			glRotatef(90,1,0,0);
 			teto.Rajzol();
 			ttarto1.Rajzol();
 			ttarto2.Rajzol();
@@ -652,12 +656,13 @@ class Uthenger {
 			motor.Rajzol();
 
 			elsokerek.setRotate(90,1,0,0);
-			elsokerek.setEltolas(Vector3D(-0.40,-0.30,0.0));
+			elsokerek.setEltolas(Vector3D(-0.40,-0.30,+0.50));
 			elsokerek.Rajzol();
 
 			hatsokerek.setRotate(90,1,0,0);
-			hatsokerek.setEltolas(Vector3D(0.40,-0.30,0.0));
+			hatsokerek.setEltolas(Vector3D(0.40,-0.30,-0.50));
 			hatsokerek.Rajzol();
+			glPopMatrix();
 		}
 
 };
