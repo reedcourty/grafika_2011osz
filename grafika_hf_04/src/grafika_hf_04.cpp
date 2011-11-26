@@ -202,7 +202,7 @@ class Camera {
 
 			glMatrixMode(GL_PROJECTION);
 			glLoadIdentity();
-			gluPerspective(50,0,1,100);
+			gluPerspective(4,1,1,100);
 		}
 };
 
@@ -310,14 +310,14 @@ class Ojjektum {
 		}
 
 		void Rajzol() {
-			glMatrixMode(GL_MODELVIEW);
-			glLoadIdentity();
+			//glMatrixMode(GL_MODELVIEW);
+			//glLoadIdentity();
 			glTranslatef(eltolas.X(),eltolas.Y(),eltolas.Z());
 			glRotatef(forgatas_szog,forgatas_x,forgatas_y,forgatas_z);
 			for (int i = 0; i < vertexszam; i++) {
 				vertexek[i].Rajzol();
 			}
-			glLoadIdentity();
+			//glLoadIdentity();
 		}
 
 };
@@ -672,10 +672,11 @@ Uthenger csirkenyomda;
 Camera camera;
 Sun sun;
 
-long time=glutGet(GLUT_ELAPSED_TIME);
+long time;
 
 // Inicializacio, a program futasanak kezdeten, az OpenGL kontextus letrehozasa utan hivodik meg (ld. main() fv.)
 void onInitialization( ) {
+	time = glutGet(GLUT_ELAPSED_TIME);
 	camera.Init();
 }
 
@@ -691,7 +692,7 @@ void onDisplay( ) {
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-    gluLookAt(30*sin(fok),30*cos(fok),300,0,0,0,0,1,0);
+    gluLookAt(30*sin(fok),30*cos(fok),60,0,0,0,0,0,1);
 
     glLightfv(GL_LIGHT0,GL_POSITION,AMBIENS_FENY);
     glEnable(GL_LIGHT0);
@@ -701,13 +702,13 @@ void onDisplay( ) {
 
     glEnable(GL_LIGHT1);
 
-    glPushMatrix();
+    //glPushMatrix();
     //teglatest.Rajzol();
     //henger.Rajzol();
     //kup.Rajzol();
     //ellipszoid.Rajzol();
     csirkenyomda.Rajzol();
-    glPopMatrix();
+    //glPopMatrix();
 
     glutSwapBuffers();     				// Buffercsere: rajzolas vege
 
@@ -723,43 +724,6 @@ void onKeyboard(unsigned char key, int x, int y) {
 
     if (key == 'd') glutPostRedisplay( ); 		// d beture rajzold ujra a kepet
 
-    if (key == 'w') {
-    	fok += 1;
-    	henger.setRotate(fok,1,0,0);
-    	teglatest.setRotate(fok,0,1,0);
-
-    	csirkenyomda.teto.setRotate(fok,0,1,0);
-    	csirkenyomda.ttarto1.setRotate(fok,0,1,0);
-    	csirkenyomda.ttarto2.setRotate(fok,0,1,0);
-    	csirkenyomda.ttarto3.setRotate(fok,0,1,0);
-    	csirkenyomda.ttarto4.setRotate(fok,0,1,0);
-    	csirkenyomda.test.setRotate(fok,0,1,0);
-    	csirkenyomda.kemeny.setRotate(fok,0,1,0);
-    	csirkenyomda.motor.setRotate(fok,0,1,0);
-    	csirkenyomda.elsokerek.setRotate(fok,0,1,0);
-    	csirkenyomda.hatsokerek.setRotate(fok,0,1,0);
-
-    	glutPostRedisplay();
-    }
-
-    if (key == 's') {
-        fok -= 1;
-        henger.setRotate(fok,1,0,0);
-        teglatest.setRotate(fok,0,1,0);
-
-		csirkenyomda.teto.setRotate(fok,0,1,0);
-		csirkenyomda.ttarto1.setRotate(fok,0,1,0);
-		csirkenyomda.ttarto2.setRotate(fok,0,1,0);
-		csirkenyomda.ttarto3.setRotate(fok,0,1,0);
-		csirkenyomda.ttarto4.setRotate(fok,0,1,0);
-    	csirkenyomda.test.setRotate(fok,0,1,0);
-    	csirkenyomda.kemeny.setRotate(fok,0,1,0);
-    	csirkenyomda.motor.setRotate(fok,0,1,0);
-    	csirkenyomda.elsokerek.setRotate(fok,0,1,0);
-    	csirkenyomda.hatsokerek.setRotate(fok,0,1,0);
-
-        glutPostRedisplay();
-    }
 }
 
 // Eger esemenyeket lekezelo fuggveny
@@ -774,7 +738,7 @@ void onIdle( ) {
 		float dt=(float)(new_time - time)/(float)1000;
 		if(dt>0)
 		{
-			fok+=0.41888*dt*10;
+			fok+=0.41888*dt;
 			time=new_time;
 			onDisplay();
 		}
