@@ -413,6 +413,82 @@ class Henger {
 		}
 };
 
+class Kup {
+private:
+		float magassag;
+		float sugar;
+		Vector3D kozeppont;
+
+		Vertex vertexek[HENGERVERTEXSZAM*3];
+	public:
+		Kup() {
+			magassag = 0.5;
+			sugar = 0.5;
+			kozeppont = Vector3D(0,0,0);
+		};
+
+		void ComputeVertices() {
+			Vector3D teteje = Vector3D(kozeppont.X(),kozeppont.Y()+magassag/2,kozeppont.Z());
+			Vector3D alja = Vector3D(kozeppont.X(),kozeppont.Y()-magassag/2,kozeppont.Z());
+
+			Vector3D elsopont = Vector3D(kozeppont.X(),kozeppont.Y()+magassag/2,kozeppont.Z()+sugar);
+
+			//#if defined(DEBUG)
+			//	cout << "teteje: " << teteje.X() << "," << teteje.Y() << "," << teteje.Z() << endl;
+			//	cout << "alja: " << alja.X() << "," << alja.Y() << "," << alja.Z() << endl;
+			//	cout << "elsopont: " << elsopont.X() << "," << elsopont.Y() << "," << elsopont.Z() << endl;
+			//#endif
+
+			Vector3D felsolap[HENGERVERTEXSZAM+1], alsolap[HENGERVERTEXSZAM+1];
+			float x, z, szog;
+
+			for (int i = 0; i < HENGERVERTEXSZAM/2; i++) {
+				szog = 2*PI/(HENGERVERTEXSZAM/2)*i;
+				x = sugar*cos(szog);
+				z = sugar*sin(szog);
+				felsolap[i] = Vector3D(teteje.X(),teteje.Y(),teteje.Z());
+			}
+
+			felsolap[HENGERVERTEXSZAM/2] = felsolap[0];
+
+			for (int i = 0; i < HENGERVERTEXSZAM/2; i++) {
+				vertexek[i] = Vertex(teteje,felsolap[i],felsolap[i+1]);
+			}
+
+			for (int i = 0; i < HENGERVERTEXSZAM/2; i++) {
+				szog = 2*PI/(HENGERVERTEXSZAM/2)*i;
+				x = sugar*cos(szog);
+				z = sugar*sin(szog);
+				alsolap[i] = Vector3D(x,alja.Y(),z);
+			}
+
+			alsolap[HENGERVERTEXSZAM/2] = alsolap[0];
+
+			for (int i = 0; i < HENGERVERTEXSZAM/2; i++) {
+				vertexek[i+HENGERVERTEXSZAM/2] = Vertex(alja,alsolap[i],alsolap[i+1]);
+			}
+
+			for (int i = 0; i < HENGERVERTEXSZAM/2; i++) {
+				vertexek[i+HENGERVERTEXSZAM] = Vertex(felsolap[i],felsolap[i+1],alsolap[i]);
+			}
+
+			for (int i = 0; i < HENGERVERTEXSZAM/2; i++) {
+				vertexek[i+HENGERVERTEXSZAM*2] = Vertex(felsolap[i+1],alsolap[i+1],alsolap[i]);
+			}
+
+		}
+
+		void Rajzol() {
+			glMatrixMode(GL_MODELVIEW);
+			glLoadIdentity();
+			glRotatef(fok,1,0,0);
+			for (int i = 0; i < HENGERVERTEXSZAM*3; i++) {
+				vertexek[i].Rajzol();
+			}
+			glLoadIdentity();
+		}
+};
+
 Vector3D csucsok[8]={
 		Vector3D(+0.00,+0.00,+0.00),
 		Vector3D(+0.50,+0.00,+0.00),
@@ -425,7 +501,8 @@ Vector3D csucsok[8]={
 };
 
 //Teglatest t(csucsok);
-Henger henger;
+//Henger henger;
+Kup kup;
 
 Camera camera;
 Sun sun;
@@ -433,7 +510,8 @@ Sun sun;
 // Inicializacio, a program futasanak kezdeten, az OpenGL kontextus letrehozasa utan hivodik meg (ld. main() fv.)
 void onInitialization( ) {
 	camera.Init();
-	henger.ComputeVertices();
+	//henger.ComputeVertices();
+	kup.ComputeVertices();
 }
 
 // Rajzolas, ha az alkalmazas ablak ervenytelenne valik, akkor ez a fuggveny hivodik meg
@@ -459,7 +537,8 @@ void onDisplay( ) {
     		glEnable(GL_LIGHT1);
 
     //t.Rajzol();
-    henger.Rajzol();
+    //henger.Rajzol();
+    kup.Rajzol();
 
     glutSwapBuffers();     				// Buffercsere: rajzolas vege
 
