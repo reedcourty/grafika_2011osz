@@ -89,6 +89,8 @@ const int HENGERVERTEXSZAM = 128;
 const int KUPVERTEXSZAM = 128;
 const int ELLIPSZOIDVERTEXSZAM = 32;
 
+const float KAMERASEBESSEG = 0.6;
+
 class Vector3D {
 	// Dr. Szirmay-Kalos L. - Haromdimenzios grafika, ... 35. old. alapjan
 	private:
@@ -181,118 +183,6 @@ class Vector3D {
 
 		float& Z() { return this->z; }
 
-};
-
-class Camera {
-	private:
-		Vector3D eye_position;
-		Vector3D look_at;
-		Vector3D up;
-	public:
-		Camera() {
-			eye_position = Vector3D(800,600,700);
-			look_at = Vector3D(0,0,0);
-			up = Vector3D(0,1,0);
-		}
-
-		void Init() {
-
-			float Ia_nap[4] = {0.0, 0.0, 0.0, 0.0};
-			float Id_nap[4] = {1.0, 1.0, 1.0, 1.0};
-			float Is_nap[4] = {2.0, 2.0, 2.0, 1.0};
-			float Ia_amb[4] = {0.1, 0.2, 0.3, 1.0};
-			float Id_amb[4] = {0.0, 0.0, 0.0, 0.0};
-			float Is_amb[4] = {0.0, 0.0, 0.0, 0.0};
-
-			// TODO
-
-			glLightfv(GL_LIGHT0,GL_AMBIENT,Ia_amb);
-				glLightfv(GL_LIGHT0,GL_DIFFUSE,Id_amb);
-				glLightfv(GL_LIGHT0,GL_SPECULAR,Is_amb);
-				glLightfv(GL_LIGHT1,GL_AMBIENT,Ia_nap);
-				glLightfv(GL_LIGHT1,GL_DIFFUSE,Id_nap);
-				glLightfv(GL_LIGHT1,GL_SPECULAR,Is_nap);
-
-
-			glEnable(GL_DEPTH_TEST);
-			glEnable(GL_NORMALIZE);
-			glEnable(GL_LIGHTING);
-
-			glMatrixMode(GL_PROJECTION);
-			glLoadIdentity();
-			gluPerspective(4,1,1,100);
-		}
-};
-
-class Sun {
-	private:
-		Vector3D pozicio;
-		float h;
-	public:
-		Sun() {
-			pozicio = Vector3D(-1,1,1);
-			h = 0;
-		}
-
-		Vector3D getPozicio() {
-			return this->pozicio;
-		}
-
-		float getH() {
-			return this->h;
-		}
-
-};
-
-class Vertex {
-	private:
-		Vector3D csucspont[3];
-		Vector3D normalvektor;
-	public:
-		Vertex() {};
-		Vertex(Vector3D _csucspont[3]) {
-			this->csucspont[0] = _csucspont[0];
-			this->csucspont[1] = _csucspont[1];
-			this->csucspont[2] = _csucspont[2];
-
-			Vector3D v1 = csucspont[0]-csucspont[1];
-			Vector3D v2 = csucspont[2]-csucspont[1];
-
-			this->normalvektor = v2%v1;
-		};
-
-		Vertex(Vector3D &v1, Vector3D &v2, Vector3D &v3) {
-			this->csucspont[0] = v1;
-			this->csucspont[1] = v2;
-			this->csucspont[2] = v3;
-
-			Vector3D n1 = csucspont[0]-csucspont[1];
-			Vector3D n2 = csucspont[2]-csucspont[1];
-
-			this->normalvektor = n2%n1;
-		}
-
-		void Rajzol() {
-
-
-			/*#if defined(DEBUG)
-				cout << "1. csucspont: " << csucspont[0].X() << "," << csucspont[0].Y() << "," << csucspont[0].Z() << endl;
-				cout << "2. csucspont: " << csucspont[1].X() << "," << csucspont[1].Y() << "," << csucspont[1].Z() << endl;
-				cout << "3. csucspont: " << csucspont[2].X() << "," << csucspont[2].Y() << "," << csucspont[2].Z() << endl;
-				cout << "Normalvektor: " << normalvektor.X() << "," << normalvektor.Y() << "," << normalvektor.Z() << endl;
-			#endif
-			*/
-
-			glBegin(GL_TRIANGLES);
-				glNormal3f(normalvektor.X(),normalvektor.Y(),normalvektor.Z());
-				glTexCoord2d(0,0);
-				glVertex3f(csucspont[0].X(),csucspont[0].Y(),csucspont[0].Z());
-				glTexCoord2d(1,1);
-				glVertex3f(csucspont[1].X(),csucspont[1].Y(),csucspont[1].Z());
-				glTexCoord2d(0,1);
-				glVertex3f(csucspont[2].X(),csucspont[2].Y(),csucspont[2].Z());
-			glEnd();
-		}
 };
 
 class Color {
@@ -401,15 +291,110 @@ class Color {
 		float A() { return this->a; }
 };
 
-typedef float szintomb[4];
+class Camera {
+	private:
+		Vector3D eye_position;
+		Vector3D look_at;
+		Vector3D up;
+	public:
+		Camera() {
+			eye_position = Vector3D(800,600,700);
+			look_at = Vector3D(0,0,0);
+			up = Vector3D(0,1,0);
+		}
 
-struct szin {
-	szintomb t;
+		void Init() {
+
+			float nap_intenzitas_ambiens[4] = {0.0, 0.0, 0.0, 0.0};
+			float nap_intenzitas_diffuz[4] = {1.0, 1.0, 1.0, 1.0};
+			float nap_intenzitas_spekularis[4] = {2.0, 2.0, 2.0, 1.0};
+			float ambiens_feny_ambiens[4] = {0.1, 0.2, 0.3, 1.0};
+			float ambiens_feny_diffuz[4] = {0.0, 0.0, 0.0, 0.0};
+			float ambiens_feny_spekularis[4] = {0.0, 0.0, 0.0, 0.0};
+
+			glLightfv(GL_LIGHT1,GL_AMBIENT,nap_intenzitas_ambiens);
+			glLightfv(GL_LIGHT1,GL_DIFFUSE,nap_intenzitas_diffuz);
+			glLightfv(GL_LIGHT1,GL_SPECULAR,nap_intenzitas_spekularis);
+
+			glLightfv(GL_LIGHT0,GL_AMBIENT,ambiens_feny_ambiens);
+			glLightfv(GL_LIGHT0,GL_DIFFUSE,ambiens_feny_diffuz);
+			glLightfv(GL_LIGHT0,GL_SPECULAR,ambiens_feny_spekularis);
+
+			glEnable(GL_DEPTH_TEST);
+			glEnable(GL_NORMALIZE);
+			glEnable(GL_LIGHTING);
+
+			glMatrixMode(GL_PROJECTION);
+			glLoadIdentity();
+			gluPerspective(4,1,1,100);
+		}
 };
+
+class Sun {
+	private:
+		Vector3D pozicio;
+		float h;
+	public:
+		Sun() {
+			pozicio = Vector3D(-1,1,1);
+			h = 0;
+		}
+
+		Vector3D getPozicio() {
+			return this->pozicio;
+		}
+
+		float getH() {
+			return this->h;
+		}
+};
+
+class Vertex {
+	private:
+		Vector3D csucspont[3];
+		Vector3D normalvektor;
+	public:
+		Vertex() {};
+		Vertex(Vector3D _csucspont[3]) {
+			this->csucspont[0] = _csucspont[0];
+			this->csucspont[1] = _csucspont[1];
+			this->csucspont[2] = _csucspont[2];
+
+			Vector3D v1 = csucspont[0]-csucspont[1];
+			Vector3D v2 = csucspont[2]-csucspont[1];
+
+			this->normalvektor = v2%v1;
+		};
+
+		Vertex(Vector3D &v1, Vector3D &v2, Vector3D &v3) {
+			this->csucspont[0] = v1;
+			this->csucspont[1] = v2;
+			this->csucspont[2] = v3;
+
+			Vector3D n1 = csucspont[0]-csucspont[1];
+			Vector3D n2 = csucspont[2]-csucspont[1];
+
+			this->normalvektor = n2%n1;
+		}
+
+		void Rajzol() {
+			glBegin(GL_TRIANGLES);
+				glNormal3f(normalvektor.X(),normalvektor.Y(),normalvektor.Z());
+				glTexCoord2d(0,0);
+				glVertex3f(csucspont[0].X(),csucspont[0].Y(),csucspont[0].Z());
+				glTexCoord2d(1,1);
+				glVertex3f(csucspont[1].X(),csucspont[1].Y(),csucspont[1].Z());
+				glTexCoord2d(0,1);
+				glVertex3f(csucspont[2].X(),csucspont[2].Y(),csucspont[2].Z());
+			glEnd();
+		}
+};
+
+typedef float szintomb[4];
+struct szin { szintomb t; };
 
 class Material {
 	private:
-		Color emission;
 		Color ambient;
 		Color diffuse;
 		Color specular;
@@ -417,21 +402,11 @@ class Material {
 
 	public:
 		Material() {}
-		Material(Color _emission, Color _ambient, Color _diffuse, Color _specular, float _shininess) {
-			this->emission = _emission;
+		Material(Color _ambient, Color _diffuse, Color _specular, float _shininess) {
 			this->ambient = _ambient;
 			this->diffuse = _diffuse;
 			this->specular = _specular;
 			this->shininess = _shininess;
-		}
-
-		szin getEmission() {
-			szin sz;
-			sz.t[0] = emission.R();
-			sz.t[1] = emission.G();
-			sz.t[2] = emission.B();
-			sz.t[3] = emission.A();
-			return sz;
 		}
 
 		szin getAmbient() {
@@ -468,15 +443,15 @@ class Material {
 
 class Texture {
 public:
-	unsigned char image[16*16*3];
-	Texture(int r1,int r2,int g1,int g2,int b1,int b2){
-		long time=glutGet(GLUT_ELAPSED_TIME);
+	unsigned char bitmap[16*16*3];
+	Texture(int R1, int G1, int B1, int R2, int G2, int B2) {
+		long time = glutGet(GLUT_ELAPSED_TIME);
 		srand(time);
-		for(int i=0;i<256;i++)
-		{
-			image[i*3]=r1+rand()%r2;
-			image[i*3+1]=g1+rand()%g2;
-			image[i*3+2]=b1+rand()%b2;
+
+		for (int i = 0; i < 256; i++) {
+			bitmap[i*3] = R1 + rand() % R2;
+			bitmap[i*3+1] = G1 + rand() % G2;
+			bitmap[i*3+2] = B1 + rand() % B2;
 		}
 	}
 };
@@ -485,47 +460,41 @@ const int TEXTURAKSZAMA = 3;
 unsigned int texturak[TEXTURAKSZAMA];
 
 const int FU = 0;
-Texture fu=Texture(0,128,192,64,0,128);
+Texture fu = Texture(0,192,0,128,64,32);
 const int CSH = 1;
-Texture uthenger=Texture(128,64,128,64,128,64);
+Texture hengerlo = Texture(128,128,128,64,64,64);
 const int ASZFALT = 2;
-Texture aszfalt=Texture(32,20,32,28,32,28);
+Texture aszfalt = Texture(32,32,32,10,10,10);
 
-
-Color ezustemisszio = Color();
 Color ezustambiens = Color(0.19225, 0.19225, 0.19225, 1.0);
 Color ezustdiffuz = Color(0.50754, 0.50754, 0.50754, 1.0);
 Color ezustspekularis = Color(0.508273, 0.508273, 0.508273, 1.0);
 float ezustfenyesseg = 51.2;
-Material ezust = Material(ezustemisszio, ezustambiens, ezustdiffuz, ezustspekularis, ezustfenyesseg);
+Material ezust = Material(ezustambiens, ezustdiffuz, ezustspekularis, ezustfenyesseg);
 
-Color pezustemisszio = Color();
 Color pezustambiens = Color(0.23125, 0.23125, 0.23125, 1.0);
 Color pezustdiffuz = Color(0.2775, 0.2775, 0.2775, 1.0);
 Color pezustspekularis = Color(0.773911, 0.773911, 0.773911, 1.0);
 float pezustfenyesseg = 89.6;
-Material pezust = Material(pezustemisszio, pezustambiens, pezustdiffuz, pezustspekularis, pezustfenyesseg);
+Material pezust = Material(pezustambiens, pezustdiffuz, pezustspekularis, pezustfenyesseg);
 
-Color bronzemmisszio = Color();
 Color bronzambiens = Color(0.2125, 0.1275, 0.054, 1.0);
 Color bronzdiffuz = Color(0.714, 0.4284, 0.18144, 1.0);
 Color bronzspekularis = Color(0.393548, 0.271906, 0.166721, 1.0);
 float bronzfennyesseg = 25.6;
-Material bronz = Material(bronzemmisszio, bronzambiens, bronzdiffuz, bronzspekularis, pezustfenyesseg);
+Material bronz = Material(bronzambiens, bronzdiffuz, bronzspekularis, pezustfenyesseg);
 
-Color pirosemisszio = Color();
 Color pirosambiens = Color(0.25, 0.25, 0.25, 1.0);
 Color pirosdiffuz = Color(1.0, 0.2, 0.0, 1.0);
 Color pirosspekularis = Color(0.0, 0.0, 0.0, 0.0);
 float pirosfenyesseg = 0.0;
-Material piros = Material(pirosemisszio, pirosambiens, pirosdiffuz, pirosspekularis, pirosfenyesseg);
+Material piros = Material(pirosambiens, pirosdiffuz, pirosspekularis, pirosfenyesseg);
 
-Color sargaemisszio = Color();
 Color sargaambiens = Color(0.25, 0.25, 0.25, 1.0);
 Color sargadiffuz = Color(1.0, 1.0, 0.0, 1.0);
 Color sargaspekularis = Color(0.0, 0.0, 0.0, 0.0);
 float sargafenyesseg = 0.0;
-Material sarga = Material(sargaemisszio, sargaambiens, sargadiffuz, sargaspekularis, sargafenyesseg);
+Material sarga = Material(sargaambiens, sargadiffuz, sargaspekularis, sargafenyesseg);
 
 class Ojjektum {
 	private:
@@ -570,10 +539,8 @@ class Ojjektum {
 		}
 
 		void Rajzol() {
-			//glBindTexture(GL_TEXTURE_2D, textura);
 			glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, anyag.getDiffuse().t);
 			glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, anyag.getSpecular().t);
-			glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, anyag.getEmission().t);
 			glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, anyag.getAmbient().t);
 			glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, anyag.getShininess());
 
@@ -582,9 +549,6 @@ class Ojjektum {
 				glBindTexture(GL_TEXTURE_2D,texturak[textura]);
 			}
 
-
-			//glMatrixMode(GL_MODELVIEW);
-			//glLoadIdentity();
 			glPushMatrix();
 			glTranslatef(eltolas.X(),eltolas.Y(),eltolas.Z());
 			glRotatef(forgatas_szog,forgatas_x,forgatas_y,forgatas_z);
@@ -592,16 +556,12 @@ class Ojjektum {
 				vertexek[i].Rajzol();
 			}
 			glPopMatrix();
-			//glLoadIdentity();
+
 
 			if (textura > -1) {
 				glDisable(GL_TEXTURE_2D);
 			}
-
-
 		}
-
-
 };
 
 class Teglatest : public Ojjektum {
@@ -711,14 +671,6 @@ class Henger : public Ojjektum {
 			Vector3D teteje = Vector3D(kozeppont.X(),kozeppont.Y()+magassag/2,kozeppont.Z());
 			Vector3D alja = Vector3D(kozeppont.X(),kozeppont.Y()-magassag/2,kozeppont.Z());
 
-			Vector3D elsopont = Vector3D(kozeppont.X(),kozeppont.Y()+magassag/2,kozeppont.Z()+sugar);
-
-			//#if defined(DEBUG)
-			//	cout << "teteje: " << teteje.X() << "," << teteje.Y() << "," << teteje.Z() << endl;
-			//	cout << "alja: " << alja.X() << "," << alja.Y() << "," << alja.Z() << endl;
-			//	cout << "elsopont: " << elsopont.X() << "," << elsopont.Y() << "," << elsopont.Z() << endl;
-			//#endif
-
 			Vector3D felsolap[HENGERVERTEXSZAM+1], alsolap[HENGERVERTEXSZAM+1];
 			float x, z, szog;
 
@@ -787,8 +739,6 @@ private:
 			Vector3D teteje = Vector3D(kozeppont.X(),kozeppont.Y()+magassag/2,kozeppont.Z());
 			Vector3D alja = Vector3D(kozeppont.X(),kozeppont.Y()-magassag/2,kozeppont.Z());
 
-			Vector3D elsopont = Vector3D(kozeppont.X(),kozeppont.Y()+magassag/2,kozeppont.Z()+sugar);
-
 			Vector3D alsolap[KUPVERTEXSZAM+1];
 			float x, z, szog;
 
@@ -833,7 +783,6 @@ class Ellipszoid : public Ojjektum {
 			kozeppont = v;
 			ComputeVertices();
 		}
-
 
 		void ComputeSzalag(float sugar0, float sugar1, float magassag0, float magassag1, int irany) {
 			float x, z, szog;
@@ -880,8 +829,6 @@ class Ellipszoid : public Ojjektum {
 					vertexszam++;
 				}
 			}
-
-
 		}
 
 		void ComputeVertices() {
@@ -919,6 +866,7 @@ class Uthenger {
 
 		Uthenger() {
 			teto = Teglatest(0.8,0.1,0.6, Vector3D(0.0,0.50,0.0));
+
 			ttarto1 = Teglatest(0.1,0.4,0.1, Vector3D(0.25,0.25,0.25));
 			ttarto2 = Teglatest(0.1,0.4,0.1, Vector3D(-0.25,0.25,0.25));
 			ttarto3 = Teglatest(0.1,0.4,0.1, Vector3D(0.25,0.25,-0.25));
@@ -931,20 +879,17 @@ class Uthenger {
 			motor = Teglatest(0.4,0.4,0.4, Vector3D(0.0,-0.25,0.0));
 
 			elsokerek = Henger(0.8, 0.25, Vector3D(-0.20,-0.50,0));
-			elsokerek.setAnyag(bronz);
-			elsokerek.setTextura(CSH);
 
 			hatsokerek = Henger(0.8, 0.25, Vector3D(+0.20,+0.50,0));
-			hatsokerek.setAnyag(bronz);
-			hatsokerek.setTextura(CSH);
-
 		}
 
 		void Rajzol() {
 			glPushMatrix();
 			glRotatef(90,1,0,0);
+
 			teto.setAnyag(pezust);
 			teto.Rajzol();
+
 			ttarto1.setAnyag(ezust);
 			ttarto1.Rajzol();
 			ttarto2.setAnyag(ezust);
@@ -953,8 +898,10 @@ class Uthenger {
 			ttarto3.Rajzol();
 			ttarto4.setAnyag(ezust);
 			ttarto4.Rajzol();
+
 			test.setAnyag(ezust);
 			test.Rajzol();
+
 			kemeny.setAnyag(ezust);
 			kemeny.Rajzol();
 
@@ -964,16 +911,18 @@ class Uthenger {
 
 			elsokerek.setRotate(90,1,0,0);
 			elsokerek.setEltolas(Vector3D(-0.40,-0.30,+0.50));
+			elsokerek.setAnyag(bronz);
+			elsokerek.setTextura(CSH);
 			elsokerek.Rajzol();
 
 			hatsokerek.setRotate(90,1,0,0);
 			hatsokerek.setEltolas(Vector3D(0.40,-0.30,-0.50));
-
-
+			hatsokerek.setAnyag(bronz);
+			hatsokerek.setTextura(CSH);
 			hatsokerek.Rajzol();
+
 			glPopMatrix();
 		}
-
 };
 
 class Csirke {
@@ -1009,7 +958,6 @@ class Csirke {
 			taraj1 = Kup(0.3,0.10,Vector3D(0,0,0));
 			taraj2 = Kup(0.3,0.10,Vector3D(0,0,0));
 			taraj3 = Kup(0.3,0.10,Vector3D(0,0,0));
-
 		}
 
 		void Rajzol() {
@@ -1085,20 +1033,11 @@ class Csirke {
 			taraj3.setEltolas(Vector3D(0,-0.50,0.60));
 			taraj3.setAnyag(piros);
 			taraj3.Rajzol();
-
 		}
 };
 
-Teglatest teglatest(0.30,0.45,0.5, Vector3D(-0.5,-0.5,-0.5));
-
 Teglatest mezo(5.00,5.00,0.01, Vector3D(0,0,-0.60));
 Teglatest ut(5.00,1.00,0.01, Vector3D(0,0,-0.59));
-
-
-
-Henger henger;
-Kup kup;
-Ellipszoid ellipszoid;
 
 Uthenger csirkenyomda;
 Csirke csirke;
@@ -1109,38 +1048,35 @@ Sun sun;
 long time;
 float fok = 0;
 
+float eyex = 0;
+float eyey = 0;
+
 // Inicializacio, a program futasanak kezdeten, az OpenGL kontextus letrehozasa utan hivodik meg (ld. main() fv.)
 void onInitialization( ) {
 	time = glutGet(GLUT_ELAPSED_TIME);
 	camera.Init();
 
 	glGenTextures(TEXTURAKSZAMA,texturak);
-
-
-	   glBindTexture(GL_TEXTURE_2D,texturak[0]);
-	    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-		glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
-	    glTexImage2D(GL_TEXTURE_2D,0,GL_RGB,16,16,0,GL_RGB,GL_UNSIGNED_BYTE,fu.image);
-	   glBindTexture(GL_TEXTURE_2D,texturak[1]);
-	    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-		glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
-	    glTexImage2D(GL_TEXTURE_2D,0,GL_RGB,16,16,0,GL_RGB,GL_UNSIGNED_BYTE,uthenger.image);
-	   glBindTexture(GL_TEXTURE_2D,texturak[2]);
-	    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-		glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
-	    glTexImage2D(GL_TEXTURE_2D,0,GL_RGB,16,16,0,GL_RGB,GL_UNSIGNED_BYTE,aszfalt.image);
-
+	glBindTexture(GL_TEXTURE_2D,texturak[0]);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+	glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
+	glTexImage2D(GL_TEXTURE_2D,0,GL_RGB,16,16,0,GL_RGB,GL_UNSIGNED_BYTE,fu.bitmap);
+	glBindTexture(GL_TEXTURE_2D,texturak[1]);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+	glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
+	glTexImage2D(GL_TEXTURE_2D,0,GL_RGB,16,16,0,GL_RGB,GL_UNSIGNED_BYTE,hengerlo.bitmap);
+	glBindTexture(GL_TEXTURE_2D,texturak[2]);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+	glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
+	glTexImage2D(GL_TEXTURE_2D,0,GL_RGB,16,16,0,GL_RGB,GL_UNSIGNED_BYTE,aszfalt.bitmap);
 
 	mezo.setTextura(FU);
 	mezo.setAnyag(sarga);
 	ut.setTextura(ASZFALT);
 	ut.setAnyag(sarga);
-
-
-
 }
 
 // Rajzolas, ha az alkalmazas ablak ervenytelenne valik, akkor ez a fuggveny hivodik meg
@@ -1157,8 +1093,6 @@ void onDisplay( ) {
 
     gluLookAt(30*sin(fok),30*cos(fok),60,0,0,0,0,0,1);
 
-    //gluLookAt(90*sin(fok),30,-10,0,0,1,0,0,1);
-
     glLightfv(GL_LIGHT0,GL_POSITION,AMBIENS_FENY);
     glEnable(GL_LIGHT0);
 
@@ -1166,12 +1100,6 @@ void onDisplay( ) {
     glLightfv(GL_LIGHT1,GL_POSITION,nap);
 
     glEnable(GL_LIGHT1);
-
-    //glPushMatrix();
-    //teglatest.Rajzol();
-    //henger.Rajzol();
-    //kup.Rajzol();
-    //ellipszoid.Rajzol();
 
     mezo.Rajzol();
     ut.Rajzol();
@@ -1182,7 +1110,6 @@ void onDisplay( ) {
     glScalef(0.4,0.4,0.4);
     csirke.Rajzol();
     glPopMatrix();
-    //glPopMatrix();
 
     glutSwapBuffers();     				// Buffercsere: rajzolas vege
 
@@ -1197,7 +1124,6 @@ void onKeyboard(unsigned char key, int x, int y) {
 	#endif
 
     if (key == 'd') glutPostRedisplay( ); 		// d beture rajzold ujra a kepet
-
 }
 
 // Eger esemenyeket lekezelo fuggveny
@@ -1208,14 +1134,14 @@ void onMouse(int button, int state, int x, int y) {
 // `Idle' esemenykezelo, jelzi, hogy az ido telik, az Idle esemenyek frekvenciajara csak a 0 a garantalt minimalis ertek
 void onIdle( ) {
      // long time = glutGet(GLUT_ELAPSED_TIME);		// program inditasa ota eltelt ido
-	long new_time=glutGet(GLUT_ELAPSED_TIME);
-		float dt=(float)(new_time - time)/(float)1000;
-		if(dt>0)
-		{
-			fok+=0.41888*dt;
-			time=new_time;
-			onDisplay();
-		}
+	long aktualisido = glutGet(GLUT_ELAPSED_TIME);
+
+	float elteltido = (float)(aktualisido - time)/1000;
+	if (elteltido > 0) {
+		fok+=KAMERASEBESSEG*elteltido;
+		time = aktualisido;
+		glutPostRedisplay();
+	}
 }
 
 // ...Idaig modosithatod
