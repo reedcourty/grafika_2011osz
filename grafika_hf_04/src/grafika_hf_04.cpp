@@ -277,8 +277,206 @@ class Vertex {
 		}
 };
 
-float fok = 0;
+class Color {
+	private:
+		float r, g, b, a;
+	public:
+		Color() {}
+		Color(float _r, float _g, float _b, float _a) {
+			this->r = _r;
+			this->g = _g;
+			this->b = _b;
+			this->a = _a;
+		}
 
+		Color operator+(const Color &c) {
+			return Color(this->r+c.r, this->g+c.g, this->b+c.b, this->a+c.a);
+		}
+
+		void operator+=(const Color &c) {
+			this->r+=c.r;
+			this->g+=c.g;
+			this->b+=c.b;
+			this->a+=c.a;
+		}
+
+		Color operator+(const float c) {
+			return Color(this->r+c, this->g+c, this->b+c, this->a+c);
+		}
+
+		void operator+=(const float c) {
+			this->r+=c;
+			this->g+=c;
+			this->b+=c;
+			this->a+=c;
+		}
+
+		Color operator-(const Color &c) {
+			return Color(this->r-c.r, this->g-c.g, this->b-c.b, this->a-c.a);
+		}
+
+		void operator-=(const Color &c) {
+			this->r-=c.r;
+			this->g-=c.g;
+			this->b-=c.b;
+			this->a-=c.a;
+		}
+
+		Color operator-(const float c) {
+			return Color(this->r-c, this->g-c, this->b-c, this->a-c);
+		}
+
+		void operator-=(const float c) {
+			this->r-=c;
+			this->g-=c;
+			this->b-=c;
+			this->a-=c;
+		}
+
+		Color operator*(const Color &c) {
+			return Color(this->r*c.r, this->g*c.g, this->b*c.b, this->a*c.a);
+		}
+
+		void operator*=(const Color &c) {
+			this->r*=c.r;
+			this->g*=c.g;
+			this->b*=c.b;
+			this->a*=c.a;
+		}
+
+		Color operator*(const float c) {
+			return Color(this->r*c, this->g*c, this->b*c, this->a*c);
+		}
+
+		void operator*=(const float c) {
+			this->r*=c;
+			this->g*=c;
+			this->b*=c;
+			this->a*=c;
+		}
+
+		Color operator/(const Color &c) {
+			return Color(this->r/c.r, this->g/c.g, this->b/c.b, this->a/c.a);
+		}
+
+		void operator/=(const Color &c) {
+			this->r/=c.r;
+			this->g/=c.g;
+			this->b/=c.b;
+			this->a/=c.a;
+		}
+
+		Color operator/(const float c) {
+			return Color(this->r/c, this->g/c, this->b/c, this->a/c);
+		}
+
+		void operator/=(const float c) {
+			this->r/=c;
+			this->g/=c;
+			this->b/=c;
+			this->a/=c;
+		}
+
+		float R() { return this->r; }
+		float G() { return this->g; }
+		float B() { return this->b; }
+		float A() { return this->a; }
+};
+
+typedef float szintomb[4];
+
+struct szin {
+	szintomb t;
+};
+
+class Material {
+	private:
+		Color emission;
+		Color ambient;
+		Color diffuse;
+		Color specular;
+		float shininess;
+
+	public:
+		Material() {}
+		Material(Color _emission, Color _ambient, Color _diffuse, Color _specular, float _shininess) {
+			this->emission = _emission;
+			this->ambient = _ambient;
+			this->diffuse = _diffuse;
+			this->specular = _specular;
+			this->shininess = _shininess;
+		}
+
+		szin getEmission() {
+			szin sz;
+			sz.t = {emission.R(),emission.G(), emission.B(), emission.A()};
+			return sz;
+		}
+
+		szin getAmbient() {
+			szin sz;
+			sz.t = {ambient.R(),ambient.G(), ambient.B(), ambient.A()};
+			return sz;
+		}
+
+		szin getDiffuse() {
+			szin sz;
+			sz.t = {diffuse.R(),diffuse.G(), diffuse.B(), diffuse.A()};
+			return sz;
+		}
+
+		szin getSpecular() {
+			szin sz;
+			sz.t[0] = specular.R();
+			sz.t[1] = specular.G();
+			sz.t[2] = specular.B();
+			sz.t[3] = specular.A();
+			return sz;
+		}
+
+		float getShininess() {
+			return shininess;
+		}
+};
+
+class Texture {
+
+};
+
+Color ezustemisszio = Color();
+Color ezustambiens = Color(0.19225, 0.19225, 0.19225, 1.0);
+Color ezustdiffuz = Color(0.50754, 0.50754, 0.50754, 1.0);
+Color ezustspekularis = Color(0.508273, 0.508273, 0.508273, 1.0);
+float ezustfenyesseg = 51.2;
+Material ezust = Material(ezustemisszio, ezustambiens, ezustdiffuz, ezustspekularis, ezustfenyesseg);
+
+Color pezustemisszio = Color();
+Color pezustambiens = Color(0.23125, 0.23125, 0.23125, 1.0);
+Color pezustdiffuz = Color(0.2775, 0.2775, 0.2775, 1.0);
+Color pezustspekularis = Color(0.773911, 0.773911, 0.773911, 1.0);
+float pezustfenyesseg = 89.6;
+Material pezust = Material(pezustemisszio, pezustambiens, pezustdiffuz, pezustspekularis, pezustfenyesseg);
+
+Color bronzemmisszio = Color();
+Color bronzambiens = Color(0.2125, 0.1275, 0.054, 1.0);
+Color bronzdiffuz = Color(0.714, 0.4284, 0.18144, 1.0);
+Color bronzspekularis = Color(0.393548, 0.271906, 0.166721, 1.0);
+float bronzfennyesseg = 25.6;
+Material bronz = Material(bronzemmisszio, bronzambiens, bronzdiffuz, bronzspekularis, pezustfenyesseg);
+
+Color pirosemisszio = Color();
+Color pirosambiens = Color(0.25, 0.25, 0.25, 1.0);
+Color pirosdiffuz = Color(1.0, 0.2, 0.0, 1.0);
+Color pirosspekularis = Color(0.0, 0.0, 0.0, 0.0);
+float pirosfenyesseg = 0.0;
+Material piros = Material(pirosemisszio, pirosambiens, pirosdiffuz, pirosspekularis, pirosfenyesseg);
+
+Color sargaemisszio = Color();
+Color sargaambiens = Color(0.25, 0.25, 0.25, 1.0);
+Color sargadiffuz = Color(1.0, 1.0, 0.0, 1.0);
+Color sargaspekularis = Color(0.0, 0.0, 0.0, 0.0);
+float sargafenyesseg = 0.0;
+Material sarga = Material(sargaemisszio, sargaambiens, sargadiffuz, sargaspekularis, sargafenyesseg);
 
 class Ojjektum {
 	private:
@@ -287,6 +485,10 @@ class Ojjektum {
 		float forgatas_y;
 		float forgatas_z;
 		Vector3D eltolas;
+
+		Material anyag;
+		Texture textura;
+
 	protected:
 		Vertex vertexek[2048];
 		int vertexszam;
@@ -309,7 +511,22 @@ class Ojjektum {
 			eltolas = v;
 		}
 
+		void setAnyag(Material _anyag) {
+			this->anyag = _anyag;
+		}
+
+		void setTextura(Texture _textura) {
+			this->textura = _textura;
+		}
+
 		void Rajzol() {
+			//glBindTexture(GL_TEXTURE_2D, textura);
+			glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, anyag.getDiffuse().t);
+			glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, anyag.getSpecular().t);
+			glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, anyag.getEmission().t);
+			glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, anyag.getAmbient().t);
+			glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, anyag.getShininess());
+
 			//glMatrixMode(GL_MODELVIEW);
 			//glLoadIdentity();
 			glPushMatrix();
@@ -658,23 +875,33 @@ class Uthenger {
 		void Rajzol() {
 			glPushMatrix();
 			glRotatef(90,1,0,0);
+			teto.setAnyag(pezust);
 			teto.Rajzol();
+			ttarto1.setAnyag(ezust);
 			ttarto1.Rajzol();
+			ttarto2.setAnyag(ezust);
 			ttarto2.Rajzol();
+			ttarto3.setAnyag(ezust);
 			ttarto3.Rajzol();
+			ttarto4.setAnyag(ezust);
 			ttarto4.Rajzol();
+			test.setAnyag(ezust);
 			test.Rajzol();
+			kemeny.setAnyag(ezust);
 			kemeny.Rajzol();
 
 			motor.setRotate(0,1,0,0);
+			motor.setAnyag(ezust);
 			motor.Rajzol();
 
 			elsokerek.setRotate(90,1,0,0);
 			elsokerek.setEltolas(Vector3D(-0.40,-0.30,+0.50));
+			elsokerek.setAnyag(bronz);
 			elsokerek.Rajzol();
 
 			hatsokerek.setRotate(90,1,0,0);
 			hatsokerek.setEltolas(Vector3D(0.40,-0.30,-0.50));
+			hatsokerek.setAnyag(bronz);
 			hatsokerek.Rajzol();
 			glPopMatrix();
 		}
@@ -721,59 +948,74 @@ class Csirke {
 
 			jlab1.setRotate(-50,1,0,0);
 			jlab1.setEltolas(Vector3D(0.25,-0.0,-0.40));
+			jlab1.setAnyag(piros);
 			jlab1.Rajzol();
 
 			jlab2.setRotate(50,1,0,0);
 			jlab2.setEltolas(Vector3D(0.25,-0.0,-0.90));
+			jlab2.setAnyag(piros);
 			jlab2.Rajzol();
 
 			jlab3.setRotate(90,1,0,0);
 			jlab3.setEltolas(Vector3D(0.25,-0.30,-1.2));
+			jlab3.setAnyag(piros);
 			jlab3.Rajzol();
 
 			blab1.setRotate(-50,1,0,0);
 			blab1.setEltolas(Vector3D(-0.25,-0.0,-0.40));
+			blab1.setAnyag(piros);
 			blab1.Rajzol();
 
 			blab2.setRotate(50,1,0,0);
 			blab2.setEltolas(Vector3D(-0.25,-0.0,-0.90));
+			blab2.setAnyag(piros);
 			blab2.Rajzol();
 
 			blab3.setRotate(90,1,0,0);
 			blab3.setEltolas(Vector3D(-0.25,-0.30,-1.2));
+			blab3.setAnyag(piros);
 			blab3.Rajzol();
 
+			test.setAnyag(sarga);
 			test.Rajzol();
 
 			nyak.setRotate(-45, 1, 0, 0);
 			nyak.setEltolas(Vector3D(0,-0.35,-0.2));
+			nyak.setAnyag(sarga);
 			nyak.Rajzol();
 
 			fej.setEltolas(Vector3D(0,-0.95,0.50));
+			fej.setAnyag(sarga);
 			fej.Rajzol();
 
 			farok.setRotate(200,1,0,0);
 			farok.setEltolas(Vector3D(0,0.7,0.1));
+			farok.setAnyag(sarga);
 			farok.Rajzol();
 
 			csor.setRotate(200,1,0,0);
 			csor.setEltolas(Vector3D(0,-1.4,0.40));
+			csor.setAnyag(piros);
 			csor.Rajzol();
 
 			taraj0.setRotate(80,1,0,0);
 			taraj0.setEltolas(Vector3D(0,-0.75,0.90));
+			taraj0.setAnyag(piros);
 			taraj0.Rajzol();
 
 			taraj1.setRotate(60,1,0,0);
 			taraj1.setEltolas(Vector3D(0,-0.65,0.80));
+			taraj1.setAnyag(piros);
 			taraj1.Rajzol();
 
 			taraj2.setRotate(40,1,0,0);
 			taraj2.setEltolas(Vector3D(0,-0.55,0.70));
+			taraj2.setAnyag(piros);
 			taraj2.Rajzol();
 
 			taraj3.setRotate(20,1,0,0);
 			taraj3.setEltolas(Vector3D(0,-0.50,0.60));
+			taraj3.setAnyag(piros);
 			taraj3.Rajzol();
 
 		}
@@ -783,6 +1025,9 @@ Teglatest teglatest(0.30,0.45,0.5, Vector3D(-0.5,-0.5,-0.5));
 
 Teglatest mezo(5.00,5.00,0.01, Vector3D(0,0,-0.60));
 Teglatest ut(5.00,1.00,0.01, Vector3D(0,0,-0.60));
+
+
+
 Henger henger;
 Kup kup;
 Ellipszoid ellipszoid;
@@ -794,6 +1039,7 @@ Camera camera;
 Sun sun;
 
 long time;
+float fok = 0;
 
 // Inicializacio, a program futasanak kezdeten, az OpenGL kontextus letrehozasa utan hivodik meg (ld. main() fv.)
 void onInitialization( ) {
