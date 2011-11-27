@@ -885,6 +885,7 @@ class Uthenger {
 
 		void Rajzol() {
 			glPushMatrix();
+			glTranslatef(0.0,0.0,0.55);
 			glRotatef(90,1,0,0);
 
 			teto.setAnyag(pezust);
@@ -962,6 +963,10 @@ class Csirke {
 
 		void Rajzol() {
 
+			glPushMatrix();
+			glTranslatef(1.0,1.0,0.53);
+			glScalef(0.4,0.4,0.4);
+
 			jlab1.setRotate(-50,1,0,0);
 			jlab1.setEltolas(Vector3D(0.25,-0.0,-0.40));
 			jlab1.setAnyag(piros);
@@ -1033,11 +1038,13 @@ class Csirke {
 			taraj3.setEltolas(Vector3D(0,-0.50,0.60));
 			taraj3.setAnyag(piros);
 			taraj3.Rajzol();
+
+			glPopMatrix();
 		}
 };
 
-Teglatest mezo(5.00,5.00,0.01, Vector3D(0,0,-0.60));
-Teglatest ut(5.00,1.00,0.01, Vector3D(0,0,-0.59));
+Teglatest mezo(5.00,5.00,0.01, Vector3D(0,0,-0.002));
+Teglatest ut(5.00,1.00,0.01, Vector3D(0,0,-0.001));
 
 Uthenger csirkenyomda;
 Csirke csirke;
@@ -1048,8 +1055,12 @@ Sun sun;
 long time;
 float fok = 0;
 
-float eyex = 0;
-float eyey = 0;
+float sotetoldal[4][4] = {
+		{1,0,0,0},
+		{0,1,0,0},
+		{-sun.getPozicio().X()/sun.getPozicio().Z(),-sun.getPozicio().Y()/sun.getPozicio().Z(),0,0},
+		{0,0,0.005,1}
+};
 
 // Inicializacio, a program futasanak kezdeten, az OpenGL kontextus letrehozasa utan hivodik meg (ld. main() fv.)
 void onInitialization( ) {
@@ -1093,6 +1104,8 @@ void onDisplay( ) {
 
     gluLookAt(30*sin(fok),30*cos(fok),60,0,0,0,0,0,1);
 
+    //gluLookAt(60,0,0,0,0,0,0,0,1);
+
     glLightfv(GL_LIGHT0,GL_POSITION,AMBIENS_FENY);
     glEnable(GL_LIGHT0);
 
@@ -1104,12 +1117,14 @@ void onDisplay( ) {
     mezo.Rajzol();
     ut.Rajzol();
     csirkenyomda.Rajzol();
-
-    glPushMatrix();
-    glTranslatef(1.0,1.0,0.0);
-    glScalef(0.4,0.4,0.4);
     csirke.Rajzol();
-    glPopMatrix();
+
+    glMultMatrixf(&sotetoldal[0][0]);
+    glDisable(GL_LIGHTING);
+    glColor3f(0,0,0);
+    csirke.Rajzol();
+    csirkenyomda.Rajzol();
+    glEnable(GL_LIGHTING);
 
     glutSwapBuffers();     				// Buffercsere: rajzolas vege
 
