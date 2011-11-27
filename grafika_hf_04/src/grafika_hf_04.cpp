@@ -409,19 +409,28 @@ class Material {
 
 		szin getEmission() {
 			szin sz;
-			sz.t = {emission.R(),emission.G(), emission.B(), emission.A()};
+			sz.t[0] = emission.R();
+			sz.t[1] = emission.G();
+			sz.t[2] = emission.B();
+			sz.t[3] = emission.A();
 			return sz;
 		}
 
 		szin getAmbient() {
 			szin sz;
-			sz.t = {ambient.R(),ambient.G(), ambient.B(), ambient.A()};
+			sz.t[0] = ambient.R();
+			sz.t[1] = ambient.G();
+			sz.t[2] = ambient.B();
+			sz.t[3] = ambient.A();
 			return sz;
 		}
 
 		szin getDiffuse() {
 			szin sz;
-			sz.t = {diffuse.R(),diffuse.G(), diffuse.B(), diffuse.A()};
+			sz.t[0] = diffuse.R();
+			sz.t[1] = diffuse.G();
+			sz.t[2] = diffuse.B();
+			sz.t[3] = diffuse.A();
 			return sz;
 		}
 
