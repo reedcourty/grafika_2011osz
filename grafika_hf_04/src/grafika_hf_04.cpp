@@ -196,6 +196,24 @@ class Camera {
 		}
 
 		void Init() {
+
+			float Ia_nap[4] = {0.0, 0.0, 0.0, 0.0};
+			float Id_nap[4] = {1.0, 1.0, 1.0, 1.0};
+			float Is_nap[4] = {2.0, 2.0, 2.0, 1.0};
+			float Ia_amb[4] = {0.1, 0.2, 0.3, 1.0};
+			float Id_amb[4] = {0.0, 0.0, 0.0, 0.0};
+			float Is_amb[4] = {0.0, 0.0, 0.0, 0.0};
+
+			// TODO
+
+			glLightfv(GL_LIGHT0,GL_AMBIENT,Ia_amb);
+				glLightfv(GL_LIGHT0,GL_DIFFUSE,Id_amb);
+				glLightfv(GL_LIGHT0,GL_SPECULAR,Is_amb);
+				glLightfv(GL_LIGHT1,GL_AMBIENT,Ia_nap);
+				glLightfv(GL_LIGHT1,GL_DIFFUSE,Id_nap);
+				glLightfv(GL_LIGHT1,GL_SPECULAR,Is_nap);
+
+
 			glEnable(GL_DEPTH_TEST);
 			glEnable(GL_NORMALIZE);
 			glEnable(GL_LIGHTING);
@@ -271,7 +289,7 @@ class Vertex {
 				glVertex3f(csucspont[0].X(),csucspont[0].Y(),csucspont[0].Z());
 				glTexCoord2d(1,1);
 				glVertex3f(csucspont[1].X(),csucspont[1].Y(),csucspont[1].Z());
-				glTexCoord2d(0,0);
+				glTexCoord2d(0,1);
 				glVertex3f(csucspont[2].X(),csucspont[2].Y(),csucspont[2].Z());
 			glEnd();
 		}
@@ -449,8 +467,30 @@ class Material {
 };
 
 class Texture {
-
+public:
+	unsigned char image[16*16*3];
+	Texture(int r1,int r2,int g1,int g2,int b1,int b2){
+		long time=glutGet(GLUT_ELAPSED_TIME);
+		srand(time);
+		for(int i=0;i<256;i++)
+		{
+			image[i*3]=r1+rand()%r2;
+			image[i*3+1]=g1+rand()%g2;
+			image[i*3+2]=b1+rand()%b2;
+		}
+	}
 };
+
+const int TEXTURAKSZAMA = 3;
+unsigned int texturak[TEXTURAKSZAMA];
+
+const int FU = 0;
+Texture fu=Texture(0,128,192,64,0,128);
+const int CSH = 1;
+Texture uthenger=Texture(128,64,128,64,128,64);
+const int ASZFALT = 2;
+Texture aszfalt=Texture(32,20,32,28,32,28);
+
 
 Color ezustemisszio = Color();
 Color ezustambiens = Color(0.19225, 0.19225, 0.19225, 1.0);
@@ -496,7 +536,7 @@ class Ojjektum {
 		Vector3D eltolas;
 
 		Material anyag;
-		Texture textura;
+		int textura;
 
 	protected:
 		Vertex vertexek[2048];
@@ -507,6 +547,7 @@ class Ojjektum {
 		Ojjektum() {
 			vertexszam = 0;
 			eltolas = Vector3D(0,0,0);
+			textura = -1;
 		}
 
 		void setRotate(float szog, float x, float y, float z) {
@@ -524,7 +565,7 @@ class Ojjektum {
 			this->anyag = _anyag;
 		}
 
-		void setTextura(Texture _textura) {
+		void setTextura(int _textura) {
 			this->textura = _textura;
 		}
 
@@ -536,6 +577,12 @@ class Ojjektum {
 			glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, anyag.getAmbient().t);
 			glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, anyag.getShininess());
 
+			if (textura > -1) {
+				glEnable(GL_TEXTURE_2D);
+				glBindTexture(GL_TEXTURE_2D,texturak[textura]);
+			}
+
+
 			//glMatrixMode(GL_MODELVIEW);
 			//glLoadIdentity();
 			glPushMatrix();
@@ -546,7 +593,14 @@ class Ojjektum {
 			}
 			glPopMatrix();
 			//glLoadIdentity();
+
+			if (textura > -1) {
+				glDisable(GL_TEXTURE_2D);
+			}
+
+
 		}
+
 
 };
 
@@ -877,7 +931,12 @@ class Uthenger {
 			motor = Teglatest(0.4,0.4,0.4, Vector3D(0.0,-0.25,0.0));
 
 			elsokerek = Henger(0.8, 0.25, Vector3D(-0.20,-0.50,0));
+			elsokerek.setAnyag(bronz);
+			elsokerek.setTextura(CSH);
+
 			hatsokerek = Henger(0.8, 0.25, Vector3D(+0.20,+0.50,0));
+			hatsokerek.setAnyag(bronz);
+			hatsokerek.setTextura(CSH);
 
 		}
 
@@ -905,12 +964,12 @@ class Uthenger {
 
 			elsokerek.setRotate(90,1,0,0);
 			elsokerek.setEltolas(Vector3D(-0.40,-0.30,+0.50));
-			elsokerek.setAnyag(bronz);
 			elsokerek.Rajzol();
 
 			hatsokerek.setRotate(90,1,0,0);
 			hatsokerek.setEltolas(Vector3D(0.40,-0.30,-0.50));
-			hatsokerek.setAnyag(bronz);
+
+
 			hatsokerek.Rajzol();
 			glPopMatrix();
 		}
@@ -1033,7 +1092,7 @@ class Csirke {
 Teglatest teglatest(0.30,0.45,0.5, Vector3D(-0.5,-0.5,-0.5));
 
 Teglatest mezo(5.00,5.00,0.01, Vector3D(0,0,-0.60));
-Teglatest ut(5.00,1.00,0.01, Vector3D(0,0,-0.60));
+Teglatest ut(5.00,1.00,0.01, Vector3D(0,0,-0.59));
 
 
 
@@ -1054,6 +1113,34 @@ float fok = 0;
 void onInitialization( ) {
 	time = glutGet(GLUT_ELAPSED_TIME);
 	camera.Init();
+
+	glGenTextures(TEXTURAKSZAMA,texturak);
+
+
+	   glBindTexture(GL_TEXTURE_2D,texturak[0]);
+	    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+		glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
+	    glTexImage2D(GL_TEXTURE_2D,0,GL_RGB,16,16,0,GL_RGB,GL_UNSIGNED_BYTE,fu.image);
+	   glBindTexture(GL_TEXTURE_2D,texturak[1]);
+	    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+		glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
+	    glTexImage2D(GL_TEXTURE_2D,0,GL_RGB,16,16,0,GL_RGB,GL_UNSIGNED_BYTE,uthenger.image);
+	   glBindTexture(GL_TEXTURE_2D,texturak[2]);
+	    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+		glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
+	    glTexImage2D(GL_TEXTURE_2D,0,GL_RGB,16,16,0,GL_RGB,GL_UNSIGNED_BYTE,aszfalt.image);
+
+
+	mezo.setTextura(FU);
+	mezo.setAnyag(sarga);
+	ut.setTextura(ASZFALT);
+	ut.setAnyag(sarga);
+
+
+
 }
 
 // Rajzolas, ha az alkalmazas ablak ervenytelenne valik, akkor ez a fuggveny hivodik meg
@@ -1086,7 +1173,7 @@ void onDisplay( ) {
     //kup.Rajzol();
     //ellipszoid.Rajzol();
 
-    //mezo.Rajzol();
+    mezo.Rajzol();
     ut.Rajzol();
     csirkenyomda.Rajzol();
 
