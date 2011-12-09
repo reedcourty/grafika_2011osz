@@ -953,6 +953,7 @@ class Uthenger {
 class Csirke {
 	private:
 		Vector3D helyzet;
+		Vector3D headpoz;
 	public:
 		Henger jlab1, jlab2, blab1, blab2;
 		Kup jlab3, blab3;
@@ -963,6 +964,9 @@ class Csirke {
 		Kup taraj0, taraj1, taraj2, taraj3;
 		Kup farok;
 		Csirke() {
+
+			headpoz = Vector3D(0,-0.95,0.50);
+
 			jlab1 = Henger(0.8, 0.10, Vector3D(0,0,0));
 			jlab2 = Henger(0.8, 0.10, Vector3D(0,0,0));
 			jlab3 = Kup(0.2, 0.25, Vector3D(0,0,0));
@@ -986,8 +990,16 @@ class Csirke {
 			taraj3 = Kup(0.3,0.10,Vector3D(0,0,0));
 		}
 
+		Vector3D getHelyzet() {
+			return this->helyzet;
+		}
+
 		void setHelyzet(Vector3D v) {
 			this->helyzet = v;
+		}
+
+		Vector3D getHeadpoz() {
+			return this->headpoz;
 		}
 
 		void Rajzol() {
@@ -1035,7 +1047,7 @@ class Csirke {
 			nyak.setAnyag(sarga);
 			nyak.Rajzol();
 
-			fej.setEltolas(Vector3D(0,-0.95,0.50));
+			fej.setEltolas(headpoz);
 			fej.setAnyag(sarga);
 			fej.Rajzol();
 
@@ -1082,6 +1094,10 @@ Csirke csibe;
 Csirke csiba;
 Csirke csipa;
 
+Vector3D csirkekozpont = Vector3D(1.5,1.0,0.53);
+
+Vector3D kovcsirkefej;
+
 Camera camera;
 Sun sun;
 
@@ -1122,16 +1138,19 @@ void onInitialization( ) {
 	ut.setTextura(ASZFALT);
 	ut.setAnyag(sarga);
 
-	csibe.setHelyzet(Vector3D(1.0,1.0,0.53));
-	csiba.setHelyzet(Vector3D(1.5,1.0,0.53));
-	csipa.setHelyzet(Vector3D(2.0,1.0,0.53));
+	csibe.setHelyzet(csirkekozpont-Vector3D(0.5,0.0,0.0));
+	csiba.setHelyzet(csirkekozpont);
+	csipa.setHelyzet(csirkekozpont+Vector3D(0.5,0.0,0.0));
+
+	kovcsirkefej = csibe.getHeadpoz()+csibe.getHelyzet();
 }
 
-void onDisplayAfter( ) {
+void onDisplayAfter(float eyex, float eyey, float eyez, float centerx, float centery, float centerz, float upx, float upy, float upz) {
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-    gluLookAt(30*sin(fok),30*cos(fok),60,0,0,0,0,0,1);
+    //gluLookAt(30*sin(fok),30*cos(fok),60,0,0,0,0,0,1);
+    gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz);
 
     //gluLookAt(60,0,0,0,0,0,0,0,1);
 
@@ -1169,11 +1188,11 @@ void onDisplay( ) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // kepernyo torles
 
     glViewport(0,0,300,300);
-    onDisplayAfter();
+    onDisplayAfter(30*sin(fok),30*cos(fok),60,csirkekozpont.X(),csirkekozpont.Y(),csirkekozpont.Z(),0,0,1);
     glViewport(0,300,300,300);
-    onDisplayAfter();
+    onDisplayAfter(kovcsirkefej.X(), kovcsirkefej.Y(), kovcsirkefej.Z(), 30*sin(fok),30*cos(fok),-20,0,0,1);
     glViewport(300,150,300,300);
-    onDisplayAfter();
+    onDisplayAfter(30*sin(fok),30*cos(fok),60,0,0,0,0,0,1);
 
     glutSwapBuffers();     				// Buffercsere: rajzolas vege
 
