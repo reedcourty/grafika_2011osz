@@ -1111,6 +1111,10 @@ float sotetoldal[4][4] = {
 		{0,0,0.005,1}
 };
 
+float CoordX = 0;
+float CoordY = 0;
+float CoordZ = 0;
+
 // Inicializacio, a program futasanak kezdeten, az OpenGL kontextus letrehozasa utan hivodik meg (ld. main() fv.)
 void onInitialization( ) {
 	time = glutGet(GLUT_ELAPSED_TIME);
@@ -1190,7 +1194,7 @@ void onDisplay( ) {
     glViewport(0,0,300,300);
     onDisplayAfter(30*sin(fok),30*cos(fok),60,csirkekozpont.X(),csirkekozpont.Y(),csirkekozpont.Z(),0,0,1);
     glViewport(0,300,300,300);
-    onDisplayAfter(kovcsirkefej.X(), kovcsirkefej.Y(), kovcsirkefej.Z(), 30*sin(fok),30*cos(fok),-20,0,0,1);
+    onDisplayAfter(kovcsirkefej.X(), kovcsirkefej.Y(), kovcsirkefej.Z()+CoordZ, csirkekozpont.X()+CoordX,csirkekozpont.Y()+CoordY,csirkekozpont.Z(),0,0,1);
     glViewport(300,150,300,300);
     onDisplayAfter(30*sin(fok),30*cos(fok),60,0,0,0,0,0,1);
 
@@ -1208,14 +1212,30 @@ void onKeyboard(unsigned char key, int x, int y) {
 
     if (key == 'd') glutPostRedisplay( ); 		// d beture rajzold ujra a kepet
 
-    if (key == '1') {
-        	glViewport(0,0,300,300);
-        	glutPostRedisplay( ); 		// d beture rajzold ujra a kepet
+    if (key == 'j') {
+        	CoordX = CoordX + 0.01;
+        	glutPostRedisplay();
     }
-    if (key == '2') {
-           	glViewport(0,300,300,300);
-           	glutPostRedisplay( ); 		// d beture rajzold ujra a kepet
+    if (key == 'l') {
+    		CoordX = CoordX - 0.01;
+    		glutPostRedisplay();
     }
+    if (key == 'i') {
+			CoordY = CoordY + 0.01;
+			glutPostRedisplay();
+	}
+	if (key == 'k') {
+			CoordY = CoordY - 0.01;
+			glutPostRedisplay();
+	}
+    if (key == '8') {
+			CoordZ = CoordZ + 0.01;
+			glutPostRedisplay();
+	}
+	if (key == '9') {
+			CoordZ = CoordZ - 0.01;
+			glutPostRedisplay();
+	}
 }
 
 // Eger esemenyeket lekezelo fuggveny
