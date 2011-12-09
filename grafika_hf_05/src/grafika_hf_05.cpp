@@ -334,10 +334,12 @@ class Sun {
 	private:
 		Vector3D pozicio;
 		float h;
+		float feny[4];
 	public:
 		Sun() {
 			pozicio = Vector3D(-1,1,1);
 			h = 0;
+			feny[0] = 1, feny[1] = 0, feny[2] = 0, feny[3] = 1;
 		}
 
 		Vector3D getPozicio() {
@@ -346,6 +348,28 @@ class Sun {
 
 		float getH() {
 			return this->h;
+		}
+
+		float getFenyR() {
+			return feny[0];
+		}
+
+		float getFenyG() {
+			return feny[1];
+		}
+
+		float getFenyB() {
+			return feny[2];
+		}
+
+		float getFenyH() {
+			return feny[3];
+		}
+
+		void setFeny(long t) {
+			float tc = sin(t*PI/10000);
+			feny[1] = tc;
+			feny[2] = tc;
 		}
 };
 
@@ -1125,6 +1149,9 @@ void onDisplay( ) {
     float nap[4] = {sun.getPozicio().X(), sun.getPozicio().Y(), sun.getPozicio().Z(), sun.getH()};
     glLightfv(GL_LIGHT1,GL_POSITION,nap);
 
+    float napocska[4] = {sun.getFenyR(), sun.getFenyG(), sun.getFenyB(), sun.getFenyH()};
+    glLightfv(GL_LIGHT1,GL_DIFFUSE,napocska);
+
     glEnable(GL_LIGHT1);
 
     mezo.Rajzol();
@@ -1167,6 +1194,9 @@ void onMouse(int button, int state, int x, int y) {
 void onIdle( ) {
      // long time = glutGet(GLUT_ELAPSED_TIME);		// program inditasa ota eltelt ido
 	long aktualisido = glutGet(GLUT_ELAPSED_TIME);
+
+	long suntime = aktualisido % 10000;
+	sun.setFeny(suntime);
 
 	float elteltido = (float)(aktualisido - time)/1000;
 	if (elteltido > 0) {
