@@ -928,6 +928,7 @@ class Uthenger {
 
 class Csirke {
 	private:
+		Vector3D helyzet;
 	public:
 		Henger jlab1, jlab2, blab1, blab2;
 		Kup jlab3, blab3;
@@ -961,10 +962,15 @@ class Csirke {
 			taraj3 = Kup(0.3,0.10,Vector3D(0,0,0));
 		}
 
+		void setHelyzet(Vector3D v) {
+			this->helyzet = v;
+		}
+
 		void Rajzol() {
 
 			glPushMatrix();
-			glTranslatef(1.0,1.0,0.53);
+			//glTranslatef(1.0,1.0,0.53);
+			glTranslatef(helyzet.X(), helyzet.Y(), helyzet.Z());
 			glScalef(0.4,0.4,0.4);
 
 			jlab1.setRotate(-50,1,0,0);
@@ -1047,7 +1053,10 @@ Teglatest mezo(5.00,5.00,0.01, Vector3D(0,0,-0.002));
 Teglatest ut(5.00,1.00,0.01, Vector3D(0,0,-0.001));
 
 Uthenger csirkenyomda;
-Csirke csirke;
+
+Csirke csibe;
+Csirke csiba;
+Csirke csipa;
 
 Camera camera;
 Sun sun;
@@ -1088,6 +1097,10 @@ void onInitialization( ) {
 	mezo.setAnyag(sarga);
 	ut.setTextura(ASZFALT);
 	ut.setAnyag(sarga);
+
+	csibe.setHelyzet(Vector3D(1.0,1.0,0.53));
+	csiba.setHelyzet(Vector3D(1.5,1.0,0.53));
+	csipa.setHelyzet(Vector3D(1.0,2.0,0.53));
 }
 
 // Rajzolas, ha az alkalmazas ablak ervenytelenne valik, akkor ez a fuggveny hivodik meg
@@ -1117,12 +1130,16 @@ void onDisplay( ) {
     mezo.Rajzol();
     ut.Rajzol();
     csirkenyomda.Rajzol();
-    csirke.Rajzol();
+    csibe.Rajzol();
+    csiba.Rajzol();
+    csipa.Rajzol();
 
     glMultMatrixf(&sotetoldal[0][0]);
     glDisable(GL_LIGHTING);
     glColor3f(0,0,0);
-    csirke.Rajzol();
+    csibe.Rajzol();
+    csiba.Rajzol();
+    csipa.Rajzol();
     csirkenyomda.Rajzol();
     glEnable(GL_LIGHTING);
 
