@@ -1124,7 +1124,7 @@ void onInitialization( ) {
 
 	csibe.setHelyzet(Vector3D(1.0,1.0,0.53));
 	csiba.setHelyzet(Vector3D(1.5,1.0,0.53));
-	csipa.setHelyzet(Vector3D(1.0,2.0,0.53));
+	csipa.setHelyzet(Vector3D(2.0,1.0,0.53));
 }
 
 void onDisplayAfter( ) {
