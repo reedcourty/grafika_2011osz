@@ -1127,15 +1127,7 @@ void onInitialization( ) {
 	csipa.setHelyzet(Vector3D(1.0,2.0,0.53));
 }
 
-// Rajzolas, ha az alkalmazas ablak ervenytelenne valik, akkor ez a fuggveny hivodik meg
-void onDisplay( ) {
-
-	glViewport(0,0,600,600);
-
-    glClearColor(0.1f, 0.2f, 0.3f, 1.0f);		// torlesi szin beallitasa
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // kepernyo torles
-
-
+void onDisplayAfter( ) {
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
@@ -1169,6 +1161,19 @@ void onDisplay( ) {
     csipa.Rajzol();
     csirkenyomda.Rajzol();
     glEnable(GL_LIGHTING);
+}
+
+// Rajzolas, ha az alkalmazas ablak ervenytelenne valik, akkor ez a fuggveny hivodik meg
+void onDisplay( ) {
+    glClearColor(0.1f, 0.2f, 0.3f, 1.0f);		// torlesi szin beallitasa
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // kepernyo torles
+
+    glViewport(0,0,300,300);
+    onDisplayAfter();
+    glViewport(0,300,300,300);
+    onDisplayAfter();
+    glViewport(300,150,300,300);
+    onDisplayAfter();
 
     glutSwapBuffers();     				// Buffercsere: rajzolas vege
 
@@ -1183,6 +1188,15 @@ void onKeyboard(unsigned char key, int x, int y) {
 	#endif
 
     if (key == 'd') glutPostRedisplay( ); 		// d beture rajzold ujra a kepet
+
+    if (key == '1') {
+        	glViewport(0,0,300,300);
+        	glutPostRedisplay( ); 		// d beture rajzold ujra a kepet
+    }
+    if (key == '2') {
+           	glViewport(0,300,300,300);
+           	glutPostRedisplay( ); 		// d beture rajzold ujra a kepet
+    }
 }
 
 // Eger esemenyeket lekezelo fuggveny
