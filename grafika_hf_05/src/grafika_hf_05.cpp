@@ -1038,7 +1038,9 @@ class Csirke {
 		}
 
 		void setHelyzet(long dt) {
-			this->helyzet += this->sebesseg*dt;
+			if (this->helyzet.Y() > -1.0) {
+				this->helyzet += this->sebesseg*dt;
+			}
 		}
 
 		Vector3D getHeadpoz() {
