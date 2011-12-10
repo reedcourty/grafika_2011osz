@@ -1140,8 +1140,8 @@ class Csirke {
 		}
 };
 
-Teglatest mezo(50.00,50.00,0.01, Vector3D(0,0,-0.002));
-Teglatest ut(50.00,1.00,0.01, Vector3D(0,0,-0.001));
+Teglatest mezo(500.00,500.00,0.01, Vector3D(0,0,-0.002));
+Teglatest ut(500.00,1.00,0.01, Vector3D(0,0,-0.001));
 
 Vector3D csirkenyomda_start = Vector3D(0.0,0.0,0.55);
 Uthenger csirkenyomda;
@@ -1224,7 +1224,7 @@ void onInitialization( ) {
 }
 
 void onDisplayAfter(float eyex, float eyey, float eyez, float centerx, float centery, float centerz, float upx, float upy, float upz) {
-    glMatrixMode(GL_MODELVIEW);
+	glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
     //gluLookAt(30*sin(fok),30*cos(fok),60,0,0,0,0,0,1);
@@ -1272,8 +1272,22 @@ void onDisplay( ) {
     onDisplayAfter(30*sin(fok),30*cos(fok),60,csirkekozpont.X(),csirkekozpont.Y(),csirkekozpont.Z(),0,0,1);
     glViewport(0,window_height/2,window_width/2,window_height/2);
     onDisplayAfter(kovcsirkefej.X(), kovcsirkefej.Y(), kovcsirkefej.Z()+CoordZ, csirkekozpont.X()+CoordX,csirkekozpont.Y()+CoordY,csirkekozpont.Z(),0,0,1);
+
     glViewport(window_width/2,window_height/4,window_width/2,window_height/2);
-    onDisplayAfter(30*sin(fok),30*cos(fok),60,0,0,0,0,0,1);
+
+    float ex = csirkenyomda.getR().X();
+    float ey = csirkenyomda.getR().Y();
+    float ez = csirkenyomda.getR().Z();
+    float kx;
+    if (csirkenyomda.getSebesseg().X() > 0) {
+    	kx = csirkenyomda.getR().X() + 3.0;
+    }
+    else {
+    	kx = csirkenyomda.getR().X() - 3.0;
+    }
+    float ky = csirkenyomda.getR().Y();
+    float kz = csirkenyomda.getR().Z();
+    onDisplayAfter(ex,ey,ez,kx,ky,kz,0,0,1);
 
     glutSwapBuffers();     				// Buffercsere: rajzolas vege
 
