@@ -883,12 +883,17 @@ class Ellipszoid : public Ojjektum {
 
 class Uthenger {
 	private:
-
+		Vector3D sebesseg;
+		Vector3D gyorsulas;
+		Vector3D r;
 	public:
 		Teglatest teto, ttarto1, ttarto2, ttarto3, ttarto4, kemeny, test, motor, tengely1, tengely2;
 		Henger elsokerek, hatsokerek;
 
 		Uthenger() {
+
+			gyorsulas = Vector3D(0,0,0);
+
 			teto = Teglatest(0.8,0.1,0.6, Vector3D(0.0,0.50,0.0));
 
 			ttarto1 = Teglatest(0.1,0.4,0.1, Vector3D(0.25,0.25,0.25));
@@ -907,9 +912,42 @@ class Uthenger {
 			hatsokerek = Henger(0.8, 0.25, Vector3D(+0.20,+0.50,0));
 		}
 
+		Vector3D getR() {
+			return this->r;
+		}
+
+		Vector3D getSebesseg() {
+			return this->sebesseg;
+		}
+
+		void setR(Vector3D v) {
+			this->r = v;
+		}
+
+		void setR(long t) {
+			this->sebesseg += this->gyorsulas*t;
+			this->r +=  this->sebesseg*t;
+		}
+
+		Vector3D getGyorsulas() {
+			return this->gyorsulas;
+		}
+
+		void setGyorsulasF() {
+			this->gyorsulas = Vector3D(0.000001,0,0);
+		}
+
+		void setGyorsulasB() {
+			this->gyorsulas = Vector3D(-0.000001,0,0);
+		}
+
+		void setGyorsulasN() {
+			this->gyorsulas = Vector3D(0,0,0);
+		}
+
 		void Rajzol() {
 			glPushMatrix();
-			glTranslatef(0.0,0.0,0.55);
+			glTranslatef(r.X(),r.Y(),r.Z());
 			glRotatef(90,1,0,0);
 
 			teto.setAnyag(pezust);
@@ -1088,6 +1126,7 @@ class Csirke {
 Teglatest mezo(5.00,5.00,0.01, Vector3D(0,0,-0.002));
 Teglatest ut(5.00,1.00,0.01, Vector3D(0,0,-0.001));
 
+Vector3D csirkenyomda_start = Vector3D(0.0,0.0,0.55);
 Uthenger csirkenyomda;
 
 Csirke csibe;
@@ -1147,6 +1186,8 @@ void onInitialization( ) {
 	csipa.setHelyzet(csirkekozpont+Vector3D(0.5,0.0,0.0));
 
 	kovcsirkefej = csibe.getHeadpoz()+csibe.getHelyzet();
+
+	csirkenyomda.setR(csirkenyomda_start);
 }
 
 void onDisplayAfter(float eyex, float eyey, float eyez, float centerx, float centery, float centerz, float upx, float upy, float upz) {
@@ -1212,6 +1253,22 @@ void onKeyboard(unsigned char key, int x, int y) {
 
     if (key == 'd') glutPostRedisplay( ); 		// d beture rajzold ujra a kepet
 
+    if (key == 'f') {
+    	csirkenyomda.setGyorsulasF();
+    	glutPostRedisplay();
+    }
+
+    if (key == 'b') {
+		csirkenyomda.setGyorsulasB();
+		glutPostRedisplay();
+	}
+
+    if (key == 'n') {
+		csirkenyomda.setGyorsulasN();
+		cout << csirkenyomda.getGyorsulas().X() << endl;
+		glutPostRedisplay();
+	}
+
     if (key == 'j') {
         	CoordX = CoordX + 0.01;
         	glutPostRedisplay();
@@ -1251,7 +1308,13 @@ void onIdle( ) {
 	long suntime = aktualisido % 10000;
 	sun.setFeny(suntime);
 
+	long dt = aktualisido - time;
+	csirkenyomda.setR(dt);
+
 	float elteltido = (float)(aktualisido - time)/1000;
+
+
+
 	if (elteltido > 0) {
 		fok+=KAMERASEBESSEG*elteltido;
 		time = aktualisido;
