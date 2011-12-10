@@ -992,6 +992,7 @@ class Csirke {
 	private:
 		Vector3D helyzet;
 		Vector3D headpoz;
+		Vector3D sebesseg;
 	public:
 		Henger jlab1, jlab2, blab1, blab2;
 		Kup jlab3, blab3;
@@ -1036,9 +1037,23 @@ class Csirke {
 			this->helyzet = v;
 		}
 
+		void setHelyzet(long dt) {
+			this->helyzet += this->sebesseg*dt;
+		}
+
 		Vector3D getHeadpoz() {
 			return this->headpoz;
 		}
+
+		Vector3D getSebesseg() {
+			return this->sebesseg;
+		}
+
+		void setSebesseg(Vector3D v) {
+			this->sebesseg = v;
+		}
+
+
 
 		void Rajzol() {
 
@@ -1123,8 +1138,8 @@ class Csirke {
 		}
 };
 
-Teglatest mezo(5.00,5.00,0.01, Vector3D(0,0,-0.002));
-Teglatest ut(5.00,1.00,0.01, Vector3D(0,0,-0.001));
+Teglatest mezo(50.00,50.00,0.01, Vector3D(0,0,-0.002));
+Teglatest ut(50.00,1.00,0.01, Vector3D(0,0,-0.001));
 
 Vector3D csirkenyomda_start = Vector3D(0.0,0.0,0.55);
 Uthenger csirkenyomda;
@@ -1269,6 +1284,11 @@ void onKeyboard(unsigned char key, int x, int y) {
 		glutPostRedisplay();
 	}
 
+    if (key == 'c') {
+    	csibe.setSebesseg(Vector3D(0.0,-0.001,0));
+    	glutPostRedisplay();
+    }
+
     if (key == 'j') {
         	CoordX = CoordX + 0.01;
         	glutPostRedisplay();
@@ -1310,6 +1330,7 @@ void onIdle( ) {
 
 	long dt = aktualisido - time;
 	csirkenyomda.setR(dt);
+	csibe.setHelyzet(dt);
 
 	float elteltido = (float)(aktualisido - time)/1000;
 
