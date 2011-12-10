@@ -1143,7 +1143,7 @@ class Csirke {
 Teglatest mezo(500.00,500.00,0.01, Vector3D(0,0,-0.002));
 Teglatest ut(500.00,1.00,0.01, Vector3D(0,0,-0.001));
 
-Vector3D csirkenyomda_start = Vector3D(0.0,0.0,0.55);
+Vector3D csirkenyomda_start = Vector3D(-1.0,0.0,0.55);
 Uthenger csirkenyomda;
 
 Csirke csibe;
@@ -1159,6 +1159,8 @@ Sun sun;
 
 long time;
 float fok = 0;
+
+long headtime;
 
 float sotetoldal[4][4] = {
 		{1,0,0,0},
@@ -1176,10 +1178,12 @@ int kovetkezo;
 void InditCsirke() {
 	if (kovetkezo == 0) {
 		csibe.setSebesseg(Vector3D(0.0,-0.001,0));
+		kovcsirkefej = csiba.getHeadpoz()+csiba.getHelyzet();
 		kovetkezo++;
 	}
 	else if (kovetkezo == 1) {
 		csiba.setSebesseg(Vector3D(0.0,-0.001,0));
+		kovcsirkefej = csipa.getHeadpoz()+csipa.getHelyzet();
 		kovetkezo++;
 	}
 	else if (kovetkezo == 2) {
@@ -1268,25 +1272,34 @@ void onDisplay( ) {
     int window_width = glutGet(GLUT_WINDOW_WIDTH);
     int window_height = glutGet(GLUT_WINDOW_HEIGHT);
 
+    float ex, ey, ez;
+    float kx, ky, kz;
+
     glViewport(0,0,window_width/2,window_height/2);
     onDisplayAfter(30*sin(fok),30*cos(fok),60,csirkekozpont.X(),csirkekozpont.Y(),csirkekozpont.Z(),0,0,1);
+
     glViewport(0,window_height/2,window_width/2,window_height/2);
-    onDisplayAfter(kovcsirkefej.X(), kovcsirkefej.Y(), kovcsirkefej.Z()+CoordZ, csirkekozpont.X()+CoordX,csirkekozpont.Y()+CoordY,csirkekozpont.Z(),0,0,1);
+    ex = kovcsirkefej.X();
+	ey = kovcsirkefej.Y()-1.0;
+	ez = kovcsirkefej.Z();
+	kx = (-1)*sin(headtime*PI/50000);
+	ky = (-1)*fabs(sin(headtime*PI/50000));
+	kz = kovcsirkefej.Z();
+	cout << headtime << "," << kx << "," << ky << "," << kz << endl;
+	onDisplayAfter(ex,ey,ez,kx,ky,kz,0,0,1);
 
     glViewport(window_width/2,window_height/4,window_width/2,window_height/2);
-
-    float ex = csirkenyomda.getR().X();
-    float ey = csirkenyomda.getR().Y();
-    float ez = csirkenyomda.getR().Z();
-    float kx;
+    ex = csirkenyomda.getR().X();
+    ey = csirkenyomda.getR().Y();
+    ez = csirkenyomda.getR().Z();
     if (csirkenyomda.getSebesseg().X() > 0) {
     	kx = csirkenyomda.getR().X() + 3.0;
     }
     else {
     	kx = csirkenyomda.getR().X() - 3.0;
     }
-    float ky = csirkenyomda.getR().Y();
-    float kz = csirkenyomda.getR().Z();
+    ky = csirkenyomda.getR().Y();
+    kz = csirkenyomda.getR().Z();
     onDisplayAfter(ex,ey,ez,kx,ky,kz,0,0,1);
 
     glutSwapBuffers();     				// Buffercsere: rajzolas vege
@@ -1361,6 +1374,7 @@ void onIdle( ) {
 	long aktualisido = glutGet(GLUT_ELAPSED_TIME);
 
 	long suntime = aktualisido % 10000;
+	headtime = aktualisido % 100000;
 	sun.setFeny(suntime);
 
 	long dt = aktualisido - time;
