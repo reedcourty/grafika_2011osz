@@ -1265,11 +1265,14 @@ void onDisplay( ) {
     glClearColor(0.1f, 0.2f, 0.3f, 1.0f);		// torlesi szin beallitasa
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // kepernyo torles
 
-    glViewport(0,0,300,300);
+    int window_width = glutGet(GLUT_WINDOW_WIDTH);
+    int window_height = glutGet(GLUT_WINDOW_HEIGHT);
+
+    glViewport(0,0,window_width/2,window_height/2);
     onDisplayAfter(30*sin(fok),30*cos(fok),60,csirkekozpont.X(),csirkekozpont.Y(),csirkekozpont.Z(),0,0,1);
-    glViewport(0,300,300,300);
+    glViewport(0,window_height/2,window_width/2,window_height/2);
     onDisplayAfter(kovcsirkefej.X(), kovcsirkefej.Y(), kovcsirkefej.Z()+CoordZ, csirkekozpont.X()+CoordX,csirkekozpont.Y()+CoordY,csirkekozpont.Z(),0,0,1);
-    glViewport(300,150,300,300);
+    glViewport(window_width/2,window_height/4,window_width/2,window_height/2);
     onDisplayAfter(30*sin(fok),30*cos(fok),60,0,0,0,0,0,1);
 
     glutSwapBuffers();     				// Buffercsere: rajzolas vege
