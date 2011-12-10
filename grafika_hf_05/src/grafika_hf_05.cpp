@@ -1171,6 +1171,22 @@ float CoordX = 0;
 float CoordY = 0;
 float CoordZ = 0;
 
+int kovetkezo;
+
+void InditCsirke() {
+	if (kovetkezo == 0) {
+		csibe.setSebesseg(Vector3D(0.0,-0.001,0));
+		kovetkezo++;
+	}
+	else if (kovetkezo == 1) {
+		csiba.setSebesseg(Vector3D(0.0,-0.001,0));
+		kovetkezo++;
+	}
+	else if (kovetkezo == 2) {
+		csipa.setSebesseg(Vector3D(0.0,-0.001,0));
+	}
+}
+
 // Inicializacio, a program futasanak kezdeten, az OpenGL kontextus letrehozasa utan hivodik meg (ld. main() fv.)
 void onInitialization( ) {
 	time = glutGet(GLUT_ELAPSED_TIME);
@@ -1287,7 +1303,7 @@ void onKeyboard(unsigned char key, int x, int y) {
 	}
 
     if (key == 'c') {
-    	csibe.setSebesseg(Vector3D(0.0,-0.001,0));
+    	InditCsirke();
     	glutPostRedisplay();
     }
 
@@ -1333,6 +1349,8 @@ void onIdle( ) {
 	long dt = aktualisido - time;
 	csirkenyomda.setR(dt);
 	csibe.setHelyzet(dt);
+	csiba.setHelyzet(dt);
+	csipa.setHelyzet(dt);
 
 	float elteltido = (float)(aktualisido - time)/1000;
 
