@@ -1203,8 +1203,7 @@ Csirke csibe;
 Csirke csiba;
 Csirke csipa;
 
-//Vector3D csirkekozpont = Vector3D(1.5,1.0,0.53);
-Vector3D csirkekozpont = Vector3D(1.5,0.0,0.53);
+Vector3D csirkekozpont = Vector3D(1.5,1.0,0.53);
 
 Vector3D kovcsirkefej;
 
@@ -1506,12 +1505,10 @@ void onKeyboard(unsigned char key, int x, int y) {
 
     if (key == '0') {
 		csirkenyomda.setR(csirkenyomda.getR()+Vector3D(0.01,0,0));
-		cout << csirkenyomda.getR().X() << endl;
 		glutPostRedisplay();
 	}
 	if (key == '1') {
 		csirkenyomda.setR(csirkenyomda.getR()-Vector3D(0.01,0,0));
-		cout << csirkenyomda.getR().X() << endl;
 		glutPostRedisplay();
 	}
 
