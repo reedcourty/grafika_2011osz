@@ -326,7 +326,7 @@ class Camera {
 
 			glMatrixMode(GL_PROJECTION);
 			glLoadIdentity();
-			gluPerspective(4,1,1,100);
+			gluPerspective(4,1,1,500);
 		}
 };
 
@@ -1443,17 +1443,17 @@ void onDisplay( ) {
 	onDisplayAfter(ex,ey,ez,kx,ky,kz,0,0,1);
 
     glViewport(window_width/2,window_height/4,window_width/2,window_height/2);
-    ex = csirkenyomda.getR().X();
+    ex = csirkenyomda.getR().X() - 5.5;
     ey = csirkenyomda.getR().Y();
-    ez = csirkenyomda.getR().Z()+0.5;
-    if (csirkenyomda.getSebesseg().X() > 0) {
-    	kx = csirkenyomda.getR().X() + 1.0;
+    ez = csirkenyomda.getR().Z()+0.25;
+    if (csirkenyomda.getSebesseg().X() >= 0) {
+    	kx = csirkenyomda.getR().X() + 1.0 - 5.5;
     }
     else {
-    	kx = csirkenyomda.getR().X() - 1.0;
+    	kx = csirkenyomda.getR().X() - 1.0 - 5.5;
     }
-    ky = csirkenyomda.getR().Y()-0.0125;
-    kz = csirkenyomda.getR().Z()+0.5;
+    ky = csirkenyomda.getR().Y();
+    kz = csirkenyomda.getR().Z()+0.25;
     onDisplayAfter(ex,ey,ez,kx,ky,kz,0,0,1);
 
     glutSwapBuffers();     				// Buffercsere: rajzolas vege
