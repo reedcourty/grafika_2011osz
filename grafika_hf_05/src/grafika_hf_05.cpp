@@ -45,7 +45,7 @@
 #include <stdlib.h>
 
 // TODO: A beadas elott kapcsold ki a DEBUG modot:
-#define DEBUG
+//#define DEBUG
 
 #if defined(DEBUG)
 #include <iostream>
@@ -1506,12 +1506,10 @@ void onKeyboard(unsigned char key, int x, int y) {
 
     if (key == '0') {
 		csirkenyomda.setR(csirkenyomda.getR()+Vector3D(0.01,0,0));
-		cout << csirkenyomda.getR().X() << endl;
 		glutPostRedisplay();
 	}
 	if (key == '1') {
 		csirkenyomda.setR(csirkenyomda.getR()-Vector3D(0.01,0,0));
-		cout << csirkenyomda.getR().X() << endl;
 		glutPostRedisplay();
 	}
 
