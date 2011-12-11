@@ -929,7 +929,7 @@ class Uthenger {
 		}
 
 		float getSzelesseg() {
-			return this->hossz;
+			return this->szelesseg;
 		}
 
 		Vector3D getR() {
@@ -1071,8 +1071,6 @@ class Csirke {
 		}
 
 		void setHelyzet(long dt) {
-
-			cout << this->helyzet.Y() << endl;
 			if (this->helyzet.Y() < -1.0) {
 				this->setal = 0;
 			}
@@ -1110,7 +1108,6 @@ class Csirke {
 		void setSetal(int s) {
 			this->setal = s;
 		}
-
 
 		void Rajzol() {
 
@@ -1199,13 +1196,15 @@ Teglatest mezo(500.00,500.00,0.01, Vector3D(0,0,-0.002));
 Teglatest ut(500.00,1.00,0.01, Vector3D(0,0,-0.001));
 
 Vector3D csirkenyomda_start = Vector3D(-1.0,0.0,0.55);
+//Vector3D csirkenyomda_start = Vector3D(1.5,0.0,0.55);
 Uthenger csirkenyomda;
 
 Csirke csibe;
 Csirke csiba;
 Csirke csipa;
 
-Vector3D csirkekozpont = Vector3D(1.5,1.0,0.53);
+//Vector3D csirkekozpont = Vector3D(1.5,1.0,0.53);
+Vector3D csirkekozpont = Vector3D(1.5,0.0,0.53);
 
 Vector3D kovcsirkefej;
 
@@ -1231,10 +1230,6 @@ float lapito[4][4] = {
 		{0,0,0,1}
 };
 
-float CoordX = 0;
-float CoordY = 0;
-float CoordZ = 0;
-
 int kovetkezo;
 
 void InditCsirke() {
@@ -1253,7 +1248,7 @@ void InditCsirke() {
 	}
 }
 
-int Intervallumban(float a, float b, float x) {
+int Intervallumban(float a, float b, float x, float xp) {
 	int intervallumban = 0;
 	if (a > b) {
 		if ((x > b) && (x < a)) {
@@ -1276,38 +1271,34 @@ void UtkozesDetektalo() {
 
 	float uhx = csirkenyomda.getR().X();
 	float uhy = csirkenyomda.getR().Y();
-	float uhs = csirkenyomda.getSzelesseg();
-	float uhh = csirkenyomda.getHossz();
+	float uhs = csirkenyomda.getSzelesseg()/2;
+	float uhh = csirkenyomda.getHossz()/2;
 
-	if (kovetkezo == 0) {
-		csx = csibe.getHelyzet().X();
-		csy = csibe.getHelyzet().Y();
-		css = csibe.getSzelesseg();
-		csh = csibe.getHossz();
-	}
-	else if (kovetkezo == 1) {
-		csx = csiba.getHelyzet().X();
-		csy = csiba.getHelyzet().Y();
-		css = csiba.getSzelesseg();
-		csh = csiba.getHossz();
-	}
-	else if (kovetkezo == 2) {
-		csx = csipa.getHelyzet().X();
-		csy = csipa.getHelyzet().Y();
-		css = csipa.getSzelesseg();
-		csh = csipa.getHossz();
+	csx = csibe.getHelyzet().X();
+	csy = csibe.getHelyzet().Y();
+	css = csibe.getSzelesseg();
+	csh = csibe.getHossz();
+
+	if ((Intervallumban(uhx+uhh,uhx-uhh,csx,css) == 1) && (Intervallumban(uhy+uhs,uhy-uhs,csy,csh) == 1)) {
+		csibe.setLapitott();
 	}
 
-	if ((Intervallumban(uhx+uhh,uhx-uhh,csx) == 1) && (Intervallumban(uhy+uhs,uhy-uhs,csy) == 1)) {
-		if (kovetkezo == 0) {
-			csibe.setLapitott();
-		}
-		else if (kovetkezo == 1) {
-			csiba.setLapitott();
-		}
-		else if (kovetkezo == 2) {
-			csipa.setLapitott();
-		}
+	csx = csiba.getHelyzet().X();
+	csy = csiba.getHelyzet().Y();
+	css = csiba.getSzelesseg();
+	csh = csiba.getHossz();
+
+	if ((Intervallumban(uhx+uhh,uhx-uhh,csx,css) == 1) && (Intervallumban(uhy+uhs,uhy-uhs,csy,csh) == 1)) {
+		csiba.setLapitott();
+	}
+
+	csx = csipa.getHelyzet().X();
+	csy = csipa.getHelyzet().Y();
+	css = csipa.getSzelesseg();
+	csh = csipa.getHossz();
+
+	if ((Intervallumban(uhx+uhh,uhx-uhh,csx,css) == 1) && (Intervallumban(uhy+uhs,uhy-uhs,csy,csh) == 1)) {
+		csipa.setLapitott();
 	}
 }
 
@@ -1512,6 +1503,18 @@ void onKeyboard(unsigned char key, int x, int y) {
 		csipa.setLapitott();
 		glutPostRedisplay();
 	}
+
+    if (key == '0') {
+		csirkenyomda.setR(csirkenyomda.getR()+Vector3D(0.01,0,0));
+		cout << csirkenyomda.getR().X() << endl;
+		glutPostRedisplay();
+	}
+	if (key == '1') {
+		csirkenyomda.setR(csirkenyomda.getR()-Vector3D(0.01,0,0));
+		cout << csirkenyomda.getR().X() << endl;
+		glutPostRedisplay();
+	}
+
 }
 
 // Eger esemenyeket lekezelo fuggveny
