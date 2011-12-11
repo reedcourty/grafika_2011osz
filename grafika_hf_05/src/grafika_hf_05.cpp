@@ -1536,13 +1536,12 @@ void onIdle( ) {
 
 	float elteltido = (float)(aktualisido - time)/1000;
 
-
-
 	if (elteltido > 0) {
 		fok+=KAMERASEBESSEG*elteltido;
-		time = aktualisido;
 		glutPostRedisplay();
 	}
+
+	time = aktualisido;
 
 	UtkozesDetektalo();
 
