@@ -1203,8 +1203,7 @@ Csirke csibe;
 Csirke csiba;
 Csirke csipa;
 
-//Vector3D csirkekozpont = Vector3D(1.5,1.0,0.53);
-Vector3D csirkekozpont = Vector3D(1.5,0.0,0.53);
+Vector3D csirkekozpont = Vector3D(1.5,1.0,0.53);
 
 Vector3D kovcsirkefej;
 
