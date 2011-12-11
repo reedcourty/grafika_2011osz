@@ -1285,15 +1285,43 @@ void onDisplayAfter(float eyex, float eyey, float eyez, float centerx, float cen
     	glPopMatrix();
     }
 
-    csiba.Rajzol();
-    csipa.Rajzol();
+    if (csiba.getLapitott()==0) {
+    	csiba.Rajzol();
+		glPushMatrix();
+		glMultMatrixf(&sotetoldal[0][0]);
+		glDisable(GL_LIGHTING);
+		glColor3f(0,0,0);
+		csiba.Rajzol();
+		glEnable(GL_LIGHTING);
+		glPopMatrix();
+	}
+	else {
+		glPushMatrix();
+		glMultMatrixf(&lapito[0][0]);
+		csiba.Rajzol();
+		glPopMatrix();
+	}
+
+    if (csipa.getLapitott()==0) {
+    	csipa.Rajzol();
+		glPushMatrix();
+		glMultMatrixf(&sotetoldal[0][0]);
+		glDisable(GL_LIGHTING);
+		glColor3f(0,0,0);
+		csipa.Rajzol();
+		glEnable(GL_LIGHTING);
+		glPopMatrix();
+	}
+	else {
+		glPushMatrix();
+		glMultMatrixf(&lapito[0][0]);
+		csipa.Rajzol();
+		glPopMatrix();
+	}
 
     glMultMatrixf(&sotetoldal[0][0]);
     glDisable(GL_LIGHTING);
     glColor3f(0,0,0);
-
-    csiba.Rajzol();
-    csipa.Rajzol();
     csirkenyomda.Rajzol();
     glEnable(GL_LIGHTING);
 }
@@ -1375,6 +1403,14 @@ void onKeyboard(unsigned char key, int x, int y) {
     	csibe.setLapitott();
     	glutPostRedisplay();
     }
+    if (key == 'k') {
+		csiba.setLapitott();
+		glutPostRedisplay();
+	}
+    if (key == 'j') {
+		csipa.setLapitott();
+		glutPostRedisplay();
+	}
 }
 
 // Eger esemenyeket lekezelo fuggveny
