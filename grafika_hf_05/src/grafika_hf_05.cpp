@@ -808,6 +808,14 @@ class Ellipszoid : public Ojjektum {
 			ComputeVertices();
 		}
 
+		float getSugar() {
+			return this->sugar;
+		}
+
+		float getHossz() {
+			return this->hossz;
+		}
+
 		void ComputeSzalag(float sugar0, float sugar1, float magassag0, float magassag1, int irany) {
 			float x, z, szog;
 
@@ -886,12 +894,16 @@ class Uthenger {
 		Vector3D sebesseg;
 		Vector3D gyorsulas;
 		Vector3D r;
+		float hossz;
+		float szelesseg;
 	public:
 		Teglatest teto, ttarto1, ttarto2, ttarto3, ttarto4, kemeny, test, motor, tengely1, tengely2;
 		Henger elsokerek, hatsokerek;
 
 		Uthenger() {
 
+			hossz = 1.2;
+			szelesseg = 0.8;
 			gyorsulas = Vector3D(0,0,0);
 
 			teto = Teglatest(0.8,0.1,0.6, Vector3D(0.0,0.50,0.0));
@@ -901,7 +913,7 @@ class Uthenger {
 			ttarto3 = Teglatest(0.1,0.4,0.1, Vector3D(0.25,0.25,-0.25));
 			ttarto4 = Teglatest(0.1,0.4,0.1, Vector3D(-0.25,0.25,-0.25));
 
-			test = Teglatest(1.2,0.2,0.8, Vector3D(0.0,0.0,0.0));
+			test = Teglatest(hossz,0.2,szelesseg, Vector3D(0.0,0.0,0.0));
 
 			kemeny = Teglatest(0.05,0.2,0.05, Vector3D(-0.50,0.20,-0.25));
 
@@ -910,6 +922,14 @@ class Uthenger {
 			elsokerek = Henger(0.8, 0.25, Vector3D(-0.20,-0.50,0));
 
 			hatsokerek = Henger(0.8, 0.25, Vector3D(+0.20,+0.50,0));
+		}
+
+		float getHossz() {
+			return this->hossz;
+		}
+
+		float getSzelesseg() {
+			return this->hossz;
 		}
 
 		Vector3D getR() {
@@ -1032,6 +1052,14 @@ class Csirke {
 			taraj1 = Kup(0.3,0.10,Vector3D(0,0,0));
 			taraj2 = Kup(0.3,0.10,Vector3D(0,0,0));
 			taraj3 = Kup(0.3,0.10,Vector3D(0,0,0));
+		}
+
+		float getSzelesseg() {
+			return 2*test.getSugar();
+		}
+
+		float getHossz() {
+			return test.getHossz();
 		}
 
 		Vector3D getHelyzet() {
@@ -1225,18 +1253,61 @@ void InditCsirke() {
 	}
 }
 
+int Intervallumban(float a, float b, float x) {
+	int intervallumban = 0;
+	if (a > b) {
+		if ((x > b) && (x < a)) {
+			intervallumban = 1;
+		}
+	}
+	else {
+		if ((x > a) && (x < b)) {
+			intervallumban = 1;
+		}
+	}
+	return intervallumban;
+}
+
 void UtkozesDetektalo() {
+	float csx;
+	float csy;
+	float css;
+	float csh;
+
+	float uhx = csirkenyomda.getR().X();
+	float uhy = csirkenyomda.getR().Y();
+	float uhs = csirkenyomda.getSzelesseg();
+	float uhh = csirkenyomda.getHossz();
+
 	if (kovetkezo == 0) {
-		//cout << csibe.getHelyzet().X() << endl;
-		//cout << csirkenyomda.getR().X() << endl;
+		csx = csibe.getHelyzet().X();
+		csy = csibe.getHelyzet().Y();
+		css = csibe.getSzelesseg();
+		csh = csibe.getHossz();
 	}
 	else if (kovetkezo == 1) {
-		//cout << csiba.getHelyzet().X() << endl;
-		//cout << csirkenyomda.getR().X() << endl;
+		csx = csiba.getHelyzet().X();
+		csy = csiba.getHelyzet().Y();
+		css = csiba.getSzelesseg();
+		csh = csiba.getHossz();
 	}
 	else if (kovetkezo == 2) {
-		//cout << csipa.getHelyzet().X() << endl;
-		//cout << csirkenyomda.getR().X() << endl;
+		csx = csipa.getHelyzet().X();
+		csy = csipa.getHelyzet().Y();
+		css = csipa.getSzelesseg();
+		csh = csipa.getHossz();
+	}
+
+	if ((Intervallumban(uhx+uhh,uhx-uhh,csx) == 1) && (Intervallumban(uhy+uhs,uhy-uhs,csy) == 1)) {
+		if (kovetkezo == 0) {
+			csibe.setLapitott();
+		}
+		else if (kovetkezo == 1) {
+			csiba.setLapitott();
+		}
+		else if (kovetkezo == 2) {
+			csipa.setLapitott();
+		}
 	}
 }
 
