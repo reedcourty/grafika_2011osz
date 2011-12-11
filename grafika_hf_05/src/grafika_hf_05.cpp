@@ -1433,6 +1433,11 @@ void onDisplay( ) {
     glViewport(0,0,window_width/2,window_height/2);
     onDisplayAfter(30*sin(fok),30*cos(fok),60,csirkekozpont.X(),csirkekozpont.Y(),csirkekozpont.Z(),0,0,1);
 
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluPerspective(8,1,1,500);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
     glViewport(0,window_height/2,window_width/2,window_height/2);
     ex = kovcsirkefej.X();
 	ey = kovcsirkefej.Y()-1.0;
@@ -1442,20 +1447,27 @@ void onDisplay( ) {
 	kz = kovcsirkefej.Z();
 	onDisplayAfter(ex,ey,ez,kx,ky,kz,0,0,1);
 
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	gluPerspective(8,1.5,1,50);
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
     glViewport(window_width/2,window_height/4,window_width/2,window_height/2);
-    ex = csirkenyomda.getR().X() - 5.5;
+    ex = csirkenyomda.getR().X() - 2;
     ey = csirkenyomda.getR().Y();
     ez = csirkenyomda.getR().Z()+0.25;
     if (csirkenyomda.getSebesseg().X() >= 0) {
-    	kx = csirkenyomda.getR().X() + 1.0 - 5.5;
+    	kx = csirkenyomda.getR().X() + 1.0 - 2;
     }
     else {
-    	kx = csirkenyomda.getR().X() - 1.0 - 5.5;
+    	kx = csirkenyomda.getR().X() - 1.0 - 2;
     }
     ky = csirkenyomda.getR().Y();
     kz = csirkenyomda.getR().Z()+0.25;
     onDisplayAfter(ex,ey,ez,kx,ky,kz,0,0,1);
-
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluPerspective(4,1,1,500);
     glutSwapBuffers();     				// Buffercsere: rajzolas vege
 
 }
