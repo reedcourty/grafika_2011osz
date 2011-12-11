@@ -1445,15 +1445,15 @@ void onDisplay( ) {
     glViewport(window_width/2,window_height/4,window_width/2,window_height/2);
     ex = csirkenyomda.getR().X();
     ey = csirkenyomda.getR().Y();
-    ez = csirkenyomda.getR().Z();
+    ez = csirkenyomda.getR().Z()+0.5;
     if (csirkenyomda.getSebesseg().X() > 0) {
-    	kx = csirkenyomda.getR().X() + 3.0;
+    	kx = csirkenyomda.getR().X() + 1.0;
     }
     else {
-    	kx = csirkenyomda.getR().X() - 3.0;
+    	kx = csirkenyomda.getR().X() - 1.0;
     }
-    ky = csirkenyomda.getR().Y();
-    kz = csirkenyomda.getR().Z();
+    ky = csirkenyomda.getR().Y()-0.0125;
+    kz = csirkenyomda.getR().Z()+0.5;
     onDisplayAfter(ex,ey,ez,kx,ky,kz,0,0,1);
 
     glutSwapBuffers();     				// Buffercsere: rajzolas vege
