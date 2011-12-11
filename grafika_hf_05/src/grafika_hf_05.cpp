@@ -993,6 +993,7 @@ class Csirke {
 		Vector3D helyzet;
 		Vector3D headpoz;
 		Vector3D sebesseg;
+		int setal;
 		int lapitott;
 	public:
 		Henger jlab1, jlab2, blab1, blab2;
@@ -1008,6 +1009,7 @@ class Csirke {
 			headpoz = Vector3D(0,-0.95,0.50);
 
 			lapitott = 0;
+			setal = 1;
 
 			jlab1 = Henger(0.8, 0.10, Vector3D(0,0,0));
 			jlab2 = Henger(0.8, 0.10, Vector3D(0,0,0));
@@ -1041,7 +1043,13 @@ class Csirke {
 		}
 
 		void setHelyzet(long dt) {
-			if (this->helyzet.Y() > -1.0) {
+
+			cout << this->helyzet.Y() << endl;
+			if (this->helyzet.Y() < -1.0) {
+				this->setal = 0;
+			}
+
+			if (this->setal == 1) {
 				this->helyzet += this->sebesseg*dt;
 			}
 		}
@@ -1064,6 +1072,15 @@ class Csirke {
 
 		void setLapitott() {
 			this->lapitott = 1;
+			this->setal = 0;
+		}
+
+		int getSetal() {
+			return this->setal;
+		}
+
+		void setSetal(int s) {
+			this->setal = s;
 		}
 
 
@@ -1208,6 +1225,21 @@ void InditCsirke() {
 	}
 }
 
+void UtkozesDetektalo() {
+	if (kovetkezo == 0) {
+		//cout << csibe.getHelyzet().X() << endl;
+		//cout << csirkenyomda.getR().X() << endl;
+	}
+	else if (kovetkezo == 1) {
+		//cout << csiba.getHelyzet().X() << endl;
+		//cout << csirkenyomda.getR().X() << endl;
+	}
+	else if (kovetkezo == 2) {
+		//cout << csipa.getHelyzet().X() << endl;
+		//cout << csirkenyomda.getR().X() << endl;
+	}
+}
+
 // Inicializacio, a program futasanak kezdeten, az OpenGL kontextus letrehozasa utan hivodik meg (ld. main() fv.)
 void onInitialization( ) {
 	time = glutGet(GLUT_ELAPSED_TIME);
@@ -1347,7 +1379,6 @@ void onDisplay( ) {
 	kx = (-1)*sin(headtime*PI/50000);
 	ky = (-1)*fabs(sin(headtime*PI/50000));
 	kz = kovcsirkefej.Z();
-	cout << headtime << "," << kx << "," << ky << "," << kz << endl;
 	onDisplayAfter(ex,ey,ez,kx,ky,kz,0,0,1);
 
     glViewport(window_width/2,window_height/4,window_width/2,window_height/2);
@@ -1390,7 +1421,6 @@ void onKeyboard(unsigned char key, int x, int y) {
 
     if (key == 'n') {
 		csirkenyomda.setGyorsulasN();
-		cout << csirkenyomda.getGyorsulas().X() << endl;
 		glutPostRedisplay();
 	}
 
@@ -1442,6 +1472,9 @@ void onIdle( ) {
 		time = aktualisido;
 		glutPostRedisplay();
 	}
+
+	UtkozesDetektalo();
+
 }
 
 // ...Idaig modosithatod
