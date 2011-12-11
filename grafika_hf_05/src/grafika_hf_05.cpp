@@ -993,6 +993,7 @@ class Csirke {
 		Vector3D helyzet;
 		Vector3D headpoz;
 		Vector3D sebesseg;
+		int lapitott;
 	public:
 		Henger jlab1, jlab2, blab1, blab2;
 		Kup jlab3, blab3;
@@ -1005,6 +1006,8 @@ class Csirke {
 		Csirke() {
 
 			headpoz = Vector3D(0,-0.95,0.50);
+
+			lapitott = 0;
 
 			jlab1 = Henger(0.8, 0.10, Vector3D(0,0,0));
 			jlab2 = Henger(0.8, 0.10, Vector3D(0,0,0));
@@ -1055,6 +1058,13 @@ class Csirke {
 			this->sebesseg = v;
 		}
 
+		int getLapitott() {
+			return this->lapitott;
+		}
+
+		void setLapitott() {
+			this->lapitott = 1;
+		}
 
 
 		void Rajzol() {
@@ -1169,6 +1179,13 @@ float sotetoldal[4][4] = {
 		{0,0,0.005,1}
 };
 
+float lapito[4][4] = {
+		{1,0,0,0},
+		{0,1,0,0},
+		{1,0,0.01,0},
+		{0,0,0,1}
+};
+
 float CoordX = 0;
 float CoordY = 0;
 float CoordZ = 0;
@@ -1250,14 +1267,31 @@ void onDisplayAfter(float eyex, float eyey, float eyez, float centerx, float cen
     mezo.Rajzol();
     ut.Rajzol();
     csirkenyomda.Rajzol();
-    csibe.Rajzol();
+
+    if (csibe.getLapitott()==0) {
+    	csibe.Rajzol();
+    	glPushMatrix();
+    	glMultMatrixf(&sotetoldal[0][0]);
+		glDisable(GL_LIGHTING);
+		glColor3f(0,0,0);
+		csibe.Rajzol();
+		glEnable(GL_LIGHTING);
+		glPopMatrix();
+    }
+    else {
+    	glPushMatrix();
+    	glMultMatrixf(&lapito[0][0]);
+    	csibe.Rajzol();
+    	glPopMatrix();
+    }
+
     csiba.Rajzol();
     csipa.Rajzol();
 
     glMultMatrixf(&sotetoldal[0][0]);
     glDisable(GL_LIGHTING);
     glColor3f(0,0,0);
-    csibe.Rajzol();
+
     csiba.Rajzol();
     csipa.Rajzol();
     csirkenyomda.Rajzol();
@@ -1337,30 +1371,10 @@ void onKeyboard(unsigned char key, int x, int y) {
     	glutPostRedisplay();
     }
 
-    if (key == 'j') {
-        	CoordX = CoordX + 0.01;
-        	glutPostRedisplay();
-    }
     if (key == 'l') {
-    		CoordX = CoordX - 0.01;
-    		glutPostRedisplay();
+    	csibe.setLapitott();
+    	glutPostRedisplay();
     }
-    if (key == 'i') {
-			CoordY = CoordY + 0.01;
-			glutPostRedisplay();
-	}
-	if (key == 'k') {
-			CoordY = CoordY - 0.01;
-			glutPostRedisplay();
-	}
-    if (key == '8') {
-			CoordZ = CoordZ + 0.01;
-			glutPostRedisplay();
-	}
-	if (key == '9') {
-			CoordZ = CoordZ - 0.01;
-			glutPostRedisplay();
-	}
 }
 
 // Eger esemenyeket lekezelo fuggveny
