@@ -82,17 +82,21 @@ void PrintTime() {
 
 #endif
 
+enum liftallapot {MOZOG_FEL, MOZOG_LE, SZINTEN_ALL};
+
 const float SZINT1 = -0.50;
 const float SZINT2 = +0.50;
 
-static const float szintek[4] = { -1.0, SZINT1, SZINT2, 1.0 };
+const float szintek[4] = { -1.0, SZINT1, SZINT2, 1.0 };
+
+const float lift_sebesseg = 0.002;
 
 enum allapottipus {FEJELORE, ALL, FAROKELORE};
 enum iranytipus {JOBBRA, BALRA};
 
 // A piros giliszta tulajdonsagai:
 float p_giliszta_cx = +0.00;
-float p_giliszta_cy = +0.00;
+float p_giliszta_cy = -0.40;
 float p_giliszta_vx = -0.001;
 float p_giliszta_vy = +0.00;
 
@@ -133,6 +137,10 @@ class MyPolygon {
 
 	public:
 
+		MyPolygon() {
+
+		}
+
 		MyPolygon(float _cx, float _cy, float _szelesseg) {
 			cx = _cx;
 			cy = _cy;
@@ -156,6 +164,8 @@ class MyPolygon {
 const float PI = 3.14159;
 const int BONTAS = 100;
 
+float giliszta_Amax = 0.10;
+
 class MySine {
 
 	// k = omega / c
@@ -163,14 +173,18 @@ class MySine {
 	// k = (2*pi) / lambda
 
 	private:
-
+    
+        float cx, cy, Amax, Aakt, omega, phi, f, hosszmax, hosszakt;
+		iranytipus irany;
 		typedef float koordinata[2];
 		koordinata koordinatak[BONTAS];
+		float hossz_allando;
 
 	public:
 
-		float cx, cy, Amax, Aakt, omega, phi, f, hosszmax, hosszakt;
-		iranytipus irany;
+		MySine() {
+			MySine(cx, cy, giliszta_Amax, 0, 0.02, 40, this->irany);
+		}
 
 		MySine(float _cx, float _cy, float _Amax, float _phi, float _f, float _hosszmax, iranytipus _irany) {
 			this->cx = _cx;
@@ -184,13 +198,15 @@ class MySine {
 			this->hosszakt = _hosszmax;
 			this->irany = _irany;
 
+			this->hossz_allando = 8*sqrt(this->Amax*this->Amax+(this->hosszmax/8)*(this->hosszmax/8));
+
 			for (int i = 0; i <= BONTAS; i++) {
 				this->koordinatak[i][0] = (float)i*(4*PI/BONTAS);
 				this->koordinatak[i][1] = sin(omega*i + phi); // "A" nem itt, mert akkor mindig ujra kellene szamolni
 
-				#if defined(DEBUG)
-				cout << "i: " << i << " x: " << this->koordinatak[i][0] << " y: " << this->koordinatak[i][1] << endl;
-				#endif
+				//#if defined(DEBUG)
+				//cout << "i: " << i << " x: " << this->koordinatak[i][0] << " y: " << this->koordinatak[i][1] << endl;
+				//#endif
 			}
 		}
 
@@ -248,56 +264,105 @@ class Palya {
 
 class Lift {
 	private:
+		int azonosito;
 		int szint;
+		liftallapot allapot;
+		float sebesseg;
+		float magassag;
+
+		long eltelt_ido;
+		long utolso_rajzolas_ideje;
 
 	public:
-		float szam;
-
-		Lift() {
+		Lift(int _azonosito) {
 			this->szint = 1;
-			#if defined(DEBUG)
-			cout << "szint: " << get_szint() << " magassag: " << get_magassag() << endl;
-			#endif
+			this->azonosito = _azonosito;
+			this->sebesseg = lift_sebesseg;
+			this->magassag = get_szint_magassag();
+			this->utolso_rajzolas_ideje = 0;
+			this->allapot = SZINTEN_ALL;
 		}
 
-		int get_szint(void) {
-			return this->szint;
+		int get_azonosito(void) { return this->azonosito; }
+
+		int get_szint(void) { return this->szint; }
+		void set_szint(int _szint) { this->szint = _szint; }
+
+		liftallapot get_allapot(void) {	return this->allapot; }
+		void set_allapot(liftallapot _allapot) { this->allapot = _allapot; }
+
+		int get_sebesseg(void) { return this->sebesseg; }
+		void set_sebesseg(int _sebesseg) { this->sebesseg = _sebesseg; }
+
+		void szint_fel(void) {
+			if (this->szint < 3) { this->szint++; }
 		}
 
-		void set_szint(int _szint) {
-			this->szint = _szint;
+		void szint_le(void) {
+			if (this->szint > 0) { this->szint--; }
 		}
 
-		float get_magassag(void) {
+		float get_szint_magassag(void) {
 			int i = this->szint;
 			return szintek[i];
 		}
 
-		void set_kov_szint(void) {
-			if (this->szint < 3) {
-				this->szint = this->szint + 1;
-			}
+		float get_szint_magassag(int szint) {
+			return szintek[szint];
 		}
 
-		void set_elo_szint(void) {
-			if (this->szint > 0) {
-				this->szint = this->szint - 1;
+		void szamol(void) {
+
+			long time = glutGet(GLUT_ELAPSED_TIME);
+
+			this->eltelt_ido = time - this->utolso_rajzolas_ideje;
+
+			if (this->allapot == MOZOG_FEL) {
+				if (this->magassag < get_szint_magassag(get_szint()+1)) {
+					this->magassag = this->magassag + this->sebesseg * eltelt_ido;
+				}
+				else {
+					set_allapot(SZINTEN_ALL);
+					szint_fel();
+					this->magassag = get_szint_magassag(get_szint());
+					rajzol();
+				}
 			}
+
+			if (this->allapot == MOZOG_LE) {
+				if (this->magassag > get_szint_magassag(get_szint()-1)) {
+					this->magassag = this->magassag - this->sebesseg * eltelt_ido;
+				}
+				else {
+					set_allapot(SZINTEN_ALL);
+					szint_le();
+					this->magassag = get_szint_magassag(get_szint());
+					rajzol();
+				}
+			}
+
 		}
 
-		void draw(void) {
+		void rajzol(void) {
+
+			szamol();
+
 			glColor3f(0.03f,0.53f,0.047f);
 
-			if (szam == 1) {
-				MyRectangle _lift(-0.60,this->get_magassag()-0.005,-0.20,this->get_magassag()+0.005);
+			if (this->azonosito == 1) {
+				MyRectangle _lift(-0.60,this->magassag-0.005,-0.20,this->magassag+0.005);
 				_lift.draw();
 			}
-			if (szam == 2) {
-				MyRectangle _lift(+0.20,this->get_magassag()-0.005,+0.60,this->get_magassag()+0.005);
+			if (this->azonosito == 2) {
+				MyRectangle _lift(+0.20,this->magassag-0.005,+0.60,this->magassag+0.005);
 				_lift.draw();
 			}
 
+			this->utolso_rajzolas_ideje = glutGet(GLUT_ELAPSED_TIME);
 		}
+
+
+
 };
 
 class Giliszta {
@@ -319,6 +384,8 @@ class Giliszta {
 		allapottipus allapot;
 
 		iranytipus irany;
+
+		MySine farok;
 
 	public:
 		Giliszta(float _szin_R, float _szin_G, float _szin_B, float _cx, float _cy, float _vx, float _vy) {
@@ -380,7 +447,7 @@ class Giliszta {
 
 			MyPolygon mp(cx, cy, giliszta_fej);
 			mp.draw();
-			MySine farok(cx, cy, 0.05, 0, 0.02, 50, this->irany);
+			MySine farok(cx, cy, giliszta_Amax, 0, 0.02, 40, this->irany);
 			farok.set_irany(this->irany);
 			farok.draw();
 
@@ -389,9 +456,25 @@ class Giliszta {
 
 };
 
+class Gilisztapp {
+	private:
+		MyPolygon fej;
+		MySine farok;
+
+		iranytipus irany;
+
+		float cx, cy;
+
+	public:
+		Gilisztapp() {
+			fej = MyPolygon(cx, cy, giliszta_fej);
+			farok = MySine(cx, cy, giliszta_Amax, 0, 0.02, 40, this->irany);
+		}
+};
+
 Palya p;
-Lift LiftQA;
-Lift LiftOL;
+Lift LiftQA(1);
+Lift LiftOL(2);
 
 Giliszta z_giliszta(0.55f,0.71f,0.00f,z_giliszta_cx,z_giliszta_cy,z_giliszta_vx,z_giliszta_vy);
 Giliszta p_giliszta(0.64f,0.00f,0.00f,p_giliszta_cx,p_giliszta_cy,p_giliszta_vx,p_giliszta_vy);
@@ -401,10 +484,8 @@ void onInitialization( ) {
 
 	glColor3f(1.0f,0.863f,0.047f);
 
-	LiftQA.szam = 1;
-	LiftOL.szam = 2;
-	p_giliszta.set_allapot(FEJELORE);
-	z_giliszta.set_allapot(FEJELORE);
+	p_giliszta.set_allapot(ALL);
+	z_giliszta.set_allapot(ALL);
 
 
 }
@@ -416,8 +497,8 @@ void onDisplay( ) {
 
     // ...
     p.draw();
-    LiftQA.draw();
-    LiftOL.draw();
+    LiftQA.rajzol();
+    LiftOL.rajzol();
     p_giliszta.draw();
     z_giliszta.draw();
 
@@ -436,27 +517,37 @@ void onKeyboard(unsigned char key, int x, int y) {
     if (key == 'd') glutPostRedisplay( ); 		// d beture rajzold ujra a kepet
 
     if (key == 'q') {
-    	LiftQA.set_kov_szint();
+    	if (LiftQA.get_allapot() == SZINTEN_ALL) {
+    		LiftQA.set_allapot(MOZOG_FEL);
+    	}
    		glutPostRedisplay();
 
     }
     if (key == 'a') {
-    	LiftQA.set_elo_szint();
+    	if (LiftQA.get_allapot() == SZINTEN_ALL) {
+    		LiftQA.set_allapot(MOZOG_LE);
+    	}
     	glutPostRedisplay();
     }
 
     if (key == 'o') {
-    	LiftOL.set_kov_szint();
+    	if (LiftOL.get_allapot() == SZINTEN_ALL) {
+    	    LiftOL.set_allapot(MOZOG_FEL);
+    	}
    		glutPostRedisplay();
     }
     if (key == 'l') {
-    	LiftOL.set_elo_szint();
+    	if (LiftOL.get_allapot() == SZINTEN_ALL) {
+    		LiftOL.set_allapot(MOZOG_LE);
+    	}
    		glutPostRedisplay();
     }
 
 	#if defined(DEBUG)
-    cout << "LiftQA.szint: " << LiftQA.get_szint() << " magassag: " << LiftQA.get_magassag() << endl;
-    cout << "LiftOL.szint: " << LiftOL.get_szint() << " magassag: " << LiftOL.get_magassag() << endl;
+    	cout << "LiftQA.allapot: " << LiftQA.get_allapot() << endl;
+    	cout << "LiftQA.szint: " << LiftQA.get_szint() << endl;
+    	cout << "LiftOL.allapot: " << LiftOL.get_allapot() << endl;
+    	cout << "LiftOL.szint: " << LiftOL.get_szint() << endl;
 	#endif
 
 }
